@@ -1,0 +1,27 @@
+.metadata
+# 워크스페이스 설정폴더
+/Servers
+/서버폴더
+
+.DS_Store 
+#Mac용 운영체제파일
+Thumbs.db
+#Window용 운영체제파일
+
+
+.settings/
+*.classpath
+*.project
+# Eclipse 관련 파일
+
+target/
+# Maven 빌드 아티팩트
+build/
+# Gradle 빌드 아티팩트
+
+# 로그 및 임시 파일
+logs/
+*.log
+tmp/
+
+
