@@ -9,13 +9,13 @@ import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
 
 public interface BoardService {
 	
-	void save(BoardDTO board, MultipartFile file, String username);
+	void save(BoardDTO board, String userId);
 	
 	List <BoardDTO> findAll(int pageNo);
 	
 	BoardDTO findByBoardNo(Long bardNo);
 	
-	BoardDTO update(BoardDTO board, MultipartFile file, Long boardNo, CustomUserDetails userDetails);
+	BoardDTO update(BoardDTO board, Long boardNo, CustomUserDetails userDetails);
 	
 	void deleteByBoardNo(Long boardNo, CustomUserDetails userDetails);
 }

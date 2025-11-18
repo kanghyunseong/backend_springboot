@@ -34,17 +34,17 @@ public class BoardController {
 	
 private final BoardService boardService;
 	
-	// 게시글 작성 + 첨부파일이 있는
-	// @AuthenticationPrincipal로 Authentication의 principal에 담아놓은 UserDetails를 매개변수로 받을 수 있음
-	// 권장방법임
+	// 게시글 작성
 	@PostMapping
 	public ResponseEntity<?> save(@Valid BoardDTO board, 
-			@RequestParam(name="file", required=false) MultipartFile file,
 			@AuthenticationPrincipal CustomUserDetails userDetails){
 		
-		log.info("게시글 정보 : {}, 파일정보 : {}", board, file.getOriginalFilename());
-		//log.info("이게 뭔데 : {}", userDetails.getUsername());
-		boardService.save(board, file, userDetails.getUsername());
+		if (userDetails == null) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    }
+		
+		log.info("게시글 정보 : {}", board);
+		boardService.save(board, userDetails.getUsername());
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
@@ -67,17 +67,24 @@ private final BoardService boardService;
 	
 	@PutMapping("/{boardNo}")
 	public ResponseEntity<BoardDTO> update(@PathVariable(name="boardNo") Long boardNo,
-										   BoardDTO board, @RequestParam(name="file", required=false)
-										   MultipartFile file, 
+										   BoardDTO board,
 										   @AuthenticationPrincipal CustomUserDetails userDetails){
+		if (userDetails == null) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    }
+		
 		board.setBoardNo(boardNo);
-		boardService.update(board, file, boardNo, userDetails);
+		boardService.update(board, boardNo, userDetails);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	@DeleteMapping("/{boardNo}")
 	public ResponseEntity<?> deleteBuBoardNo(@PathVariable(name="boardNo") Long boardNo,
 											 @AuthenticationPrincipal CustomUserDetails userDetails){
+		if (userDetails == null) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    }
+		
 		boardService.deleteByBoardNo(boardNo, userDetails);
 		return ResponseEntity.ok().build();
 	}

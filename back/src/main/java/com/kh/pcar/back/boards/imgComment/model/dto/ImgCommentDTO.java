@@ -1,5 +1,23 @@
 package com.kh.pcar.back.boards.imgComment.model.dto;
 
-public class ImgCommentDTO {
+import java.sql.Date;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString 
+public class ImgCommentDTO {
+	private Long imgCommentNo;
+	private String imgCommentWriter;
+	private String imgCommentContent;
+	private Date imgCommentDate;
+	private String imgCommentStatus;
+	private Long refIno;
 }

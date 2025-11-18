@@ -8,10 +8,10 @@ import lombok.Value;
 @Value
 @Builder
 public class CommentVO {
-	
 	private Long commentNo;
-	private String commentContent;
 	private String commentWriter;
-	private Date createDate;
-	private Long refBoardNo;
+	private String commentContent;
+	private Date commentDate;
+	private String commentStatus;
+	private Long refBno;
 }

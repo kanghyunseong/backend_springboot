@@ -1,5 +1,19 @@
 package com.kh.pcar.back.boards.imgBoard.model.vo;
 
-public class ImgBoardVO {
+import java.sql.Date;
 
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
+public class ImgBoardVO {
+   private Long imgBoardNo;
+   private String imgBoardTitle;
+   private String imgBoardWriter;
+   private String imgBoardContent;
+   private int imgCount;
+   private String fileUrl;
+   private String imgBoardStatus;
+   private Date imgBoardDate;
 }

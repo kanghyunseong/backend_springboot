@@ -24,10 +24,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 		
 		
-		MemberDTO user = mapper.loadUser(username);
+		MemberDTO user = mapper.loadUser(userId);
 		
 		log.info("이거 오나요 : {}", user);
 		
@@ -37,9 +37,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		
 		
-		return CustomUserDetails.builder().username(user.getMemberId())
-										  .password(user.getMemberPwd())
-										  .memberName(user.getMemberName())
+		return CustomUserDetails.builder().userId(user.getUserId())
+										  .password(user.getUserPwd())
+										  .memberName(user.getUserName())
 										  .authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
 										  .build();
 										  

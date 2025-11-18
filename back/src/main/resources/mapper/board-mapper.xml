@@ -1,8 +1,99 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
-<mapper namespace="com.kh.pcar.back.board.model.dao.BoardMapper">
-	
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.pcar.back.boards.board.model.dao.BoardMapper">
+	<sql id="boardColumn">
+	SELECT
+           B.BOARD_NO boardNo
+         , B.BOARD_TITLE boardTitle
+         , M.USER_ID boardWriter
+         , B.BOARD_CONTENT boardContent
+         , B.COUNT count
+         , B.BOARD_STATUS boardStatus
+         , B.BOARD_DATE boardDate
+	</sql>
+
+    <!-- 게시글 INSERT (boardWriter = USER_ID 문자열 → USER_NO로 변환) -->
+    <insert id="save" parameterType="BoardVO">
+        INSERT 
+          INTO 
+        	   TB_BOARD B
+        	   (
+        	   B.BOARD_NO
+        	 , B.BOARD_TITLE
+        	 , B.BOARD_WRITER
+       		 , B.BOARD_CONTENT
+        	 , B.COUNT
+        	 , B.BOARD_DATE
+        	 , B.BOARD_STATUS
+        	   )
+        VALUES 
+        	   (
+               SEQ_BNO.NEXTVAL
+           	 , #{boardTitle}
+             , (SELECT M.USER_NO FROM TB_MEMBER M WHERE M.USER_ID = #{boardWriter})
+             , #{boardContent}
+             , DEFAULT     
+             , DEFAULT     
+             , DEFAULT       
+        )
+    </insert>
+
+    <!-- 게시글 목록 조회 (writer는 USER_ID로 가져오기) -->
+    <select id="findAll" resultType="BoardDTO">
+      <include refid="boardColumn" />
+        FROM 
+        	 TB_BOARD B
+        JOIN 
+        	 TB_MEMBER M ON B.BOARD_WRITER = M.USER_NO
+       WHERE 
+       		 B.BOARD_STATUS = 'Y'
+       ORDER 
+       	  BY 
+       	  	 B.BOARD_NO DESC
+    </select>
+    <!-- RowBounds는 자바에서 넘겨주니까 XML은 LIMIT/OFFSET 안 써도 됨 -->
+
+    <!-- 단일 게시글 조회 -->
+    <select id="findByBoardNo" resultType="BoardDTO" parameterType="long">
+        FROM 
+        	 TB_BOARD B
+        JOIN 
+        	 TB_MEMBER M ON B.BOARD_WRITER = M.USER_NO
+       WHERE 
+       		 B.BOARD_NO = #{boardNo}
+         AND 
+         	 B.BOARD_STATUS = 'Y'
+    </select>
+
+    <!-- 게시글 수정 -->
+    <update id="update" parameterType="BoardDTO">
+        UPDATE 
+        	   TB_BOARD B
+           SET 
+           	   B.BOARD_TITLE   = #{boardTitle}
+             , B.BOARD_CONTENT = #{boardContent}
+         WHERE 
+         	   B.BOARD_NO = #{boardNo}
+           AND 
+           	   B.BOARD_WRITER = #{loginUserNo}
+    </update>
+
+    <!-- 게시글 삭제 -->
+    <update id="deleteByBoardNo">
+        UPDATE 
+        	   TB_BOARD B
+           SET 
+           	   B.BOARD_STATUS = 'N'
+         WHERE 
+         	   B.BOARD_NO = #{boardNo}
+           AND 
+           	   B.BOARD_WRITER = #{loginUserNo};
+    </update>
+    
 </mapper>
+
+      
+
