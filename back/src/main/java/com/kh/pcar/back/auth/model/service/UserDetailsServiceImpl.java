@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.exception.UsernameNotFoundException;
-import com.kh.pcar.back.member.dao.MemberMapper;
-import com.kh.pcar.back.member.dto.MemberDTO;
+import com.kh.pcar.back.member.model.dao.MemberMapper;
+import com.kh.pcar.back.member.model.dto.MemberDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
