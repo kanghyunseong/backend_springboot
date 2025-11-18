@@ -3,8 +3,8 @@ spring:
   name: back
  datasource:
   url: jdbc:oracle:thin:@115.90.212.20:10000:XE
-  username: KHS02
-  password: KHS021234
+  username: C##QOWNDUD123
+  password: rkdgustjd123
   driver-class-name: oracle.jdbc.driver.OracleDriver
  mvc:
   static-path-pattern: /uploads/**

@@ -57,7 +57,7 @@ public class SecurityConfigure {
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
-							   requests.requestMatchers(HttpMethod.POST, "/auth/login", "/members", "/auth/refresh").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh").permitAll();
 							   requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/boards", "/comments").authenticated();

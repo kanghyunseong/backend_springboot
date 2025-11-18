@@ -8,7 +8,7 @@ import lombok.Value;
 public class RefreshToken {
 	
 	private String token;
-	private String username;
+	private Long userNo;
 	private Long expiration;
 
 }
