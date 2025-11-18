@@ -12,9 +12,16 @@ import lombok.Value;
 @Builder
 public class CustomUserDetails implements UserDetails{
 	
-	private String userId;
+	private Long userNo;
+	private String username; // ID
 	private String password;
-	private String userName;
+	private String realName; // 실명
+	private String birthDay;
+	private String email;
+	private String phone;
+	private String licenseUrl;
 	private Collection<? extends GrantedAuthority> authorities;
-
+	
+	
+	
 }
