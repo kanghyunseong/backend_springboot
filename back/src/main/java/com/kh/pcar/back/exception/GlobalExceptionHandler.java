@@ -59,4 +59,9 @@ public class GlobalExceptionHandler {
 	   public ResponseEntity<?> handlerInvalidParameter(InvalidParameterException e){
 	      return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	   }
+	 
+	 @ExceptionHandler(MemberJoinException.class)
+	 public ResponseEntity<Map<String, String>> handleMemberJoin(MemberJoinException e) {
+	     return createResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
+	 }
 }

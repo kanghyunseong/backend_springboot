@@ -35,4 +35,12 @@
 			   STATUS = 'Y' 
 	</select>
 	
+	<update id="deleteUserStatus">
+		UPDATE 
+		       TB_MEMBER
+		   SET
+		       STATUS = 'N'  WHERE
+		       USER_NO = #{userNo}
+	</update>
+	
 </mapper>

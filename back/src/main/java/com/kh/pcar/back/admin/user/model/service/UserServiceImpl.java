@@ -48,4 +48,11 @@ public class UserServiceImpl implements UserService {
         // 6. PageInfo 객체와 List<UserDTO>를 하나의 응답 DTO로 묶어서 반환
 		return new UserPageResponseDTO(pi, users);
 	}
+
+	@Override
+	public void deleteUser(Long userNo) {
+		userMapper.deleteUserStatus(userNo);
+	}
+	
+	
 }
