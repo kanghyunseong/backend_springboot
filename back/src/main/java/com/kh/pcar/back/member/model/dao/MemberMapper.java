@@ -20,5 +20,5 @@ public interface MemberMapper {
 	@Insert("INSERT INTO TB_LOCAL (USER_NO,PASSWORD) VALUES (SEQ_MEMBER.CURRVAL, #{memberPwd})")
 	int joinLocal(MemberVO member);
 	
-	MemberDTO loadUser(String memberId);
+	MemberDTO loadUser(String userId);
 }

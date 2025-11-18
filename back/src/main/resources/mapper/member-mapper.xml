@@ -30,5 +30,25 @@
              , #{licenseUrl} 
                )
 	</insert>
+	
+<select id="loadUser" parameterType="String" resultType="MemberDTO">
+    SELECT
+           M.USER_NO       userNo
+         , M.USER_ID       memberId
+         , M.USER_NAME     memberName
+         , M.BIRTHDAY      birthDay
+         , M.EMAIL         email
+         , M.PHONE         phone
+         , M.USER_ROLL     role
+         , M.LICENSE_IMG   licenseUrl
+         , M.STATUS        status
+         , M.ENROLL_DATE   enrollDate
+         , L.PASSWORD      memberPwd
+    FROM TB_MEMBER M
+    LEFT JOIN TB_LOCAL L ON M.USER_NO = L.USER_NO
+    WHERE M.USER_ID = #{memberId}
+      AND M.STATUS = 'Y'
+</select>
+
 
 </mapper>

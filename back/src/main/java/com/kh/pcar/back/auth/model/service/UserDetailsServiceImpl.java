@@ -24,12 +24,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 		
+		log.info("userId :  {}" , userId);
 		
-		MemberDTO user = mapper.loadUser(username);
+		MemberDTO user = mapper.loadUser(userId);
 		
-		log.info("이거 오나요 : {}", user);
+		if (user == null) {
+		    log.info("쿼리 결과가 없습니다.");
+		} else {
+		    log.info("이거 오나요 : {}", user);
+		}
 		
 		if(user == null) {
 			throw new UsernameNotFoundException("그럼 죽어!!");
@@ -37,11 +42,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		
 		
-		return CustomUserDetails.builder().username(user.getMemberId())
-										  .password(user.getMemberPwd())
-										  .memberName(user.getMemberName())
-										  .authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
-										  .build();
+		return CustomUserDetails.builder().userNo(user.getUserNo())
+				      					  .username(user.getMemberId())
+				      					  .password(user.getMemberPwd())
+				      					  .realName(user.getMemberName())
+				      					  .birthDay(user.getBirthDay())
+				      					  .email(user.getEmail())
+				      					  .phone(user.getPhone())
+				      					  .licenseUrl(user.getLicenseUrl())
+				      					  .authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
+				      					  .build();
 										  
 	}
 	
