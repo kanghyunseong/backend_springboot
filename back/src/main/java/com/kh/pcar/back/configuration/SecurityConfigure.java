@@ -57,11 +57,11 @@ public class SecurityConfigure {
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
-							   requests.requestMatchers(HttpMethod.POST, "/auth/login", "/members", "/auth/refresh").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/auth/login", "/members", "/auth/refresh","/admin/**", "/api/admin/**").permitAll();
 							   requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/boards", "/comments").authenticated();
-							   requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**").permitAll();
+							   requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**","/admin/**", "/api/admin/**").permitAll();
 							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN");
 							   
 						   })

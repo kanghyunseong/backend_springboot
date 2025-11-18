@@ -3,6 +3,36 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
-<mapper namespace="com.kh.pcar.back.admin.model.dao.AdminMapper">
+<mapper namespace="com.kh.pcar.back.admin.user.model.dao.UserMapper">
+
+	<select id="findAllMember" resultType="com.kh.pcar.back.admin.user.model.dto.UserDTO">
+		SELECT
+			   USER_NO AS userNo, 
+			   USER_ID AS userId, 
+			   USER_NAME AS userName, 
+			   BIRTHDAY AS birthday,
+			   EMAIL AS email, 
+			   PHONE AS phone, 
+			   USER_ROLL AS userRoll, 
+			   LICENSE_IMG AS licenseImg,
+			   STATUS AS status, 
+			   ENROLL_DATE AS enrollDate
+		  FROM
+			   TB_MEMBER
+	     WHERE
+			   STATUS = 'Y' 
+	     ORDER 
+	        BY
+			   USER_NO DESC
+	</select>
+	
+	<select id="getTotalCount" resultType="_int">
+		SELECT
+			   COUNT(*)
+		 FROM
+			  TB_MEMBER 
+	    WHERE
+			   STATUS = 'Y' 
+	</select>
 	
 </mapper>
