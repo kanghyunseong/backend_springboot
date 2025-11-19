@@ -28,6 +28,5 @@ public class UserDTO {
 	private String status;
 	private Date enrollDate;
 	private String licenseStatus;
-	
-	
+
 }

@@ -55,6 +55,7 @@ public class GlobalExceptionHandler {
 	     return createResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
 	 }
 	 
+
 	 @ExceptionHandler(LoginException.class)
 	 public ResponseEntity<Map<String, String>> handleLogin(LoginException e) {
 	     return createResponseEntity(e, HttpStatus.BAD_REQUEST);
@@ -71,4 +72,5 @@ public class GlobalExceptionHandler {
 	             .status(HttpStatus.BAD_REQUEST)
 	             .body(Map.of("error-message", msg));
 	 }
+	 
 }
