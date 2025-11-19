@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Service("imgBoardFileService")
 public class FileService {
 	private final Path fileLocation;
 	

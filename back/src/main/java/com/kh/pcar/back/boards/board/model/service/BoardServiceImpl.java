@@ -5,14 +5,13 @@ import java.util.List;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.boards.board.model.dao.BoardMapper;
 import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
+import com.kh.pcar.back.boards.board.model.dto.PageResponse;
 import com.kh.pcar.back.boards.board.model.vo.BoardVO;
 import com.kh.pcar.back.exception.CustomAuthenticationException;
-import com.kh.pcar.back.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +38,27 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<BoardDTO> findAll(int pageNo) {
-		if(pageNo < 0) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
-		RowBounds rb = new RowBounds((pageNo - 1) * 10, 10);
-		return boardMapper.findAll(rb);
+	public PageResponse<BoardDTO> findAll(int pageNo) {
+
+	    if (pageNo < 0) {
+	        throw new InvalidParameterException("유효하지 않은 접근입니다.");
+	    }
+
+	    int pageSize = 10;
+
+	    RowBounds rb = new RowBounds(pageNo * pageSize, pageSize);
+	    List<BoardDTO> list = boardMapper.findAll(rb);
+
+	    int totalCount = boardMapper.countBoards();
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
+	    return new PageResponse<>(
+	            list,
+	            pageNo,
+	            pageSize,
+	            totalPages,
+	            totalCount
+	    );
 	}
 
 	@Override
