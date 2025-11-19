@@ -18,4 +18,8 @@ public interface UserMapper {
 	    
 	    void deleteUserStatus(Long userNo);
 
+		void updateUser(UserDTO userDTO);
+
+		UserDTO findByUserNo(Long userNo);
+
 }

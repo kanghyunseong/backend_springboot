@@ -27,6 +27,7 @@ public class UserDTO {
 	private String licenseImg;
 	private String status;
 	private Date enrollDate;
+	private String licenseStatus;
 	
 	
 }

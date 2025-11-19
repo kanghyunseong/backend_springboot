@@ -7,16 +7,17 @@
 
 	<select id="findAllMember" resultType="com.kh.pcar.back.admin.user.model.dto.UserDTO">
 		SELECT
-			   USER_NO AS userNo, 
-			   USER_ID AS userId, 
-			   USER_NAME AS userName, 
-			   BIRTHDAY AS birthday,
-			   EMAIL AS email, 
-			   PHONE AS phone, 
-			   USER_ROLL AS userRoll, 
-			   LICENSE_IMG AS licenseImg,
-			   STATUS AS status, 
-			   ENROLL_DATE AS enrollDate
+			    USER_NO AS userNo
+			  , USER_ID AS userId
+			  , USER_NAME AS userName
+			  , BIRTHDAY AS birthday
+			  , EMAIL AS email
+			  , PHONE AS phone 
+			  , USER_ROLL AS userRoll 
+			  , LICENSE_IMG AS licenseImg
+			  , STATUS AS status 
+			  , ENROLL_DATE AS enrollDate
+			  , LICENSE_STATUS AS licenseStatus
 		  FROM
 			   TB_MEMBER
 	     WHERE
@@ -42,5 +43,35 @@
 		       STATUS = 'N'  WHERE
 		       USER_NO = #{userNo}
 	</update>
+	
+	<update id="updateUser">
+		UPDATE 
+		       TB_MEMBER
+           SET 
+           	   USER_NAME = #{userName}
+             , EMAIL = #{email}
+             , PHONE = #{phone}
+             , LICENSE_STATUS = #{licenseStatus}
+         WHERE 
+         	   USER_NO = #{userNo}
+	</update>
+	<select id="findByUserNo" resultType="com.kh.pcar.back.admin.user.model.dto.UserDTO">
+    SELECT
+           USER_NO AS userNo 
+         , USER_ID AS userId 
+         , USER_NAME AS userName 
+         , BIRTHDAY AS birthday
+         , EMAIL AS email
+         , PHONE AS phone 
+         , USER_ROLL AS userRoll 
+         , LICENSE_IMG AS licenseImg
+         , STATUS AS status 
+         , ENROLL_DATE AS enrollDate
+         , LICENSE_STATUS AS licenseStatus
+      FROM
+           TB_MEMBER
+     WHERE
+           USER_NO = #{userNo}
+</select>
 	
 </mapper>

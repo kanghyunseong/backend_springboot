@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.pcar.back.admin.cars.model.dao.CarsMapper">
+    <select id="findAllCars" resultType="com.kh.pcar.back.admin.cars.model.dto.CarsDTO">
+        SELECT
+               CAR_ID AS carId
+             , CAR_NAME AS carName
+             , CAR_DRIVING AS carDriving
+             , BATTERY AS battery
+             , CAR_EFFICIENCY AS carEfficiency
+             , CAR_STATUS AS carStatus
+             , CAR_SIZE AS carSize
+             , CAR_IMAGE AS carImage
+          FROM 
+               TB_CAR
+         ORDER 
+            BY 
+              CAR_ID DESC
+    </select>
+
+    <select id="getTotalCount" resultType="_int">
+        SELECT COUNT(*) FROM TB_CAR
+    </select>
+</mapper>

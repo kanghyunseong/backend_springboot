@@ -53,6 +53,17 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(Long userNo) {
 		userMapper.deleteUserStatus(userNo);
 	}
+
+	@Override
+	public void updateUser(UserDTO userDTO) {
+		userMapper.updateUser(userDTO);
+		
+	}
+
+	@Override
+	public UserDTO findUserByNo(Long userNo) {
+		return userMapper.findByUserNo(userNo);
+	}
 	
 	
 }
