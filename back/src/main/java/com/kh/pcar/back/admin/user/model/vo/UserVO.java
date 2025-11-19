@@ -1,19 +1,13 @@
-package com.kh.pcar.back.admin.model.vo;
+package com.kh.pcar.back.admin.user.model.vo;
 
 import java.sql.Date;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Builder;
+import lombok.Value;
 
-@Getter
-@Setter
-@RequiredArgsConstructor
-@ToString
-@EqualsAndHashCode
-public class AdminVO {
+@Value
+@Builder
+public class UserVO {
 	
 	private Long userNo;
 	private String userId;
