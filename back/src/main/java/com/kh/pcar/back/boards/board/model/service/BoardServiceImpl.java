@@ -62,7 +62,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	private void validateBoard(Long boardNo, CustomUserDetails userDetails) {
 		BoardDTO board = getBoardOrThrow(boardNo);
-		if(!board.getBoardWriter().equals(userDetails.getUserId())) {
+		if(!board.getBoardWriter().equals(userDetails.getUsername())) {
 			throw new CustomAuthenticationException("게시글이 존재하지 않습니다.");
 		}
 	}
