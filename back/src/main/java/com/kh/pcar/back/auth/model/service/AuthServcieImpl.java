@@ -41,15 +41,21 @@ public class AuthServcieImpl implements AuthService {
 	}
 	
 	private CustomUserDetails getCustomUserDetails(MemberLoginDTO member) {
-		
-		Authentication auth = null;
-		try {
-		 auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(member.getMemberId(),member.getMemberPwd()));
-		}catch(AuthenticationException e) {
-			throw new CustomAuthenticationException("아이디 또는 비밀번호를 확인하세요.");
-		}
-		CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-		return user;
+
+	    try {
+	        Authentication auth = authenticationManager.authenticate(
+	                new UsernamePasswordAuthenticationToken(
+	                        member.getMemberId(),
+	                        member.getMemberPwd()
+	                )
+	        );
+
+	        return (CustomUserDetails) auth.getPrincipal();
+
+	    } catch (AuthenticationException e) {
+	      
+	        throw new CustomAuthenticationException("아이디 또는 비밀번호를 확인하세요.");
+	    }
 	}
 	
 	private Map<String,String> getLoginResponse(CustomUserDetails user){

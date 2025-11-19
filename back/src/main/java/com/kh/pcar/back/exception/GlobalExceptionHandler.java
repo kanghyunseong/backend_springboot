@@ -37,16 +37,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(error);
 	}
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<?> handlerArgumentsNotValid(MethodArgumentNotValidException e) {
-
-		List<FieldError> list = e.getBindingResult().getFieldErrors();
-
-		Map<String, String> errors = new HashMap();
-		e.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-
-		return ResponseEntity.badRequest().body(errors);
-	}
 	
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity<?> handlerUsernameNotFound(UsernameNotFoundException e) {
@@ -63,5 +53,22 @@ public class GlobalExceptionHandler {
 	 @ExceptionHandler(MemberJoinException.class)
 	 public ResponseEntity<Map<String, String>> handleMemberJoin(MemberJoinException e) {
 	     return createResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
+	 }
+	 
+	 @ExceptionHandler(LoginException.class)
+	 public ResponseEntity<Map<String, String>> handleLogin(LoginException e) {
+	     return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+	 }
+	 
+	 @ExceptionHandler(MethodArgumentNotValidException.class)
+	 public ResponseEntity<Map<String, String>> handleValidException(MethodArgumentNotValidException e) {
+	     String msg = e.getBindingResult()
+	             .getAllErrors()
+	             .get(0)
+	             .getDefaultMessage();
+
+	     return ResponseEntity
+	             .status(HttpStatus.BAD_REQUEST)
+	             .body(Map.of("error-message", msg));
 	 }
 }
