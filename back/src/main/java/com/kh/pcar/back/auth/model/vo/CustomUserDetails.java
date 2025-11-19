@@ -11,10 +11,18 @@ import lombok.Value;
 @Value
 @Builder
 public class CustomUserDetails implements UserDetails{
-	
-	private String username;
-	private String password;
-	private String memberName;
-	private Collection<? extends GrantedAuthority> authorities;
 
+	
+	private Long userNo;
+	private String username; // ID
+	private String password;
+	private String realName; // 실명
+	private String birthDay;
+	private String email;
+	private String phone;
+	private String licenseUrl;
+	private Collection<? extends GrantedAuthority> authorities;
+	
+	
+	
 }
