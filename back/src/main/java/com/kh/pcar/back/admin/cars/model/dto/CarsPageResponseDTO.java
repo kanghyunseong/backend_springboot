@@ -1,0 +1,21 @@
+package com.kh.pcar.back.admin.cars.model.dto;
+
+import java.util.List;
+
+import com.kh.pcar.back.admin.user.model.dto.UserDTO;
+import com.kh.pcar.back.util.PageInfo;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CarsPageResponseDTO {
+
+	private PageInfo pageInfo;
+	private List<CarsDTO> cars;
+}
