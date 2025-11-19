@@ -103,6 +103,8 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		        .role("ROLE_USER")
 		        .build();
 
+		memberService.socialJoin(profile);
+		
 		return getLoginResponse(profile);
 	}
 	

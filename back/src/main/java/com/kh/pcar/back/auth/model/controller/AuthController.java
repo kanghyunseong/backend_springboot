@@ -57,17 +57,17 @@ public class AuthController {
 	  @GetMapping("/{provider}/callback")
 	    public ResponseEntity<?> callBackNaver( @PathVariable("provider") String provider,@RequestParam("code") String code, @RequestParam("state") String state) {
 	      
-		   log.info("콜백 code={}, state={}", code, state);
+		 //  log.info("콜백 code={}, state={}", code, state);
 		   
 		   if(provider.equals("naver")) {
 			   Map<String, String> loginResponse = socialAuthService.socialLogin(code, state,provider);
-		        log.info("profile : {}" , loginResponse);
+		        //log.info("profile : {}" , loginResponse);
 		        // DB에 provider="naver" 저장
 		        return ResponseEntity.ok(loginResponse);
 		    }
 	        
 
-	        // TODO: 회원가입/로그인 처리 후 세션/쿠키 저장 가능
+	   
 
 	        return null;  // 홈으로 이동
 	    }
