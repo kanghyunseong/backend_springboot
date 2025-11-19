@@ -6,6 +6,5 @@ import com.kh.pcar.back.member.dto.MemberDTO;
 @Mapper
 public interface MemberMapper {
 
-	
 	MemberDTO loadUser(String memberId);
 }
