@@ -64,4 +64,5 @@ public class GlobalExceptionHandler {
 	 public ResponseEntity<Map<String, String>> handleMemberJoin(MemberJoinException e) {
 	     return createResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
 	 }
+	 
 }

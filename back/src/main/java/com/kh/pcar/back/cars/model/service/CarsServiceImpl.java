@@ -1,8 +1,8 @@
 package com.kh.pcar.back.cars.model.service;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
-import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
 import com.kh.pcar.back.cars.model.dao.CarsMapper;
@@ -21,8 +21,19 @@ public class CarsServiceImpl implements CarsService {
 	@Override
 	public List<CarsDTO> findAll(int pageNo) {
 		
-		RowBounds rb = new RowBounds((pageNo - 1) * 4, 4);
+		if(pageNo < 1) {
+			throw new InvalidParameterException("잘못된 접근입니다.");
+		}
 		
-		return carsMapper.findAll(rb);
+		int limit = 4;
+		int offset = (pageNo - 1) * limit;
+		
+		return carsMapper.findAll(limit, offset);
+	}
+	
+	@Override
+	public List<CarsDTO> findByCarId(long carId) {
+		
+		return carsMapper.findByCarId(carId);
 	}
 }

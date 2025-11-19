@@ -8,4 +8,5 @@ public interface CarsService {
 	
 	List<CarsDTO> findAll(int pageNo);
 	
+	List<CarsDTO> findByCarId(long carId);
 }
