@@ -1,7 +1,5 @@
 package com.kh.pcar.back.boards.board.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,10 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
+import com.kh.pcar.back.boards.board.model.dto.PageResponseDTO;
 import com.kh.pcar.back.boards.board.model.service.BoardService;
 
 import jakarta.validation.Valid;
@@ -28,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("boards")
+@RequestMapping("boards/boards")
 @RequiredArgsConstructor
 public class BoardController {
 	
@@ -51,9 +49,10 @@ private final BoardService boardService;
 	// 전체조회
 	// GET boards
 	@GetMapping
-	public ResponseEntity<List<BoardDTO>> findAll(@RequestParam(name="page", defaultValue="0")int pageNo){
-		List<BoardDTO>boards = boardService.findAll(pageNo);
-		return ResponseEntity.ok(boards);
+	public ResponseEntity<PageResponseDTO<BoardDTO>> findAll(
+	        @RequestParam(name = "page", defaultValue = "0") int pageNo) {
+
+	    return ResponseEntity.ok(boardService.findAll(pageNo));
 	}
 	
 	// 단일조회

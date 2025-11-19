@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("imgBoards")
+@RequestMapping("boards/imgBoards")
 @RequiredArgsConstructor
 public class ImgBoardController {
 	private final ImgBoardService imgBoardService;

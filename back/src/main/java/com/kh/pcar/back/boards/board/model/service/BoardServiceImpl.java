@@ -5,14 +5,13 @@ import java.util.List;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.boards.board.model.dao.BoardMapper;
 import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
+import com.kh.pcar.back.boards.board.model.dto.PageResponseDTO;
 import com.kh.pcar.back.boards.board.model.vo.BoardVO;
 import com.kh.pcar.back.exception.CustomAuthenticationException;
-import com.kh.pcar.back.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +38,30 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<BoardDTO> findAll(int pageNo) {
-		if(pageNo < 0) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
-		RowBounds rb = new RowBounds((pageNo - 1) * 10, 10);
-		return boardMapper.findAll(rb);
+	public PageResponseDTO<BoardDTO> findAll(int pageNo) {
+
+	    int size = 10;
+	    int offset = pageNo * size;
+
+	    // RowBounds 정상 계산
+	    RowBounds rb = new RowBounds(offset, size);
+
+	    // 현재 페이지 목록
+	    List<BoardDTO> list = boardMapper.findAll(rb);
+
+	    // 전체 개수
+	    long total = boardMapper.countBoards();
+
+	    // 총 페이지 수
+	    int totalPages = (int) Math.ceil(total / (double) size);
+
+	    return new PageResponseDTO<>(
+	            list,
+	            totalPages,
+	            total,
+	            pageNo,
+	            size
+	    );
 	}
 
 	@Override
@@ -62,7 +79,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	private void validateBoard(Long boardNo, CustomUserDetails userDetails) {
 		BoardDTO board = getBoardOrThrow(boardNo);
-		if(!board.getBoardWriter().equals(userDetails.getUserId())) {
+		if(!board.getBoardWriter().equals(userDetails.getUsername())) {
 			throw new CustomAuthenticationException("게시글이 존재하지 않습니다.");
 		}
 	}

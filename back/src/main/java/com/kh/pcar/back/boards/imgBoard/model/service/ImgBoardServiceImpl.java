@@ -93,7 +93,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 	
 	private void validateImgBoard(Long imgBoardNo, CustomUserDetails userDetails) {
 		ImgBoardDTO imgBoard = getImgBoardOrThrow(imgBoardNo);
-		if(!imgBoard.getImgBoardWriter().equals(userDetails.getUserId())) {
+		if(!imgBoard.getImgBoardWriter().equals(userDetails.getUsername())) {
 			throw new CustomAuthenticationException("게시글이 존재하지 않습니다.");
 		}
 	}
