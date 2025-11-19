@@ -39,7 +39,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		return CustomUserDetails.builder().userId(user.getUserId())
 										  .password(user.getUserPwd())
-										  .memberName(user.getUserName())
+										  .userName(user.getUserName())
 										  .authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
 										  .build();
 										  
