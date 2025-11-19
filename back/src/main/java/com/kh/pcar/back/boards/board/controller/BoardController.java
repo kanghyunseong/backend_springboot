@@ -89,3 +89,4 @@ private final BoardService boardService;
 		return ResponseEntity.ok().build();
 	}
 }
+
