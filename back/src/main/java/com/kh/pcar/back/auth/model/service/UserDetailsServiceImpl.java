@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 		
-		log.info("userId :  {}" , userId);
+		//log.info("userId :  {}" , userId);
 		
 		MemberDTO user = mapper.loadUser(userId);
 		

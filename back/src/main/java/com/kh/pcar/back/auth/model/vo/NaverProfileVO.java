@@ -1,0 +1,18 @@
+package com.kh.pcar.back.auth.model.vo;
+
+
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
+public class NaverProfileVO {
+
+	
+	private String id;          
+    private String name;        
+    private String email;       
+    private String birthday;    
+    private String birthyear;   
+    private String mobile;      
+}
