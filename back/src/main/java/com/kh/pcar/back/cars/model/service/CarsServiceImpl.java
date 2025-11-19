@@ -21,7 +21,7 @@ public class CarsServiceImpl implements CarsService {
 	@Override
 	public List<CarsDTO> findAll(int pageNo) {
 		
-		RowBounds rb = new RowBounds((pageNo - 1) * 3, 3);
+		RowBounds rb = new RowBounds((pageNo - 1) * 4, 4);
 		
 		return carsMapper.findAll(rb);
 	}
