@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
 import com.kh.pcar.back.exception.IdDuplicateException;
 import com.kh.pcar.back.exception.MemberJoinException;
 import com.kh.pcar.back.file.service.FileService;
@@ -89,5 +90,30 @@ public class MemberServiceImpl implements MemberService {
 		
 		mapper.joinLocal(originMember);
 	}
+	
+	
+	@Override
+	@Transactional
+	public NaverProfileVO socialJoin(NaverProfileVO naverMember) {
+		
+		int count = mapper.countByMemberId(naverMember.getId());
+		
+		if(count > 0) {
+			return naverMember ;
+		}
+		else {
+			
+			mapper.socialJoin(naverMember);
+			mapper.joinSocial(naverMember);
+			
+			return naverMember;
+			
+		}
+		
+		
+		
+	}
+	
+	
 
 }
