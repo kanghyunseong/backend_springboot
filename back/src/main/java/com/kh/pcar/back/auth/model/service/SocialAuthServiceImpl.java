@@ -3,24 +3,31 @@ package com.kh.pcar.back.auth.model.service;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-
+import com.kh.pcar.back.auth.model.dto.MemberLoginDTO;
+import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
+import com.kh.pcar.back.member.model.service.MemberService;
+import com.kh.pcar.back.member.model.service.MemberServiceImpl;
 
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SocialAuthServiceImpl implements SocialAuthService {
 
 	private RestTemplate restTemplate = new RestTemplate();
-
+	private final MemberService memberService;
+	
+	
 	@Value("${naver.client.id}")
 	private String naverClientId;
 
@@ -44,23 +51,34 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 
 	}
 
-	@Override
-	public String getAccessToken(String code, String state) {
-		String naverTokenUri = "https://nid.naver.com/oauth2.0/token";
-		String url = naverTokenUri + "?grant_type=authorization_code" + "&client_id=" + naverClientId
-				+ "&client_secret=" + naverSecretCode + "&code=" + code + "&state=" + state;
 
-		log.info("토큰 요청 URL: {}", url);
+	private Map<String, Object> getTokens(String code, String state) {
+	    String naverTokenUri = "https://nid.naver.com/oauth2.0/token";
+	    String url = naverTokenUri + "?grant_type=authorization_code"
+	            + "&client_id=" + naverClientId
+	            + "&client_secret=" + naverSecretCode
+	            + "&code=" + code
+	            + "&state=" + state;
 
-		// 요청 보내기
-		Map<String, Object> response = restTemplate.getForObject(URI.create(url), Map.class);
-		log.info("토큰 응답: {}", response);
+	   // log.info("토큰 요청 URL: {}", url);
 
-		return (String) response.get("access_token");
+	    // 요청 보내기
+	    Map<String, Object> response = restTemplate.getForObject(URI.create(url), Map.class);
+	  //  log.info("토큰 응답: {}", response);
+
+	    return response; // access_token, refresh_token 둘 다 포함됨
 	}
+	
 
+	
 	@Override
-	public NaverProfileVO getProfile(String accessToken) {
+	public Map<String,String> socialLogin(String code,String state,String provider) {
+		Map<String, Object> tokens = getTokens(code, state);
+		String accessToken = (String) tokens.get("access_token");
+		String refreshToken = (String) tokens.get("refresh_token");
+		
+		//log.info("accessToken : {} , refreshToken : {} ", accessToken, refreshToken );
+		
 
 		String naverProfileUri = "https://openapi.naver.com/v1/nid/me";
 
@@ -77,12 +95,35 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		        .id((String) responseBody.get("id"))
 		        .name((String) responseBody.get("name"))
 		        .email((String) responseBody.get("email"))
-		        .birthday((String) responseBody.get("birthday"))
-		        .birthyear((String) responseBody.get("birthyear"))
+		        .birthday( (String) responseBody.get("birthyear")+"-"+(String) responseBody.get("birthday"))
 		        .mobile((String) responseBody.get("mobile"))
+		        .accessToken(accessToken)
+		        .refreshtoken(refreshToken)
+		        .provider(provider)
+		        .role("ROLE_USER")
 		        .build();
 
-		return profile;
+		return getLoginResponse(profile);
 	}
+	
+	private Map<String,String> getLoginResponse(NaverProfileVO user){
+		
+		Map<String, String> loginResponse = new HashMap<>();
+		
+		loginResponse.put("userId",user.getId());
+		loginResponse.put("birthDay", user.getBirthday());
+		loginResponse.put("userName", user.getName());
+		loginResponse.put("email", user.getEmail());
+		loginResponse.put("phone", user.getMobile());
+		loginResponse.put("role", user.getRole().toString());
+		loginResponse.put("accessToken", user.getRefreshtoken());
+		loginResponse.put("refreshToken", user.getAccessToken());
+		loginResponse.put("provider", user.getProvider());
+		
+		
+		return loginResponse;
+		
+	}
+
 
 }

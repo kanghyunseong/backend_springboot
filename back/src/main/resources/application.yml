@@ -34,4 +34,4 @@ naver:
     id: Kki4fyVYcYf_zkU2HAq8
     secret: q6k43VptHS
   redirect:
-    url: http://localhost:8081/login/naver    
+    url: http://localhost:8081/members/naver/callback   

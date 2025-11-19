@@ -20,4 +20,6 @@ public class NaverProfileDTO {
     private String birthday;    
     private String birthyear;   
     private String mobile;      
+    private String accessToken;
+    private String refreshtoken;
 }

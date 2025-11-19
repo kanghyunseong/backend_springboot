@@ -12,7 +12,10 @@ public class NaverProfileVO {
 	private String id;          
     private String name;        
     private String email;       
-    private String birthday;    
-    private String birthyear;   
-    private String mobile;      
+    private String birthday;      
+    private String mobile;
+    private String role;
+    private String accessToken;
+    private String refreshtoken;
+    private String provider;
 }
