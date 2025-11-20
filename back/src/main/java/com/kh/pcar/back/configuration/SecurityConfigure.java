@@ -62,7 +62,7 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/boards", "/comments").authenticated();
 
-							   requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**","/admin/**", "/api/admin/**","/members/**","/cars/**","/station/EvCharge").permitAll();
+							   requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**","/admin/**", "/api/admin/**","/members/**","/cars/**","/station","/station/search").permitAll();
 
 							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN");
 							   requests.requestMatchers(HttpMethod.DELETE, "/admin/**", "/api/admin/**").hasRole("ADMIN");

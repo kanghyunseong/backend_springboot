@@ -16,12 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StationDTO {
-	private int driveId;
-	private Date startTime;
-	private Date endTime;
-	private int driveDistance;
-	private int energyUsed;
-	private int userNo;
-	private int carId;
+	
+	private String lat;
+	private String lng;
+	private String stationName;
+	private String address;
 
 }
