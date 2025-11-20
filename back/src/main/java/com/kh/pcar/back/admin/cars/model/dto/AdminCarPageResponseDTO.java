@@ -2,6 +2,8 @@ package com.kh.pcar.back.admin.cars.model.dto;
 
 import java.util.List;
 
+
+
 import com.kh.pcar.back.admin.user.model.dto.UserDTO;
 import com.kh.pcar.back.util.PageInfo;
 
@@ -14,8 +16,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarsPageResponseDTO {
+public class AdminCarPageResponseDTO {
 
 	private PageInfo pageInfo;
-	private List<CarsDTO> cars;
+	private List<AdminCarDTO> cars;
 }
