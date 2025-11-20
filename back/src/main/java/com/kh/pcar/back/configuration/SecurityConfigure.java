@@ -50,6 +50,7 @@ public class SecurityConfigure {
 		// <img src="http://www.naver.com" />
 
 		// Example ) 회원가입, 로그인 => 누구나 다 할 수 있어야함
+
 		// 회원정보수정, 회원탈퇴 => 로그인 된 사용자만 할 수 있어야 함
 
 		return httpSecurity.formLogin(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable)
