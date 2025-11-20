@@ -89,4 +89,13 @@
                CAR_ID = #{carId}
     </select>
     
+    <update id="updateCarStatus">
+    UPDATE 
+          TB_CAR
+      SET
+          CAR_STATUS = 'N'  
+    WHERE
+          CAR_ID = #{carId}
+</update>
+    
 </mapper>

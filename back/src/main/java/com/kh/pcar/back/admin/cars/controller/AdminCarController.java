@@ -1,6 +1,8 @@
 package com.kh.pcar.back.admin.cars.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarPageResponseDTO;
 import com.kh.pcar.back.admin.cars.model.service.AdminCarService;
+import com.kh.pcar.back.exception.CarNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -61,5 +64,20 @@ public class AdminCarController {
         return ResponseEntity.ok(adminCarService.findCarById(carId));
     }
 	
+	@DeleteMapping("/{carId}")
+	public ResponseEntity<String> deleteCar(@PathVariable(name = "carId") Long carId) {
+		
+		try {
+			adminCarService.deleteCarById(carId);
+			
+			return ResponseEntity.ok("차량 삭제에 성공하였습니다.");
+		} catch (CarNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("차량 삭제 처리에 문제가 생겼습니다.");
+		}
+		
+	}
 	
 }

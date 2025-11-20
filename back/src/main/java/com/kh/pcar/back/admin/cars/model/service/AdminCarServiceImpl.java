@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.pcar.back.admin.cars.model.dao.AdminCarMapper;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarPageResponseDTO;
+import com.kh.pcar.back.exception.CarNotFoundException;
 import com.kh.pcar.back.util.PageInfo;
 import com.kh.pcar.back.util.Pagenation;
 
@@ -75,6 +76,16 @@ public class AdminCarServiceImpl implements AdminCarService {
 	public Object findCarById(Long carId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void deleteCarById(Long carId) {
+		int result = adminCarMapper.updateCarStatus(carId);
+		
+		if(result == 0) {
+			throw new CarNotFoundException("차량 ID" + carId + "를 찾을 수 없습니다.");
+		}
+		
 	}
 
 }

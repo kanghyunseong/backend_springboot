@@ -19,5 +19,7 @@ public interface AdminCarMapper {
 	void insertCar(AdminCarDTO carDTO);
 
 	void updateCar(AdminCarDTO carDTO);
+
+	int updateCarStatus(Long carId);
 	
 }
