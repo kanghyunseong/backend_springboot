@@ -11,7 +11,6 @@ import lombok.Value;
 @Value
 @Builder
 public class CustomUserDetails implements UserDetails{
-
 	
 	private Long userNo;
 	private String username; // ID

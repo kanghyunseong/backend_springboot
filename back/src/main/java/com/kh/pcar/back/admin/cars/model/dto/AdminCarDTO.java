@@ -13,7 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CarsDTO {
+public class AdminCarDTO {
 	
 	private Long carId;
 	private String carName;
