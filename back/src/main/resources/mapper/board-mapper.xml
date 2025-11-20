@@ -75,6 +75,16 @@
          	 B.BOARD_STATUS = 'Y'
     </select>
 
+	<update id="increaseView">
+	    UPDATE
+	    	   TB_BOARD
+	       SET 
+	       	   COUNT = COUNT + 1
+	     WHERE 
+	     	   BOARD_NO = #{boardNo}
+	</update>
+
+
     <!-- 게시글 수정 -->
     <update id="update" parameterType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
         UPDATE 
@@ -84,8 +94,7 @@
              , B.BOARD_CONTENT = #{boardContent}
          WHERE 
          	   B.BOARD_NO = #{boardNo}
-           AND 
-           	   B.BOARD_WRITER = #{loginUserNo}
+
     </update>
 
     <!-- 게시글 삭제 -->
@@ -96,9 +105,71 @@
            	   B.BOARD_STATUS = 'N'
          WHERE 
          	   B.BOARD_NO = #{boardNo}
-           AND 
-           	   B.BOARD_WRITER = #{loginUserNo};
+
     </update>
+    
+    
+    <!--  검색용 총 개수 -->
+    <select id="countSearchBoards" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_BOARD
+        WHERE BOARD_STATUS = 'Y'
+        <choose>
+            <when test="type == 'title'">
+                AND BOARD_TITLE LIKE #{keyword}
+            </when>
+            <when test="type == 'writer'">
+                AND BOARD_WRITER LIKE #{keyword}
+            </when>
+            <when test="type == 'content'">
+                AND BOARD_CONTENT LIKE #{keyword}
+            </when>
+            <otherwise>
+                AND (
+                    BOARD_TITLE   LIKE #{keyword}
+                    OR BOARD_WRITER  LIKE #{keyword}
+                    OR BOARD_CONTENT LIKE #{keyword}
+                )
+            </otherwise>
+        </choose>
+    </select>
+
+    <!--  검색 결과 목록 (페이징) -->
+    <select id="searchBoards" parameterType="map"
+            resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
+        SELECT
+            BOARD_NO      AS boardNo,
+            BOARD_TITLE   AS boardTitle,
+            BOARD_WRITER  AS boardWriter,
+            BOARD_CONTENT AS boardContent,
+            BOARD_DATE    AS boardDate,
+            COUNT         AS count
+        FROM TB_BOARD
+        WHERE BOARD_STATUS = 'Y'
+        <choose>
+            <when test="type == 'title'">
+                AND BOARD_TITLE LIKE #{keyword}
+            </when>
+            <when test="type == 'writer'">
+                AND BOARD_WRITER LIKE #{keyword}
+            </when>
+            <when test="type == 'content'">
+                AND BOARD_CONTENT LIKE #{keyword}
+            </when>
+            <otherwise>
+                AND (
+                    BOARD_TITLE   LIKE #{keyword}
+                    OR BOARD_WRITER  LIKE #{keyword}
+                    OR BOARD_CONTENT LIKE #{keyword}
+                )
+            </otherwise>
+        </choose>
+        ORDER BY BOARD_NO DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+    </select>
+    
+    
+    
     
 </mapper>
 

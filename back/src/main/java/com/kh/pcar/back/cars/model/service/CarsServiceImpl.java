@@ -5,8 +5,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.cars.model.dao.CarsMapper;
 import com.kh.pcar.back.cars.model.dto.CarsDTO;
+import com.kh.pcar.back.cars.model.dto.ReservationDTO;
+import com.kh.pcar.back.exception.CarAuthorizationException;
+import com.kh.pcar.back.exception.CustomAuthenticationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +36,18 @@ public class CarsServiceImpl implements CarsService {
 	}
 	
 	@Override
-	public List<CarsDTO> findByCarId(long carId) {
+	public List<CarsDTO> findByCarId(Long carId) {
 		
 		return carsMapper.findByCarId(carId);
+	}
+	
+	@Override
+	public void saveReservation(ReservationDTO reservationDTO, CustomUserDetails userDetails) {
+		
+	    reservationDTO.setUserNo(userDetails.getUserNo());
+	    
+	    reservationDTO.setReservationStatus("R");
+		
+	    carsMapper.saveReservation(reservationDTO);
 	}
 }
