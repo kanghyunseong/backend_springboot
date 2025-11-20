@@ -1,20 +1,20 @@
 package com.kh.pcar.back.boards.board.model.service;
 
-import java.util.List;
-
-import org.springframework.web.multipart.MultipartFile;
-
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
-import com.kh.pcar.back.boards.board.model.dto.PageResponse;
+import com.kh.pcar.back.boards.board.model.dto.PageResponseDTO;
 
 public interface BoardService {
 	
 	void save(BoardDTO board, String userId);
 	
-	PageResponse<BoardDTO> findAll(int pageNo);
+	PageResponseDTO<BoardDTO> findAll(int pageNo);
+	
+	PageResponseDTO<BoardDTO> searchBoards(String type, String keyword, int pageNo);
 	
 	BoardDTO findByBoardNo(Long bardNo);
+	
+	void increaseView(Long id);
 	
 	BoardDTO update(BoardDTO board, Long boardNo, CustomUserDetails userDetails);
 	

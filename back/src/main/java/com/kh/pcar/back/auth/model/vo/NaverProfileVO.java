@@ -18,4 +18,5 @@ public class NaverProfileVO {
     private String accessToken;
     private String refreshtoken;
     private String provider;
+    private Long userNo;
 }

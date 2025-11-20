@@ -9,13 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
-import com.kh.pcar.back.boards.board.model.dto.PageResponse;
+import com.kh.pcar.back.boards.board.model.dto.PageResponseDTO;
 import com.kh.pcar.back.boards.board.model.service.BoardService;
 
 import jakarta.validation.Valid;
@@ -49,10 +50,22 @@ private final BoardService boardService;
 	// 전체조회
 	// GET boards
 	@GetMapping
-	public ResponseEntity<PageResponse<BoardDTO>> findAll(
-	        @RequestParam(name = "page", defaultValue = "0") int pageNo
-	) {
+	public ResponseEntity<PageResponseDTO<BoardDTO>> findAll(
+	        @RequestParam(name = "page", defaultValue = "0") int pageNo) {
+		
 	    return ResponseEntity.ok(boardService.findAll(pageNo));
+	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<PageResponseDTO<BoardDTO>> searchBoards(
+	        @RequestParam(name = "type") String type,
+	        @RequestParam(name = "keyword") String keyword,
+	        @RequestParam(name = "page", defaultValue = "0") int pageNo) {
+	    log.info("검색 요청 - type: {}, keyword: {}, page: {}", type, keyword, pageNo);
+
+	    PageResponseDTO<BoardDTO> result = boardService.searchBoards(type, keyword, pageNo);
+
+	    return ResponseEntity.ok(result);
 	}
 	
 	// 단일조회
@@ -60,21 +73,21 @@ private final BoardService boardService;
 	@GetMapping("/{boardNo}")
 	public ResponseEntity<BoardDTO> findByBoardNo(@PathVariable(name="boardNo") 
 												  @Min(value=1, message="넘작아용") Long boardNo){
+		boardService.increaseView(boardNo);
 		BoardDTO board = boardService.findByBoardNo(boardNo);
 		return ResponseEntity.ok(board);
 	}
 	
 	@PutMapping("/{boardNo}")
 	public ResponseEntity<BoardDTO> update(@PathVariable(name="boardNo") Long boardNo,
-										   BoardDTO board,
+										   @RequestBody BoardDTO board,
 										   @AuthenticationPrincipal CustomUserDetails userDetails){
 		if (userDetails == null) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	    }
 		
-		board.setBoardNo(boardNo);
-		boardService.update(board, boardNo, userDetails);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		BoardDTO update = boardService.update(board, boardNo, userDetails);
+	    return ResponseEntity.ok(update);
 	}
 	
 	@DeleteMapping("/{boardNo}")

@@ -56,4 +56,33 @@
 		 WHERE
 		 	   CAR_ID = #{carId}
 	</select>
+	
+	<insert id="saveReservation"
+			parameterType="com.kh.pcar.back.cars.model.dto.ReservationDTO">
+		INSERT 
+		  INTO 
+		       TB_RESERVATION
+		       (
+               RESERVATION_NO
+           	 , USER_NO
+             , CAR_ID
+             , RESERVATION_DATE
+             , START_TIME
+             , END_TIME
+             , DESTINATION
+             , RESERVATION_STATUS
+             ) 
+        VALUES
+             (
+               SEQ_RESERVATION_NO.NEXTVAL
+             , #{userNo}
+             , #{carId}
+             , SYSDATE
+             , TO_DATE(REPLACE(#{startTime}, 'T', ' '), 'YYYY-MM-DD HH24:MI')
+             , TO_DATE(REPLACE(#{endTime}, 'T', ' '), 'YYYY-MM-DD HH24:MI')
+             , #{destination}
+             , #{reservationStatus}
+        	 )
+		
+	</insert>
 </mapper>
