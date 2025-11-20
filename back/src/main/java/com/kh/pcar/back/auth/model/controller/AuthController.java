@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.pcar.back.auth.model.dto.MemberLoginDTO;
 import com.kh.pcar.back.auth.model.service.AuthService;
 import com.kh.pcar.back.auth.model.service.SocialAuthService;
-import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
 import com.kh.pcar.back.token.model.service.TokenService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,22 +56,28 @@ public class AuthController {
 	  
 	  
 	  @GetMapping("/{provider}/callback")
-	    public ResponseEntity<?> callBackNaver( @PathVariable("provider") String provider,@RequestParam("code") String code, @RequestParam("state") String state) {
+	    public ResponseEntity<?> callBackNaver( @PathVariable("provider") String provider,@RequestParam("code") String code, @RequestParam("state") String state, HttpServletResponse response) {
 	      
-		 //  log.info("콜백 code={}, state={}", code, state);
+		   log.info("콜백 code={}, state={}", code, state);
 		   
 		   if(provider.equals("naver")) {
 			   Map<String, String> loginResponse = socialAuthService.socialLogin(code, state,provider);
-		        //log.info("profile : {}" , loginResponse);
-		        // DB에 provider="naver" 저장
+		        log.info("profile : {}" , loginResponse);
+		      
+		        
+			 
+			   
+			  
 		        return ResponseEntity.ok(loginResponse);
 		    }
-	        
+	
+			
 
 	   
 
-	        return null;  // 홈으로 이동
-	    }
+	        return ResponseEntity.badRequest().build();
+	  }  // 홈으로 이동
+	    
 	
 	@PostMapping("/refresh")
 	public ResponseEntity<?> refresh(@RequestBody Map<String,String> token){

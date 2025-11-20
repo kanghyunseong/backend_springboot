@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
 import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
 import com.kh.pcar.back.member.model.dto.MemberDTO;
 import com.kh.pcar.back.member.model.vo.MemberVO;
@@ -24,5 +25,12 @@ public interface MemberMapper {
 	@Insert("INSERT INTO TB_LOCAL (USER_NO,PASSWORD) VALUES (SEQ_MEMBER.CURRVAL, #{memberPwd})")
 	int joinLocal(MemberVO member);
 
+	@Select("Select USER_NO FROM TB_MEMBER WHERE USER_ID = #{memberId}")
+	Long findUserNoById(String memberId);
+	
 	MemberDTO loadUser(String userId);
+
+	void socialJoin(NaverProfileDTO naverMember);
+
+	void joinSocial(NaverProfileDTO naverMember);
 }
