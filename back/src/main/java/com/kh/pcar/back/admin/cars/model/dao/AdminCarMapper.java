@@ -15,5 +15,9 @@ public interface AdminCarMapper {
 	List<AdminCarDTO> findAllCars(RowBounds rowBounds);
 	
 	 int getTotalCount();
+
+	void insertCar(AdminCarDTO carDTO);
+
+	void updateCar(AdminCarDTO carDTO);
 	
 }

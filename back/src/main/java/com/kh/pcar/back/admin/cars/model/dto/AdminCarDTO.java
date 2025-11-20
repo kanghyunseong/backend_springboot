@@ -20,11 +20,11 @@ public class AdminCarDTO {
 	private String carContent;
 	private String carSeet;
 	private String carSize;
-	private Long battery;
+	private Double battery;
 	private String carImage;
 	private String carStatus;
 	private Long carDriving;
-	private Long carEfficiency;
+	private Double carEfficiency;
 	
 
 }

@@ -31,9 +31,10 @@ public class JwtUtil {
 		this.key = Keys.hmacShaKeyFor(arr);
 	}
 	
-	public String getAccessToken(String username) {
+	public String getAccessToken(String username, String role) {
 		return Jwts.builder()
 				   .subject(username)
+				   .claim("role", role)
 				   .issuedAt(new Date())
 				   .expiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60  * 24))) // 만료일
 				   .signWith(key) // 서명

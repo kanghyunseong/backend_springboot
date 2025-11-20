@@ -22,6 +22,71 @@
     </select>
 
     <select id="getTotalCount" resultType="_int">
-        SELECT COUNT(*) FROM TB_CAR
+        SELECT 
+        	   COUNT(*) 
+          FROM 
+               TB_CAR
     </select>
+    
+   <insert id="insertCar">
+        INSERT 
+          INTO 
+               TB_CAR 
+               (
+               CAR_ID
+             , CAR_NAME
+             , CAR_DRIVING
+             , BATTERY
+             , CAR_EFFICIENCY
+             , CAR_SIZE
+             , CAR_IMAGE
+             , CAR_STATUS
+             , CAR_CONTENT
+             , CAR_SEET
+       		   ) 
+        VALUES 
+               (
+               SEQ_CAR_ID.NEXTVAL
+             , #{carName}
+             , #{carDriving}
+             , #{battery}
+             , #{carEfficiency}
+             , #{carSize}
+             , #{carImage}
+             , 'Y'
+             , '기본 설명'
+             , '5인승'
+        )
+    </insert>
+    <update id="updateCar">
+        UPDATE 
+               TB_CAR
+           SET 
+               CAR_NAME = #{carName}
+             , CAR_DRIVING = #{carDriving}
+             , BATTERY = #{battery}
+             , CAR_EFFICIENCY = #{carEfficiency}
+             , CAR_SIZE = #{carSize}
+               <if test="carImage != null">
+             , CAR_IMAGE = #{carImage}
+               </if>
+         WHERE 
+               CAR_ID = #{carId}
+    </update>
+    <select id="findCarById" resultType="com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO">
+        SELECT
+               CAR_ID AS carId
+             , CAR_NAME AS carName
+             , CAR_DRIVING AS carDriving
+             , BATTERY AS battery
+             , CAR_EFFICIENCY AS carEfficiency
+             , CAR_STATUS AS carStatus
+             , CAR_SIZE AS carSize
+             , CAR_IMAGE AS carImage
+          FROM 
+               TB_CAR
+         WHERE
+               CAR_ID = #{carId}
+    </select>
+    
 </mapper>
