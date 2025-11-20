@@ -2,12 +2,14 @@ package com.kh.pcar.back.admin.cars.model.service;
 
 import java.util.List;
 
+
+
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
-import com.kh.pcar.back.admin.cars.model.dao.CarsMapper;
-import com.kh.pcar.back.admin.cars.model.dto.CarsDTO;
-import com.kh.pcar.back.admin.cars.model.dto.CarsPageResponseDTO;
+import com.kh.pcar.back.admin.cars.model.dao.AdminCarMapper;
+import com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO;
+import com.kh.pcar.back.admin.cars.model.dto.AdminCarPageResponseDTO;
 import com.kh.pcar.back.admin.user.model.dto.UserPageResponseDTO;
 import com.kh.pcar.back.util.PageInfo;
 import com.kh.pcar.back.util.Pagenation;
@@ -16,15 +18,15 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CarsServiceImpl implements CarsService {
+public class AdminCarServiceImpl implements AdminCarService {
 	
-	private final CarsMapper carsMapper;
+	private final AdminCarMapper adminCarMapper;
 	private final Pagenation pagenation;
 
 	@Override
-	public CarsPageResponseDTO findAllCars(int currentPage) {
+	public AdminCarPageResponseDTO findAllCars(int currentPage) {
 		
-		int totalCount = carsMapper.getTotalCount();
+		int totalCount = adminCarMapper.getTotalCount();
 		
 		int boardLimit = 10; // 한 페이지에 10개씩
         int pageLimit = 5;
@@ -41,10 +43,10 @@ public class CarsServiceImpl implements CarsService {
         RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
         
         // 5. Mapper 호출 (RowBounds 전달)
-		List<CarsDTO> carss = carsMapper.findAllCars(rowBounds);
+		List<AdminCarDTO> cars = adminCarMapper.findAllCars(rowBounds);
 		
         // 6. PageInfo 객체와 List<UserDTO>를 하나의 응답 DTO로 묶어서 반환
-		return new CarsPageResponseDTO(pi, carss);
+		return new AdminCarPageResponseDTO(pi, cars);
         
 		
 	}
