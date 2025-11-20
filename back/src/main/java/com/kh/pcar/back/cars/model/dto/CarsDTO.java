@@ -12,14 +12,14 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CarsDTO {
-	private long carId;
+	private Long carId;
 	private String carName;
 	private String carContent;
 	private String carSeet;
 	private String carSize;
-	private long battery;
+	private Long battery;
 	private String carImage;
 	private String carStatus;
-	private long carDriving;
-	private long carEfficiency;
+	private Long carDriving;
+	private Long carEfficiency;
 }

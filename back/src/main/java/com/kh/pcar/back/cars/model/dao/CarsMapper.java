@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.kh.pcar.back.cars.model.dto.CarsDTO;
+import com.kh.pcar.back.cars.model.dto.ReservationDTO;
 
 @Mapper
 public interface CarsMapper {
@@ -14,6 +15,7 @@ public interface CarsMapper {
 
 	List<CarsDTO> findAll(@Param("limit") int limit, @Param("offset") int offset);
 	
-	List<CarsDTO> findByCarId(long carId);
+	List<CarsDTO> findByCarId(Long carId);
 	
+	void saveReservation(ReservationDTO reservationDTO);
 }
