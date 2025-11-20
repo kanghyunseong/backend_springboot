@@ -74,9 +74,9 @@ public class ServiceStationImpl implements ServiceStation {
 					//map내부에서 꺼내고 싶은 값만 추출
 			String latitude = item.get("위도").toString();
 			String longitude = item.get("경도").toString();
-			String stationId = item.get("충전소아이디").toString();
+			String stationName = item.get("충전소명").toString();
 		
-			return new MyStationDTO(latitude,longitude,stationId);
+			return new MyStationDTO(latitude,longitude,stationName);
 		})
 				.toList();
 		return stationList;
