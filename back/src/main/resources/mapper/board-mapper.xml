@@ -57,17 +57,19 @@
        	  	 B.BOARD_NO DESC
     </select>
     
-    <!-- 전체 개수 가져오기 -->
-    <select id="countBoards" resultType="long">
-        SELECT COUNT(*)
-        FROM TB_BOARD
-        WHERE BOARD_STATUS = 'Y'
-    </select>
+    <select id="countBoards" resultType="int">
+	    SELECT 
+	    	   COUNT(*)
+	      FROM 
+	           TB_BOARD
+	     WHERE 
+	     	   BOARD_STATUS = 'Y'
+	</select>
+    
 
     <!-- 단일 게시글 조회 -->
-    <select id="findByBoardNo" 
-    resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO" 
-    parameterType="long">
+    <select id="findByBoardNo" resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO" parameterType="long">
+		<include refid="boardColumn" />
         FROM 
         	 TB_BOARD B
         JOIN 

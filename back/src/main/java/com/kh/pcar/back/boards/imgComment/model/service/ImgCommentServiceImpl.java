@@ -25,13 +25,13 @@ public class ImgCommentServiceImpl implements ImgCommentService {
 		imgBoardService.findByImgBoardNo(comment.getRefIno()); // 외부에 노출된 메소드 호
 		String memberId = userDetails.getUsername();
 		
-		ImgCommentVO c =ImgCommentVO.builder()
+		ImgCommentVO ic =ImgCommentVO.builder()
 							  .imgCommentWriter(memberId)
 							  .imgCommentContent(comment.getImgCommentContent())
 							  .refIno(comment.getRefIno())
 							  .build();
-		imgCommentMapper.save(c);
-		return c;
+		imgCommentMapper.save(ic);
+		return ic;
 	}
 
 	@Override

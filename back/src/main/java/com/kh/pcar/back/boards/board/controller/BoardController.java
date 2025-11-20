@@ -51,7 +51,6 @@ private final BoardService boardService;
 	@GetMapping
 	public ResponseEntity<PageResponseDTO<BoardDTO>> findAll(
 	        @RequestParam(name = "page", defaultValue = "0") int pageNo) {
-
 	    return ResponseEntity.ok(boardService.findAll(pageNo));
 	}
 	

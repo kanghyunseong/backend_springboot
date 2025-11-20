@@ -38,7 +38,7 @@ public class MemberController {
 	@PostMapping
 	public ResponseEntity<?> join(@Valid @ModelAttribute MemberDTO member , @RequestParam(name="licenseImg" , required = false ) MultipartFile licenseImg){
 		
-		//log.info("Member에 들어온 값 {} , Multipart : {}" , member,licenseImg);
+		log.info("Member에 들어온 값 {} , Multipart : {}" , member,licenseImg);
 		
 		memberService.join(member , licenseImg);
 		

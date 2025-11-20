@@ -31,6 +31,32 @@
                )
 	</insert>
 	
+	<insert id="socialJoin" parameterType="NaverProfileVO" >
+		INSERT 
+		  INTO
+			   TB_MEMBER 
+			   (
+			   USER_NO
+    		 , USER_ID 
+             , USER_NAME
+             , BIRTHDAY 
+             , EMAIL
+             , PHONE 
+             , USER_ROLL
+			   ) 
+	    VALUES
+			   (
+			   SEQ_MEMBER.NEXTVAL
+             , #{id}
+             , #{name}
+             , #{birthday}
+             , #{email}
+             , #{mobile}
+             , #{role}
+               )
+	</insert>
+	
+	
 <select id="loadUser" parameterType="String" resultType="MemberDTO">
     SELECT
            M.USER_NO       userNo

@@ -15,8 +15,8 @@ public interface BoardMapper {
 	
 	List<BoardDTO> findAll(RowBounds rb);
 	
-	long countBoards();
-	
+	int countBoards();
+
 	BoardDTO findByBoardNo(Long boardNo);
 	
 	void update(BoardDTO board);
