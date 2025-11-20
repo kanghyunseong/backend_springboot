@@ -2,12 +2,11 @@ package com.kh.pcar.back.exception;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -73,6 +72,7 @@ public class GlobalExceptionHandler {
 	             .body(Map.of("error-message", msg));
 	 }
 	 
+
 	 @ExceptionHandler(UserNotFoundException.class)
 	 public ResponseEntity<Map<String, String>> handlerUserNotFoundException(UserNotFoundException e) {
 		 log.warn("사용자 찾기 실패 : {} ", e.getMessage());
@@ -95,5 +95,6 @@ public class GlobalExceptionHandler {
 	 @ExceptionHandler(IllegalStateException.class)
 	 public ResponseEntity<Map<String, String>> handlerIllegalState(IllegalStateException e) {
 		 return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+
 	 }
 }
