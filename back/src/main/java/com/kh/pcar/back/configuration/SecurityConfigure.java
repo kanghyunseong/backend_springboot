@@ -51,6 +51,7 @@ public class SecurityConfigure {
 
 		// Example ) 회원가입, 로그인 => 누구나 다 할 수 있어야함
 
+
 		// 회원정보수정, 회원탈퇴 => 로그인 된 사용자만 할 수 있어야 함
 
 		return httpSecurity.formLogin(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable)
@@ -63,8 +64,7 @@ public class SecurityConfigure {
 
 					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
 							"/cars/**", "/station/EvCharge", "/boards/boards/search", "/boards/boards",
-							"/boards/boards/").permitAll();
-
+							"/boards/boards/","/station/search").permitAll();
 					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**")
 							.authenticated();
 
@@ -93,6 +93,7 @@ public class SecurityConfigure {
 				 */
 				.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).build();
+>>>>>>> 9d8f1dce1b23fe3f0225e87d4090a3ccd87e0129
 
 	}
 
