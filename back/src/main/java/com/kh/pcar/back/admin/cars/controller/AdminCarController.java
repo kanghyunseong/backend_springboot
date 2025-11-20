@@ -1,14 +1,21 @@
 package com.kh.pcar.back.admin.cars.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-
-
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarPageResponseDTO;
 import com.kh.pcar.back.admin.cars.model.service.AdminCarService;
+import com.kh.pcar.back.exception.CarNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +31,53 @@ public class AdminCarController {
 		return adminCarService.findAllCars(page);
 	}
 	
+	@PostMapping
+    public ResponseEntity<String> registerCar(
+            @ModelAttribute AdminCarDTO carDTO,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) {
+        try {
+            adminCarService.registerCar(carDTO, file);
+            return ResponseEntity.ok("차량 등록 성공");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("등록 실패: " + e.getMessage());
+        }
+    }
 	
+	@PostMapping("/update")
+    public ResponseEntity<String> updateCar(
+            @ModelAttribute AdminCarDTO carDTO,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) {
+        try {
+            adminCarService.updateCar(carDTO, file);
+            return ResponseEntity.ok("차량 수정 성공");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("수정 실패: " + e.getMessage());
+        }
+    }
+	
+	@GetMapping("/{carId}")
+    public ResponseEntity<Object> getCar(@PathVariable(name = "carId") Long carId) {
+        return ResponseEntity.ok(adminCarService.findCarById(carId));
+    }
+	
+	@DeleteMapping("/{carId}")
+	public ResponseEntity<String> deleteCar(@PathVariable(name = "carId") Long carId) {
+		
+		try {
+			adminCarService.deleteCarById(carId);
+			
+			return ResponseEntity.ok("차량 삭제에 성공하였습니다.");
+		} catch (CarNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("차량 삭제 처리에 문제가 생겼습니다.");
+		}
+		
+	}
 	
 }
