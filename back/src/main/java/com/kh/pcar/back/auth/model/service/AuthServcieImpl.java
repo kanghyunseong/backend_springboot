@@ -60,7 +60,12 @@ public class AuthServcieImpl implements AuthService {
 	
 	private Map<String,String> getLoginResponse(CustomUserDetails user){
 		
-		Map<String, String> loginResponse = tokenService.generateToken(user.getUsername(),user.getUserNo());
+		String role = user.getAuthorities().stream()
+				  .findFirst()
+				  .get()
+				  .getAuthority();
+		
+		Map<String, String> loginResponse = tokenService.generateToken(user.getUsername(),user.getUserNo(), role);
 		loginResponse.put("userNo", String.valueOf(user.getUserNo()));
 		loginResponse.put("userId",user.getUsername());
 		loginResponse.put("birthDay", user.getBirthDay());
@@ -68,6 +73,7 @@ public class AuthServcieImpl implements AuthService {
 		loginResponse.put("email", user.getEmail());
 		loginResponse.put("phone", user.getPhone());
 		loginResponse.put("role", user.getAuthorities().toString());
+		loginResponse.put("role", role);
 		
 		return loginResponse;
 		

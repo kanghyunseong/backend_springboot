@@ -27,9 +27,9 @@ public class TokenService {
 	 * @return AccessToken, RefreshToken을 담은 Map
 	 */
 	@Transactional
-	public Map<String, String> generateToken(String username, Long userNo) {
+	public Map<String, String> generateToken(String username, Long userNo, String role) {
 		// 1. Access Token, Refresh Token 생성
-		Map<String, String> tokens = createTokens(username);
+		Map<String, String> tokens = createTokens(username, role);
 		
 		// 2. Refresh Token DB에 저장
 		saveToken(tokens.get("refreshToken"), userNo);
@@ -40,8 +40,8 @@ public class TokenService {
 	/**
 	 * Access Token과 Refresh Token 생성
 	 */
-	private Map<String, String> createTokens(String username) {
-		String accessToken = tokenUtil.getAccessToken(username);
+	private Map<String, String> createTokens(String username, String role) {
+		String accessToken = tokenUtil.getAccessToken(username, role);
 		String refreshToken = tokenUtil.getRefreshToken(username);
 		
 		log.info("엑세스 토큰 : {}", accessToken);
@@ -104,6 +104,6 @@ public class TokenService {
 		String username = claims.getSubject();
 		
 		// 4. 새 토큰 생성 및 반환
-		return createTokens(username);
+		return createTokens(username, "ROLE_USER");
 	}
 }

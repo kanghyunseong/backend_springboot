@@ -37,7 +37,6 @@ public class MemberServiceImpl implements MemberService {
 	}
 	
 	private MemberVO generateFileName(MemberDTO member,MultipartFile licenseImg) {
-		
 		MemberVO m = null;
 		
 		if(licenseImg != null && !licenseImg.isEmpty()) {
@@ -53,9 +52,7 @@ public class MemberServiceImpl implements MemberService {
 						          .phone(member.getPhone())
 						          .role("ROLE_USER").build();
 			return m;
-			
 		}else {
-			
 			m = MemberVO.builder().memberId(member.getMemberId())
 			          .memberPwd(passwordEncoder.encode(member.getMemberPwd()))
 			          .memberName(member.getMemberName())
@@ -66,8 +63,6 @@ public class MemberServiceImpl implements MemberService {
 			
 			return m;
 		}
-		
-		
 		
 	}
 	
@@ -91,7 +86,6 @@ public class MemberServiceImpl implements MemberService {
 		mapper.joinLocal(originMember);
 	}
 	
-	
 	@Override
 	@Transactional
 	public NaverProfileVO socialJoin(NaverProfileVO naverMember) {
@@ -107,13 +101,8 @@ public class MemberServiceImpl implements MemberService {
 			mapper.joinSocial(naverMember);
 			
 			return naverMember;
-			
 		}
 		
-		
-		
 	}
-	
-	
 
 }

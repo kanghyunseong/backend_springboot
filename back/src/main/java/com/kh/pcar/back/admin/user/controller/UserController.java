@@ -1,5 +1,6 @@
 package com.kh.pcar.back.admin.user.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity; // import 추가
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping; // import 추가
@@ -36,9 +37,10 @@ public class UserController {
 	public ResponseEntity<String> deleteUser(@PathVariable(name = "userNo") Long userNo, @AuthenticationPrincipal CustomUserDetails adminUser) {
 		
 		if(adminUser != null && adminUser.getUserNo().equals(userNo)) {
-			return ResponseEntity.badRequest()
-					             .body("자기 자신의 계정은 삭제할 수 없음");
-		}
+	        // 400 Bad Request 대신 409 Conflict (충돌)를 쓰는 것이 더 적절합니다.
+	        return ResponseEntity.status(HttpStatus.CONFLICT) // import org.springframework.http.HttpStatus 필요
+	                             .body("자기 자신의 계정은 삭제할 수 없습니다.");
+	    }
 		
 		userService.deleteUser(userNo);
 		return ResponseEntity.ok("삭제 성공");

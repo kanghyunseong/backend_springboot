@@ -73,4 +73,27 @@ public class GlobalExceptionHandler {
 	             .body(Map.of("error-message", msg));
 	 }
 	 
+	 @ExceptionHandler(UserNotFoundException.class)
+	 public ResponseEntity<Map<String, String>> handlerUserNotFoundException(UserNotFoundException e) {
+		 log.warn("사용자 찾기 실패 : {} ", e.getMessage());
+		 return createResponseEntity(e, HttpStatus.NOT_FOUND);
+	 }
+	 
+	 @ExceptionHandler(CarNotFoundException.class)
+	 public ResponseEntity<Map<String, String>> handlerCarNotFoundException(CarNotFoundException e) {
+		 log.warn("차량 번호를 찾을 수 없음 : {} ", e.getMessage());
+		 
+		 return createResponseEntity(e, HttpStatus.NOT_FOUND);
+	 }
+	 
+	 @ExceptionHandler(DataIntegrityViolationException.class)
+	 public ResponseEntity<Map<String, String>> handlerDataIntegrityViolationException(DataIntegrityViolationException e) {
+		 log.error("DB 무결성 제약 조건 위반: {}", e.getMessage());
+		 return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+	 }
+	 
+	 @ExceptionHandler(IllegalStateException.class)
+	 public ResponseEntity<Map<String, String>> handlerIllegalState(IllegalStateException e) {
+		 return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+	 }
 }
