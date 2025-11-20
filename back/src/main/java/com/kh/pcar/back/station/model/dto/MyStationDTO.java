@@ -1,0 +1,24 @@
+package com.kh.pcar.back.station.model.dto;
+
+import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Setter
+@Getter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+public class MyStationDTO {
+	
+	private String lat;
+	private String lng;
+	private String stationId;
+
+}
