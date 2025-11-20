@@ -10,12 +10,17 @@ import com.kh.pcar.back.token.model.vo.RefreshToken;
 @Mapper
 public interface TokenMapper {
 
-	@Insert("INSERT INTO BOOT_TOKEN VALUES(#{token}, #{username}, #{expiration})")
-	int saveToken(RefreshToken token);
-
-	@Delete("DELETE FROM BOOT_TOKEN WHERE MEMBER_ID = #{memberId}")
-	void deleteToken(String memberId);
-
-	@Select("DELETE TOKEN, MEMBER_ID username, EXPIRATION FROM BOOT_TOKEN WHERE TOKEN = #{refreshToken}")
-	RefreshToken findByToken(String refreshToken);
+	  
+    @Delete("DELETE FROM TB_TOKEN WHERE USER_NO = #{userNo}")
+    void deleteTokenByUserNo(Long userNo);
+    
+  
+    @Insert("INSERT INTO TB_TOKEN (TOKEN, USER_NO, EXPIRATION) " +
+            "VALUES (#{token}, #{userNo}, #{expiration})")
+    void saveToken(RefreshToken refreshToken);
+    
+   
+    @Select("SELECT TOKEN as token, USER_NO as userNo, EXPIRATION as expiration " +
+            "FROM TB_TOKEN WHERE TOKEN = #{token}")
+    RefreshToken findByToken(String token);
 }
