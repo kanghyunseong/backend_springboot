@@ -56,18 +56,29 @@ public class SecurityConfigure {
 		return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
+						   
 						   .authorizeHttpRequests(requests -> {
 							   requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh", "/cars/**").permitAll();
 							   requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**").authenticated();
+<<<<<<< HEAD
 							   requests.requestMatchers(HttpMethod.POST, "/boards", "/comments", "/cars/**").authenticated();
+=======
+							   requests.requestMatchers(HttpMethod.POST, "/boards", "/comments").authenticated();
+							   requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**","/members/**","/cars/**","/station/EvCharge").permitAll();
+							   requests.requestMatchers(HttpMethod.GET, "/admin/**", "/admin/api/settings/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.POST, "/admin/**", "/admin/api/settings/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.DELETE, "/admin/**", "/api/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/boards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/boards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.POST, "/boards/boards", "/comments", "/boards/boards/*/view").authenticated();
+>>>>>>> develop
 
-							   requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**","/admin/**", "/api/admin/**","/members/**","/cars/**","/station/EvCharge").permitAll();
-
-							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN");
-							   requests.requestMatchers(HttpMethod.DELETE, "/admin/**", "/api/admin/**").hasRole("ADMIN");
-							   requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasRole("ADMIN");
+							   requests.requestMatchers(HttpMethod.GET, "/boards/boards/search", "/boards/boards/", "/boards/boards", "/comments/**", "/uploads/**","/admin/**", "/api/admin/**","/members/**","/cars/**","/station/EvCharge").permitAll();
+							   requests.requestMatchers(HttpMethod.GET, "/boards/boards/*").authenticated();
 						   })
+						   
 						   /*
 						    * SessionManagement : 세션을 어떻게 관리할것인지 지정
 						    * sessionCreatePolicy : 세션 사용 정책을 설정

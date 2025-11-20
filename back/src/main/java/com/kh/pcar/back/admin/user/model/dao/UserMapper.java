@@ -16,7 +16,7 @@ public interface UserMapper {
 	    // 페이징 계산을 위한 전체 유저 수 조회
 	    int getTotalCount();
 	    
-	    void deleteUserStatus(Long userNo);
+	    int deleteUserStatus(Long userNo);
 
 		void updateUser(UserDTO userDTO);
 

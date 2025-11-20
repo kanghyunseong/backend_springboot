@@ -21,4 +21,5 @@ public class BoardDTO {
 	private int count;
 	private String boardStatus;
 	private Date boardDate;
+	
 }
