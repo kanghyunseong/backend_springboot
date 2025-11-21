@@ -1,6 +1,7 @@
 package com.kh.pcar.back.boards.imgBoard.model.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
@@ -15,7 +16,15 @@ public interface ImgBoardMapper {
 	
 	List<ImgBoardDTO> imgFindAll(RowBounds rb);
 	
+	int countImgBoards();
+	
+	List<ImgBoardDTO> searchImgBoards(Map<String, Object> params);
+
+    int countSearchImgBoards(Map<String, Object> params);
+	
 	ImgBoardDTO findByImgBoardNo(Long imgBoardNo);
+	
+	void increaseImgView(Long imgBoardNo);
 	
 	void imgUpdate(ImgBoardDTO imgBoard);
 	
