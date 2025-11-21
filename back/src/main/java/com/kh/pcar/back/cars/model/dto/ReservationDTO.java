@@ -22,6 +22,6 @@ public class ReservationDTO {
 	private Date endTime;
 	private String destination;
 	private String reservationStatus;
+	private String returnStatus;
 	
-
 }
