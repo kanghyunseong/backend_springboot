@@ -38,7 +38,7 @@ public class CarsController {
 		return ResponseEntity.ok(cars);
 	}
 	
-	// 차량 단일 조회
+	// 차량 상세 조회
 	// GET /
 	@GetMapping("/{carId}")
 	public ResponseEntity<List<CarsDTO>> findByCarId(@PathVariable(name="carId") Long carId) {
@@ -49,13 +49,22 @@ public class CarsController {
 	}
 
 	@PostMapping("/reserve")
-	public ResponseEntity<?> saveReservation(
+	public ResponseEntity<Long> saveReservation(
 	        @RequestBody ReservationDTO reservationDTO,
 	        @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-	    carsService.saveReservation(reservationDTO, userDetails);
-
-	    return ResponseEntity.status(HttpStatus.CREATED).body("예약 완료");
+	    
+	    Long reservationNo = carsService.saveReservation(reservationDTO, userDetails);
+	    
+	    return ResponseEntity.ok(reservationNo);
 	}
+	
+	@GetMapping("/reserve/{reservationNo}/confirm")
+	public ResponseEntity<List<ReservationDTO>> confirmReservation(@PathVariable(name="reservationNo")Long reservationNo) {
+		
+		List<ReservationDTO> reservation = carsService.confirmReservation(reservationNo);
+		
+		return ResponseEntity.ok(reservation);
+	}
+	
 	
 }

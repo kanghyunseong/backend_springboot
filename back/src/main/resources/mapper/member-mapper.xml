@@ -3,9 +3,11 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
+  
 <mapper namespace="com.kh.pcar.back.member.model.dao.MemberMapper">
-	<insert id="join" parameterType="MemberVO" >
-		INSERT 
+	
+	<sql id="joinSql">
+			INSERT 
 		  INTO
 			   TB_MEMBER 
 			   (
@@ -29,6 +31,15 @@
              , #{role}
              , #{licenseUrl} 
                )
+		
+	</sql>
+	<insert id="join" parameterType="MemberVO" >
+	<include refid="joinSql"></include>
+	</insert>
+	
+	
+		<insert id="kakaoJoin" parameterType="KakaoMemberDTO" >
+	<include refid="joinSql"></include>
 	</insert>
 	
 	<insert id="socialJoin" parameterType="NaverProfileVO" >
@@ -76,5 +87,19 @@
       AND M.STATUS = 'Y'
 </select>
 
-
+<select id="findByUserId" parameterType="String" resultType="KakaoMemberDTO">
+    SELECT
+          M.USER_NO     AS userNo
+        , M.USER_ID     AS memberId
+        , M.USER_NAME   AS memberName
+        , M.EMAIL       AS email
+        , M.BIRTHDAY    AS birthday
+        , M.PHONE       AS phone
+        , M.USER_ROLL   AS role
+        , M.LICENSE_IMG AS licenseUrl
+        , S.PROVIDER    AS provider
+    FROM TB_MEMBER M
+    LEFT JOIN TB_SOCIAL S ON M.USER_NO = S.USER_NO
+    WHERE M.USER_ID = #{userId}
+</select>
 </mapper>
