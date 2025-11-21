@@ -10,25 +10,25 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.station.model.dao.StationDAO;
+import com.kh.pcar.back.station.model.dto.ReviewDTO;
 import com.kh.pcar.back.station.model.dto.StationDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
-@Service
+@Service 
 @Slf4j
 public class ServiceStationImpl implements ServiceStation {
 
     private final RestTemplate restTemplate = new RestTemplate();
-
-    // 🔹 공공데이터 API 상수
+    private final StationDAO stationDao;
     private  final String API_KEY =
             "?serviceKey=379f167eb3f41af06081d27f407899ed21955011b09d34a54e3519d8544a89cb&perPage=300";
     private  final String BASE_URL =
             "https://api.odcloud.kr/api/15039545/v1/uddi:f8f879ad-68cf-40fb-8ccc-cb36eaf1baca";
-
-    // ================== 공통 유틸 메서드들 ==================
 
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> StationData() {
@@ -40,11 +40,8 @@ public class ServiceStationImpl implements ServiceStation {
         } catch (URISyntaxException e) {
             throw new RuntimeException("잘못된 충전소 API URL", e);
         }
-
-        log.info("call station api: {}", url);
-
         String response = restTemplate.getForObject(uri, String.class);
-
+        log.info("{}",response);
         try {
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> map = mapper.readValue(response, Map.class);
@@ -61,8 +58,9 @@ public class ServiceStationImpl implements ServiceStation {
         String longitude   = String.valueOf(item.get("경도"));
         String stationName = String.valueOf(item.get("충전소명"));
         String address     = String.valueOf(item.get("충전소주소")); 
+        String stationId  = String.valueOf(item.get("충전소아이디"));
 
-        return new StationDTO(latitude, longitude, stationName, address);
+        return new StationDTO(latitude, longitude, stationName, address,stationId);
     }
 
     // 거리 계산 
@@ -115,6 +113,7 @@ public class ServiceStationImpl implements ServiceStation {
                     String addr   = String.valueOf(item.get("충전소주소"));
                     String latStr = String.valueOf(item.get("위도"));
                     String lngStr = String.valueOf(item.get("경도"));
+                    String sId = String.valueOf(item.get("충전소아이디"));
 
                     return name.contains(kw)
                             || addr.contains(kw)
@@ -128,4 +127,15 @@ public class ServiceStationImpl implements ServiceStation {
                 .toList();
         //최종 타입은List<StationDTO>타입임
     }
+//
+//	@Override
+//	public void insertReview(ReviewDTO reviewDto,Long stationId ,CustomUserDetails userDetails) {
+//		reviewDto.setUserNo(userDetails.getUserNo());
+//		stationDao.insertReview(reviewDto,stationId,userDetails);
+//		
+		
+		
+		
+		
+//	}
 }

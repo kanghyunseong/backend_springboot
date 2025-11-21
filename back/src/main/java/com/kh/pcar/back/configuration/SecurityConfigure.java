@@ -63,7 +63,7 @@ public class SecurityConfigure {
 							.permitAll();
 
 					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
-							"/cars/**", "/station/EvCharge", "/boards/boards/search", "/boards/boards",
+							"/cars/**", "/station/**", "/boards/boards/search", "/boards/boards",
 							"/boards/boards/","/station/search").permitAll();
 					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**")
 							.authenticated();
