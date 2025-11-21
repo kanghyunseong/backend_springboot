@@ -1,7 +1,5 @@
 package com.kh.pcar.back.boards.imgBoard.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
 import com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO;
+import com.kh.pcar.back.boards.imgBoard.model.dto.ImgPageResponseDTO;
 import com.kh.pcar.back.boards.imgBoard.model.service.ImgBoardService;
 
 import jakarta.validation.Valid;
@@ -50,9 +50,20 @@ public class ImgBoardController {
 	// 전체조회
 	// GET boards
 	@GetMapping
-	public ResponseEntity<List<ImgBoardDTO>> imgFindAll(@RequestParam(name="page", defaultValue="0")int pageNo){
-		List<ImgBoardDTO>imgBoards = imgBoardService.imgFindAll(pageNo);
-		return ResponseEntity.ok(imgBoards);
+	public ResponseEntity<ImgPageResponseDTO<ImgBoardDTO>> imgFindAll(@RequestParam(name="page", defaultValue="0")int pageNo){
+		return ResponseEntity.ok(imgBoardService.imgFindAll(pageNo));
+	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<ImgPageResponseDTO<ImgBoardDTO>> searchImgBoards(
+	        @RequestParam(name = "type") String type,
+	        @RequestParam(name = "keyword") String keyword,
+	        @RequestParam(name = "page", defaultValue = "0") int pageNo) {
+	    log.info("검색 요청 - type: {}, keyword: {}, page: {}", type, keyword, pageNo);
+
+	    ImgPageResponseDTO<ImgBoardDTO> result = imgBoardService.searchImgBoards(type, keyword, pageNo);
+
+	    return ResponseEntity.ok(result);
 	}
 	
 	// 단일조회
