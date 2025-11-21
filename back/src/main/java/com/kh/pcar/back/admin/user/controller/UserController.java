@@ -1,5 +1,8 @@
 package com.kh.pcar.back.admin.user.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity; // import 추가
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.admin.user.model.dto.UserDTO;
+import com.kh.pcar.back.admin.user.model.dto.UserKpiStatsDTO;
 import com.kh.pcar.back.admin.user.model.dto.UserPageResponseDTO;
 import com.kh.pcar.back.admin.user.model.service.UserService;
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
@@ -37,8 +41,7 @@ public class UserController {
 	public ResponseEntity<String> deleteUser(@PathVariable(name = "userNo") Long userNo, @AuthenticationPrincipal CustomUserDetails adminUser) {
 		
 		if(adminUser != null && adminUser.getUserNo().equals(userNo)) {
-	        // 400 Bad Request 대신 409 Conflict (충돌)를 쓰는 것이 더 적절합니다.
-	        return ResponseEntity.status(HttpStatus.CONFLICT) // import org.springframework.http.HttpStatus 필요
+	        return ResponseEntity.status(HttpStatus.CONFLICT)
 	                             .body("자기 자신의 계정은 삭제할 수 없습니다.");
 	    }
 		
@@ -47,9 +50,9 @@ public class UserController {
 	}
 	
 	@PutMapping
-	public ResponseEntity<String> updateUser(@RequestBody UserDTO userDTO) {
-		userService.updateUser(userDTO);
-		return ResponseEntity.ok("수정 성공");
+	public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
+		UserDTO updatedUser = userService.updateUser(userDTO);
+		return ResponseEntity.ok(updatedUser);
 	}
 	
 	@GetMapping("/{userNo}")
@@ -57,5 +60,23 @@ public class UserController {
 		UserDTO user = userService.findUserByNo(userNo);
 		return ResponseEntity.ok(user);
 	}
+	@GetMapping("/trend")
+	public ResponseEntity<List<Map<String, Object>>> getJoinTrend(@RequestParam(name = "unit", defaultValue = "month") String unit) {
+	    return ResponseEntity.ok(userService.getJoinTrend(unit));
+	}
+	
+	@GetMapping("/kpi")
+	public ResponseEntity<UserKpiStatsDTO> getKpiStats() {
+		UserKpiStatsDTO stats = userService.getKpiStats();
+		return ResponseEntity.ok(stats);
+	}
+	
+	@GetMapping("/license/trend")
+	public ResponseEntity<List<Map<String, Object>>> getLicenseStatusTrend(@RequestParam(name =  "unit", defaultValue = "month") String unit) {
+	
+		List<Map<String, Object>> trendData = userService.getLicenseStatusTrend(unit);
+		return ResponseEntity.ok(trendData);
+	}
+	
 	
 }

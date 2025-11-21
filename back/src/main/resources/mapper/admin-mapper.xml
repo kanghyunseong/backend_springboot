@@ -74,5 +74,79 @@
      WHERE
            USER_NO = #{userNo}
 </select>
+<select id="getJoinTrend" parameterType="String" resultType="map">
+	SELECT 
+	       TO_CHAR
+	       (
+	       ENROLL_DATE
+	     , <choose>
+				<when test="unit == 'year'"> 'YYYY' </when>
+                <when test="unit == 'month'"> 'YYYY-MM' </when>
+                <when test="unit == 'day'"> 'YYYY-MM-DD' </when>
+                <otherwise> 'YYYY-MM-DD' </otherwise>
+		   </choose>
+	       ) AS dataLabel
+	     , COUNT(*) AS count
+	  FROM
+	       TB_MEMBER
+	 WHERE
+	       STATUS = 'Y'
+	 GROUP
+	    BY
+	       TO_CHAR
+	       (
+	       ENROLL_DATE
+	     , <choose>
+                <when test="unit == 'year'"> 'YYYY' </when>
+                <when test="unit == 'month'"> 'YYYY-MM' </when>
+                <when test="unit == 'day'"> 'YYYY-MM-DD' </when>
+                <otherwise> 'YYYY-MM-DD' </otherwise>
+            </choose> 	 
+	       ) 
+	 ORDER
+	 	BY
+	 	   dataLabel ASC
+	
+</select>
+	
+	<select id="getWaitingLicenseCount" resultType="_int">
+		SELECT 
+		       COUNT(*)
+		  FROM
+		       TB_MEMBER
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       LICENSE_STATUS = 'N'
+	</select>
+	
+	<select id="getLicenseStatusTrend" parameterType="String" resultType="map">
+    SELECT 
+        TO_CHAR(ENROLL_DATE, 
+            <choose>
+                <when test="unit == 'year'"> 'YYYY' </when>
+                <when test="unit == 'month'"> 'YYYY-MM' </when>
+                <otherwise> 'YYYY-MM-DD' </otherwise>
+            </choose>
+        ) AS dataLabel,
+        
+        SUM(CASE WHEN LICENSE_STATUS = 'Y' THEN 1 ELSE 0 END) AS approvedCount,
+        
+        SUM(CASE WHEN LICENSE_STATUS != 'Y' THEN 1 ELSE 0 END) AS pendingCount
+    FROM
+        TB_MEMBER
+    WHERE
+        STATUS = 'Y'
+    GROUP BY
+        TO_CHAR(ENROLL_DATE, 
+            <choose>
+                <when test="unit == 'year'"> 'YYYY' </when>
+                <when test="unit == 'month'"> 'YYYY-MM' </when>
+                <otherwise> 'YYYY-MM-DD' </otherwise>
+            </choose> 	 
+        ) 
+    ORDER BY
+          dataLabel ASC
+</select>
 	
 </mapper>
