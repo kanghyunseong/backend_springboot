@@ -1,12 +1,15 @@
 package com.kh.pcar.back.admin.user.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.pcar.back.admin.user.model.dao.UserMapper;
 import com.kh.pcar.back.admin.user.model.dto.UserDTO;
+import com.kh.pcar.back.admin.user.model.dto.UserKpiStatsDTO;
 import com.kh.pcar.back.admin.user.model.dto.UserPageResponseDTO;
 import com.kh.pcar.back.exception.UserNotFoundException;
 import com.kh.pcar.back.util.PageInfo;
@@ -22,6 +25,7 @@ public class UserServiceImpl implements UserService {
 	private final Pagenation pagenation; // Pagenation 빈 주입
 	
 	@Override
+	@Transactional(readOnly = true)
 	public UserPageResponseDTO findAllMember(int currentPage) {
 		
         // 1. 전체 유저 수(listCount) 조회
@@ -51,6 +55,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteUser(Long userNo) {
 		int result = userMapper.deleteUserStatus(userNo);
 		
@@ -60,15 +65,44 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateUser(UserDTO userDTO) {
+	@Transactional
+	public UserDTO updateUser(UserDTO userDTO) {
 		userMapper.updateUser(userDTO);
+		
+		return userMapper.findByUserNo(userDTO.getUserNo());
 		
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserDTO findUserByNo(Long userNo) {
 		return userMapper.findByUserNo(userNo);
 	}
-	
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> getJoinTrend(String unit) {
+		// TODO Auto-generated method stub
+		return userMapper.getJoinTrend(unit);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public UserKpiStatsDTO getKpiStats() {
+		
+		int totalActiveUsers = userMapper.getTotalCount();
+		
+		int waitingLicenseCount = userMapper.getWaitingLicenseCount();
+		
+		return new UserKpiStatsDTO(totalActiveUsers, waitingLicenseCount);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> getLicenseStatusTrend(String unit) {
+		
+		return userMapper.getLicenseStatusTrend(unit);
+	}
+
 	
 }

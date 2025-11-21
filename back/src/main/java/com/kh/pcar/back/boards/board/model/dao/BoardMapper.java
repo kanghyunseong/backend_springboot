@@ -21,7 +21,7 @@ public interface BoardMapper {
     List<BoardDTO> searchBoards(Map<String, Object> params);
 
     int countSearchBoards(Map<String, Object> params);
-	
+
 	BoardDTO findByBoardNo(Long boardNo);
 	
 	void increaseView(Long boardNo);

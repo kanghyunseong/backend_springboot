@@ -16,7 +16,8 @@
 	</sql>
 
     <!-- 게시글 INSERT (boardWriter = USER_ID 문자열 → USER_NO로 변환) -->
-    <insert id="save" parameterType="com.kh.pcar.back.boards.board.model.vo.BoardVO">
+    <insert id="save" 
+    parameterType="com.kh.pcar.back.boards.board.model.vo.BoardVO">
         INSERT 
           INTO 
         	   TB_BOARD B
@@ -42,7 +43,8 @@
     </insert>
 
     <!-- 게시글 목록 조회 (writer는 USER_ID로 가져오기) -->
-    <select id="findAll" resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
+    <select id="findAll" 
+    resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
       <include refid="boardColumn" />
         FROM 
         	 TB_BOARD B
@@ -56,9 +58,12 @@
     </select>
     
     <select id="countBoards" resultType="int">
-	    SELECT COUNT(*)
-	    FROM TB_BOARD
-	    WHERE BOARD_STATUS = 'Y'
+	    SELECT 
+	    	   COUNT(*)
+	      FROM 
+	           TB_BOARD B
+	     WHERE 
+	     	   B.BOARD_STATUS = 'Y'
 	</select>
     
 
@@ -86,7 +91,8 @@
 
 
     <!-- 게시글 수정 -->
-    <update id="update" parameterType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
+    <update id="update" 
+    parameterType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
         UPDATE 
         	   TB_BOARD B
            SET 
@@ -138,13 +144,14 @@
     <select id="searchBoards" parameterType="map"
             resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
         SELECT
-            BOARD_NO      AS boardNo,
-            BOARD_TITLE   AS boardTitle,
-            BOARD_WRITER  AS boardWriter,
-            BOARD_CONTENT AS boardContent,
-            BOARD_DATE    AS boardDate,
-            COUNT         AS count
-        FROM TB_BOARD
+               BOARD_NO boardNo
+             , BOARD_TITLE boardTitle
+             , BOARD_WRITER boardWriter
+             , BOARD_CONTENT boardContent
+             , BOARD_DATE boardDate
+             , COUNT count
+          FROM 
+               TB_BOARD
         WHERE BOARD_STATUS = 'Y'
         <choose>
             <when test="type == 'title'">

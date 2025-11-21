@@ -1,6 +1,8 @@
 package com.kh.pcar.back.admin.user.model.dto;
 
-import java.sql.Date;
+
+
+import java.util.Date;
 
 import com.kh.pcar.back.admin.user.model.vo.UserVO;
 

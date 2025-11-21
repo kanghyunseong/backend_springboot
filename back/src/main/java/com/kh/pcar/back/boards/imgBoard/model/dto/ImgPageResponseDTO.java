@@ -1,4 +1,4 @@
-package com.kh.pcar.back.boards.board.model.dto;
+package com.kh.pcar.back.boards.imgBoard.model.dto;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PageResponseDTO<T> {
+public class ImgPageResponseDTO<T> {
 
     private List<T> content;
     private int totalPages;
