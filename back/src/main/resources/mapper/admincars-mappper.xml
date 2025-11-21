@@ -16,6 +16,8 @@
              , CAR_IMAGE AS carImage
           FROM 
                TB_CAR
+         WHERE
+ 			   CAR_STATUS = 'Y'         
          ORDER 
             BY 
               CAR_ID DESC
@@ -87,9 +89,11 @@
                TB_CAR
          WHERE
                CAR_ID = #{carId}
+           AND
+               CAR_STATUS = 'Y'
     </select>
     
-    <update id="updateCarStatus">
+    <update id="updateCarStatus" parameterType="Long">
     UPDATE 
           TB_CAR
       SET
