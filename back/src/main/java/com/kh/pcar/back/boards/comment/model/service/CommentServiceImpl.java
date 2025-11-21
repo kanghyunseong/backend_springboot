@@ -22,7 +22,7 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public CommentVO save(CommentDTO comment, CustomUserDetails userDetails) {
 		
-		boardService.findByBoardNo(comment.getRefBno()); // 외부에 노출된 메소드 호
+		boardService.findByBoardNo(comment.getRefBno()); // 외부에 노출된 메소드 호출
 		String memberId = userDetails.getUsername();
 		
 		CommentVO c =CommentVO.builder()
