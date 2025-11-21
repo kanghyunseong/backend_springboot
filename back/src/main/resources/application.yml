@@ -36,3 +36,9 @@ naver:
     secret: q6k43VptHS
   redirect:
     url: http://localhost:8081/members/naver/callback   
+    
+kakao:
+  client:
+    id: 9ab6eed4ca0b2e40761693da623540b9
+  redirect:
+    url: http://localhost:5173/members/kakao/callback         

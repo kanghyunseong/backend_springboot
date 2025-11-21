@@ -59,7 +59,7 @@ public class SecurityConfigure {
 
 				.authorizeHttpRequests(requests -> {
 
-					requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh", "/cars/**")
+					requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh", "/cars/**" , "/members/**")
 							.permitAll();
 
 					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
