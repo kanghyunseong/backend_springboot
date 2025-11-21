@@ -5,11 +5,14 @@ import java.util.Map;
 import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
 
 public interface SocialAuthService {
-	public String requestNaver();
-	
-	
-	
-	 public Map<String,String> socialLogin(String code,String state,String provider);
-	 
 
+	public Map<String, String> findKakaoUserId(String code);
+
+	public Map<String, String> socialLogin(String code, String state, String provider);
+
+	
+	public Map<String,String> loginById(String id);
+	
+	public int checkUserById(Map<String,String> userInfo);
+	
 }
