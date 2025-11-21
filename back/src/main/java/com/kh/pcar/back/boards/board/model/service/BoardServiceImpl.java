@@ -44,22 +44,28 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public PageResponseDTO<BoardDTO> findAll(int pageNo) {
 
-	    if (pageNo < 0) {
-	        throw new InvalidParameterException("유효하지 않은 접근입니다.");
-	    }
+	    int size = 10;
+	    int offset = pageNo * size;
 
-	    RowBounds rb = new RowBounds(pageNo * pageSize, pageSize);
+
+	    // RowBounds 정상 계산
+	    RowBounds rb = new RowBounds(offset, size);
+
+	    // 현재 페이지 목록
 	    List<BoardDTO> list = boardMapper.findAll(rb);
 
-	    int totalCount = boardMapper.countBoards();
-	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    // 전체 개수
+	    long total = boardMapper.countBoards();
+
+	    // 총 페이지 수
+	    int totalPages = (int) Math.ceil(total / (double) size);
 
 	    return new PageResponseDTO<>(
 	            list,
-	            pageNo,
-	            pageSize,
 	            totalPages,
-	            totalCount
+	            total,
+	            pageNo,
+	            size
 	    );
 	}
 	

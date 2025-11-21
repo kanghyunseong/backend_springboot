@@ -16,8 +16,9 @@ import lombok.ToString;
 public class PageResponseDTO<T> {
 
     private List<T> content;
-    private int page;
-    private int size;
     private int totalPages;
     private long totalElements;
+    private int page;
+    private int size;
+
 }
