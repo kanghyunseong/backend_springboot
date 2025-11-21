@@ -93,7 +93,7 @@ public class SecurityConfigure {
 				 */
 				.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).build();
->>>>>>> 9d8f1dce1b23fe3f0225e87d4090a3ccd87e0129
+
 
 	}
 
