@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/imgComments")
+@RequestMapping("boards/imgComments")
 @RequiredArgsConstructor
 public class ImgCommentController {
 	
@@ -31,7 +31,7 @@ public class ImgCommentController {
 	@PostMapping
 	public ResponseEntity<?> save(@RequestBody CommentDTO comment,
 								  @AuthenticationPrincipal CustomUserDetails userDetails){
-		CommentVO c = commentService.save(comment,  userDetails);
+		CommentDTO c = commentService.save(comment,  userDetails);
 		return ResponseEntity.status(HttpStatus.CREATED).body(c);
 	}
 	

@@ -1,5 +1,7 @@
 package com.kh.pcar.back.member.controller;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pcar.back.auth.model.dto.KakaoProfileDTO;
+import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberDTO;
 import com.kh.pcar.back.member.model.service.MemberService;
 
@@ -46,5 +50,18 @@ public class MemberController {
 		
 		
 	}
+	
+	
+	@PostMapping("/kakao")
+	public ResponseEntity<?> kakaoJoin(@Valid @ModelAttribute KakaoMemberDTO member , @RequestParam(name="licenseImg" , required = false ) MultipartFile licenseImg ){
+		
+		log.info("Member에 들어온 값 {} , Multipart : {} " , member , licenseImg);
+		
+		Map<String,String> loginResponse = memberService.kakaoJoin(member,licenseImg);
+		
+		return ResponseEntity.ok(loginResponse);
+	}
+	
+
 	
 }

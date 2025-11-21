@@ -4,7 +4,8 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.pcar.back.boards.comment.model.dao.CommentMapper">
 	
-	<insert id="save" parameterType="com.kh.pcar.back.boards.comment.model.vo.CommentVO">
+	<insert id="save" 
+	parameterType="com.kh.pcar.back.boards.comment.model.vo.CommentVO">
 		INSERT 
 		  INTO 
 			   TB_COMMENT C
@@ -28,7 +29,7 @@
 	</insert>
 	
 	<select id="findAll" parameterType="long"
-						resultType="com.kh.pcar.back.boards.comment.model.dto.CommentDTO">
+	resultType="com.kh.pcar.back.boards.comment.model.dto.CommentDTO">
 		SELECT 
 			   C.COMMENT_NO commentNo
 			 , M.USER_ID commentWriter
@@ -42,14 +43,49 @@
 		  	   TB_MEMBER M ON C.COMMENT_WRITER = M.USER_NO 
 		 WHERE 
 		 	   C.COMMENT_STATUS = 'Y' 
+		   AND 
+		       C.REF_BNO = #{boardNo} 
 		 ORDER 
 		    BY 
-		       C.COMMENT_NO DESC;
+		       C.COMMENT_NO DESC
 	</select>
 	
-	<update id="">
-		
-	</update>
+	<!-- 댓글 내용 수정 -->
+    <update id="update"
+            parameterType="com.kh.pcar.back.boards.comment.model.dto.CommentDTO">
+        UPDATE TB_COMMENT
+        SET
+            COMMENT_CONTENT = #{commentContent}
+        WHERE
+            COMMENT_NO = #{commentNo}
+            AND COMMENT_STATUS = 'Y'
+    </update>
+
+    <!-- 댓글 삭제 : STATUS = 'N' 으로 소프트 삭제 -->
+    <update id="delete" parameterType="long">
+        UPDATE TB_COMMENT
+        SET COMMENT_STATUS = 'N'
+        WHERE COMMENT_NO = #{commentNo}
+    </update>
+
+    <!-- 댓글 신고 등록 : 예시용, 실제 테이블/칼럼명에 맞게 수정 필요 -->
+    <insert id="reportRequest">
+        INSERT INTO TB_COMMENT_REPORT (
+            REPORT_NO,
+            COMMENT_NO,
+            REPORTER_NO,
+            REASON,
+            REPORT_DATE,
+            STATUS
+        ) VALUES (
+            SEQ_COMMENT_REPORT_NO.NEXTVAL,
+            #{commentNo},
+            (SELECT USER_NO FROM TB_MEMBER WHERE USER_ID = #{reporterId}),
+            #{reason},
+            SYSDATE,
+            'Y'
+        )
+    </insert>
     
 </mapper>
   

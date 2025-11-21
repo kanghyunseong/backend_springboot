@@ -8,10 +8,18 @@ import com.kh.pcar.back.boards.comment.model.vo.CommentVO;
 
 public interface CommentService {
 	
-	// 인서트 하나
-	CommentVO save(CommentDTO comment, CustomUserDetails userDetails);
-	
-	// 조회 하나
-	List<CommentDTO> findAll(Long boardNo);
-	
+	// 댓글 작성
+	CommentDTO save(CommentDTO comment, CustomUserDetails userDetails);
+
+    // 특정 게시글의 댓글 전체 조회
+    List<CommentDTO> findAll(Long boardNo);
+
+    // 댓글 수정
+    void update(Long commentNo, String commentContent, String loginId);
+
+    // 댓글 삭제(STATUS 변경)
+    void delete(Long commentNo, String loginId);
+
+    // 댓글 신고
+    void report(Long commentNo, String loginId, String reason);
 }

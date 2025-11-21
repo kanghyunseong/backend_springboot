@@ -29,13 +29,19 @@
 		 , CAR_DRIVING carDriving
 		 , CAR_EFFICIENCY carEfficiency
 	  FROM
-	  	   TB_CAR
+	  	   TB_CAR C
 	 WHERE 
-	 	   CAR_STATUS = 'Y'
-	 ORDER
-	    BY
-	       CAR_ID ASC
-	 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	 	   C.CAR_STATUS = 'Y'
+	 AND NOT EXISTS (
+        	 SELECT 1
+        	 FROM TB_RESERVATION R
+       		 WHERE R.CAR_ID = C.CAR_ID
+          	   AND R.RESERVATION_STATUS = 'Y'
+     )
+   ORDER
+	  BY 
+	     CAR_ID ASC
+   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
 	<select id="findByCarId"
@@ -59,6 +65,10 @@
 	
 	<insert id="saveReservation"
 			parameterType="com.kh.pcar.back.cars.model.dto.ReservationDTO">
+			
+	<selectKey keyProperty="reservationNo" resultType="long" order="BEFORE">
+    	SELECT SEQ_RESERVATION_NO.NEXTVAL FROM DUAL
+	</selectKey>
 		INSERT 
 		  INTO 
 		       TB_RESERVATION
@@ -74,15 +84,36 @@
              ) 
         VALUES
              (
-               SEQ_RESERVATION_NO.NEXTVAL
+               #{reservationNo}
              , #{userNo}
              , #{carId}
              , SYSDATE
-             , TO_DATE(REPLACE(#{startTime}, 'T', ' '), 'YYYY-MM-DD HH24:MI')
-             , TO_DATE(REPLACE(#{endTime}, 'T', ' '), 'YYYY-MM-DD HH24:MI')
+			 , #{startTime}
+			 , #{endTime}
              , #{destination}
              , #{reservationStatus}
         	 )
-		
 	</insert>
+	
+	<select id="confirmReservation"
+		resultType="ReservationDTO">
+			SELECT 
+				   RESERVATION_NO reservationNo
+			     , USER_NO userNo
+			     , CAR_ID carId
+			     , RESERVATION_DATE reservationDate
+			     , START_TIME startTime
+			     , END_TIME endTime
+			     , DESTINATION destination
+			     , RESERVATION_STATUS reservationStatus
+			     , RETURN_STATUS returnStatus
+			  FROM
+			  	   TB_RESERVATION
+			 WHERE
+			       RESERVATION_NO = #{reservationNo}
+			   AND
+				   RESERVATION_STATUS = 'Y'
+			   AND
+			       RETURN_STATUS = 'N'
+	</select >
 </mapper>

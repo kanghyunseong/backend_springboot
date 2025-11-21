@@ -7,20 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@Setter
 @Getter
-@ToString
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StationDTO {
-	
-	private String lat;
-	private String lng;
-	private String stationName;
-	private String address;
-	private String stationId;
+@ToString
+public class ReviewDTO {
+	private Long reviewId;
+	private String commentContent;
+	private String recommend;
+	private Long stationId;
+	private Long userNo;
+	private Date createAt;
 
 }
