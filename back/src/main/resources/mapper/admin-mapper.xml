@@ -40,7 +40,8 @@
 		UPDATE 
 		       TB_MEMBER
 		   SET
-		       STATUS = 'N'  WHERE
+		       STATUS = 'N'
+	     WHERE
 		       USER_NO = #{userNo}
 	</update>
 	

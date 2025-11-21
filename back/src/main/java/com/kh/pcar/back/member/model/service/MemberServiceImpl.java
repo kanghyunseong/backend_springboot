@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
+import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
 import com.kh.pcar.back.exception.IdDuplicateException;
 import com.kh.pcar.back.exception.MemberJoinException;
 import com.kh.pcar.back.file.service.FileService;
@@ -37,7 +37,6 @@ public class MemberServiceImpl implements MemberService {
 	}
 	
 	private MemberVO generateFileName(MemberDTO member,MultipartFile licenseImg) {
-		
 		MemberVO m = null;
 		
 		if(licenseImg != null && !licenseImg.isEmpty()) {
@@ -53,9 +52,7 @@ public class MemberServiceImpl implements MemberService {
 						          .phone(member.getPhone())
 						          .role("ROLE_USER").build();
 			return m;
-			
 		}else {
-			
 			m = MemberVO.builder().memberId(member.getMemberId())
 			          .memberPwd(passwordEncoder.encode(member.getMemberPwd()))
 			          .memberName(member.getMemberName())
@@ -66,8 +63,6 @@ public class MemberServiceImpl implements MemberService {
 			
 			return m;
 		}
-		
-		
 		
 	}
 	
@@ -91,29 +86,30 @@ public class MemberServiceImpl implements MemberService {
 		mapper.joinLocal(originMember);
 	}
 	
-	
 	@Override
 	@Transactional
-	public NaverProfileVO socialJoin(NaverProfileVO naverMember) {
+	public NaverProfileDTO socialJoin(NaverProfileDTO naverMember) {
 		
 		int count = mapper.countByMemberId(naverMember.getId());
 		
+		
 		if(count > 0) {
-			return naverMember ;
+		Long userNo = mapper.findUserNoById(naverMember.getId());
+			naverMember.setUserNo(userNo);
+			
+			return naverMember;
 		}
 		else {
 			
 			mapper.socialJoin(naverMember);
 			mapper.joinSocial(naverMember);
+			Long userNo= 	mapper.findUserNoById(naverMember.getId());
+			naverMember.setUserNo(userNo);
+			
 			
 			return naverMember;
-			
 		}
 		
-		
-		
 	}
-	
-	
 
 }

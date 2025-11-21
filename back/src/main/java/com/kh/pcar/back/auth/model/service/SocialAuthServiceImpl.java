@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.kh.pcar.back.auth.model.dto.MemberLoginDTO;
-import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
 import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
+import com.kh.pcar.back.member.model.dao.MemberMapper;
 import com.kh.pcar.back.member.model.service.MemberService;
-import com.kh.pcar.back.member.model.service.MemberServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +25,7 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 
 	private RestTemplate restTemplate = new RestTemplate();
 	private final MemberService memberService;
+	private final MemberMapper memberMapper;
 	
 	
 	@Value("${naver.client.id}")
@@ -59,7 +59,7 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 	            + "&client_secret=" + naverSecretCode
 	            + "&code=" + code
 	            + "&state=" + state;
-
+	    	   
 	   // log.info("토큰 요청 URL: {}", url);
 
 	    // 요청 보내기
@@ -91,19 +91,40 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 
 		Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
 
-		NaverProfileVO profile = NaverProfileVO.builder()
-		        .id((String) responseBody.get("id"))
-		        .name((String) responseBody.get("name"))
-		        .email((String) responseBody.get("email"))
-		        .birthday( (String) responseBody.get("birthyear")+"-"+(String) responseBody.get("birthday"))
-		        .mobile((String) responseBody.get("mobile"))
-		        .accessToken(accessToken)
-		        .refreshtoken(refreshToken)
-		        .provider(provider)
-		        .role("ROLE_USER")
-		        .build();
+		  NaverProfileDTO profileDTO = new NaverProfileDTO(
+				    null,
+			        (String) responseBody.get("id"),
+			        (String) responseBody.get("name"),
+			        (String) responseBody.get("email"),
+			        (String) responseBody.get("birthyear") + "-" + (String) responseBody.get("birthday"),
+			        (String) responseBody.get("mobile"),
+			        accessToken,
+			        refreshToken
+			        ,provider
+			        ,"ROLE_USER"
+			    );
 
-		return getLoginResponse(profile);
+		
+		  NaverProfileDTO npd =	memberService.socialJoin(profileDTO);
+		  
+		  
+		  
+		  NaverProfileVO nv = NaverProfileVO.builder()
+				  			.userNo(npd.getUserNo())
+				  			.name(npd.getName())
+				  			.id(npd.getId())
+				  			.email(npd.getEmail())
+				  			.mobile(npd.getMobile())
+				  			.role(npd.getRole())
+				  			.accessToken(npd.getAccessToken())
+				  			.refreshtoken(npd.getRefreshtoken())
+				  			.birthday(npd.getBirthday())
+				  			.provider(npd.getProvider())
+				  			.build();
+				  		    
+		  
+		
+		return getLoginResponse(nv);
 	}
 	
 	private Map<String,String> getLoginResponse(NaverProfileVO user){
@@ -111,13 +132,14 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		Map<String, String> loginResponse = new HashMap<>();
 		
 		loginResponse.put("userId",user.getId());
+		loginResponse.put("userNo", String.valueOf(user.getUserNo()));
 		loginResponse.put("birthDay", user.getBirthday());
 		loginResponse.put("userName", user.getName());
 		loginResponse.put("email", user.getEmail());
 		loginResponse.put("phone", user.getMobile());
 		loginResponse.put("role", user.getRole().toString());
-		loginResponse.put("accessToken", user.getRefreshtoken());
-		loginResponse.put("refreshToken", user.getAccessToken());
+		loginResponse.put("accessToken", user.getAccessToken());
+		loginResponse.put("refreshToken", user.getRefreshtoken());
 		loginResponse.put("provider", user.getProvider());
 		
 		

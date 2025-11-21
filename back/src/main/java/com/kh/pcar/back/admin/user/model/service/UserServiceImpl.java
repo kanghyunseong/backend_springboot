@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.kh.pcar.back.admin.user.model.dao.UserMapper;
 import com.kh.pcar.back.admin.user.model.dto.UserDTO;
 import com.kh.pcar.back.admin.user.model.dto.UserPageResponseDTO;
+import com.kh.pcar.back.exception.UserNotFoundException;
 import com.kh.pcar.back.util.PageInfo;
 import com.kh.pcar.back.util.Pagenation;
 
@@ -51,7 +52,11 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(Long userNo) {
-		userMapper.deleteUserStatus(userNo);
+		int result = userMapper.deleteUserStatus(userNo);
+		
+		if(result == 0) {
+			throw new UserNotFoundException("사용자 번호 " + userNo + "를 찾을 수 없거나 이미 삭제된 사용자입니다.");
+		}
 	}
 
 	@Override
