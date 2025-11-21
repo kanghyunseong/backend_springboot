@@ -28,7 +28,7 @@ public class StationController {
 	private final ServiceStation service;
 	//서비스로 사용자의 위치 정보 전송 그 후 걸러낸걸 MyStationDTO에 담음 
 	@GetMapping
-	public List<StationDTO> stations(@RequestParam(name= "lat")String lat,@RequestParam(name="lng")String lng) {
+	public List<StationDTO> stations(@RequestParam(name= "lat")String lat,@RequestParam(name="lng")String lng,@RequestParam(name="stationId") String stationId) {
 //		log.info("{}",page);
 //		log.info("{}",serviceKey);
 //		log.info("{}",perPage);
