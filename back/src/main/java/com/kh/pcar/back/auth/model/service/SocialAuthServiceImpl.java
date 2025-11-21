@@ -7,12 +7,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.kh.pcar.back.auth.model.dto.KakaoProfileDTO;
 import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
 import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
 import com.kh.pcar.back.member.model.dao.MemberMapper;
+import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,21 +43,16 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 	private String naverSecretCode;
 
 	@Value("${naver.redirect.url}")
-	private String naverredirectUrl;
+	private String naverRedirectUrl;
+	
+	@Value("${kakao.client.id}")
+	private String kakaoClientId;
 
-	@Override
-	public String requestNaver() {
-		String naver_auth_uri = "https://nid.naver.com/oauth2.0/authorize";
 
-		String state = "state_" + System.currentTimeMillis() + "_" + (int) (Math.random() * 100000);
+	@Value("${kakao.redirect.url}")
+	private String kakaoRedirectUrl;
 
-		String url = naver_auth_uri + "?response_type=code" + "&client_id=" + naverClientId + "&redirect_uri="
-				+ URLEncoder.encode(naverredirectUrl, StandardCharsets.UTF_8) + "&state=" + state;
 
-		log.info("네이버 로그인 URL 생성됨 → {}", url);
-		return url;
-
-	}
 
 
 	private Map<String, Object> getTokens(String code, String state) {
@@ -146,6 +149,108 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		return loginResponse;
 		
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public Map<String, String> findKakaoUserId(String code) {
+	    String tokenUrl = "https://kauth.kakao.com/oauth/token";
 
+	    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+	    params.add("grant_type", "authorization_code");
+	    params.add("client_id", kakaoClientId);
+	    params.add("redirect_uri", kakaoRedirectUrl);
+	    params.add("code", code);
+
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+	    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+	    RestTemplate restTemplate = new RestTemplate();
+	    Map<String, Object> response = restTemplate.postForObject(tokenUrl, request, Map.class);
+
+	    String accessToken = (String) response.get("access_token");
+	    String refreshToken = (String) response.get("refresh_token");
+
+	    // accessToken으로 유저 정보 요청
+	    HttpHeaders userHeaders = new HttpHeaders();
+	    userHeaders.setBearerAuth(accessToken);
+
+	    HttpEntity<Void> userRequest = new HttpEntity<>(userHeaders);
+	    Map<String, Object> userInfo = restTemplate.exchange(
+	            "https://kapi.kakao.com/v2/user/me",
+	            HttpMethod.GET,
+	            userRequest,
+	            Map.class).getBody();
+
+	    // userInfo에서 필요한 값 추출 후 DTO 또는 VO 만들고 DB 처리
+	    // Map<String,String> loginResponse = getLoginResponse(vo);
+	    
+	    log.info("kakao userInfo : {}",userInfo);
+	    log.info("kakao accessToken : {}",accessToken);
+	    log.info("kakao refreshToken : {}",refreshToken);
+	    
+	    String id = String.valueOf(userInfo.get("id"));
+	    
+	    return Map.of(
+	    	"id" , id,
+	        "accessToken", accessToken,
+	        "refreshToken", refreshToken
+	    );
+	}
+	
+	public int checkUserById(Map<String,String> userInfo){
+		
+		
+		
+	
+		String id = userInfo.get("id");
+		
+		
+		int result = memberMapper.countByMemberId(id);
+		
+		
+		return result; 
+		
+		
+	};
+	
+	public Map<String,String> loginById(String id){
+		
+		
+		KakaoMemberDTO member = memberMapper.findByUserId(id);
+		
+		
+		
+		
+		
+		Map<String,String> loginResponse = getLoginResponse(member);
+		
+		
+		return loginResponse;
+		
+		
+	}
+	
+	private Map<String, String> getLoginResponse(KakaoMemberDTO member) {
+	    Map<String, String> loginResponse = new HashMap<>();
+
+	    loginResponse.put("userId", member.getMemberId());
+	    loginResponse.put("userNo", String.valueOf(member.getUserNo()));
+	    loginResponse.put("birthDay", member.getBirthDay());
+	    loginResponse.put("userName", member.getMemberName());
+	    loginResponse.put("email", member.getEmail());
+	    loginResponse.put("phone", member.getPhone());
+	    loginResponse.put("role", member.getRole());
+	    loginResponse.put("licenseImg", member.getLicenseUrl());
+	    loginResponse.put("provider", member.getProvider());
+
+	    return loginResponse;
+	}
 
 }

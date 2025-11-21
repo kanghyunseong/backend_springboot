@@ -46,17 +46,13 @@ public class AuthController {
 		return null;
 	}
 	
-	  @GetMapping("/naver")
-	    public ResponseEntity<?> naverAuth() {
-	        String url = socialAuthService.requestNaver();
-	        return ResponseEntity.ok(url); 
-	    }
+
 	   
 	  
 	  
 	  
 	  @GetMapping("/{provider}/callback")
-	    public ResponseEntity<?> callBackNaver( @PathVariable("provider") String provider,@RequestParam("code") String code, @RequestParam("state") String state, HttpServletResponse response) {
+	    public ResponseEntity<?> callBack( @PathVariable("provider") String provider,@RequestParam("code") String code, @RequestParam(value = "state" , required = false) String state) {
 	      
 		   log.info("콜백 code={}, state={}", code, state);
 		   
@@ -70,6 +66,41 @@ public class AuthController {
 			  
 		        return ResponseEntity.ok(loginResponse);
 		    }
+		   
+		   if(provider.equals("kakao")) {
+			   log.info(provider);		   
+			   	Map<String,String> userInfo = socialAuthService.findKakaoUserId(code);
+			   	
+			
+			   	log.info("이거맞음? : {}" , userInfo);
+			   	
+			   	
+			   	
+			   	int result  =socialAuthService.checkUserById(userInfo);
+			   	
+			   	
+			    if (result < 1) {
+		            // DB에 없으면 회원가입 필요
+		            return ResponseEntity.status(200)
+		                    .body(Map.of(
+		                            "message", "회원가입 필요",
+		                            "userId", userInfo.get("id")
+		                            ,"refreshToken", userInfo.get("refreshToken")
+		                            ,"accessToken",userInfo.get("accessToken")
+		                            ,"provider" , provider
+		                    ));
+		        } else {
+		        	
+		        	
+		        	
+		        	Map<String,String> loginResponse = socialAuthService.loginById(userInfo.get("id"));
+		        	
+		        	log.info("555555555{}",loginResponse);
+		        	
+		        	return ResponseEntity.ok(loginResponse);
+		        }
+		    
+		   }
 	
 			
 
