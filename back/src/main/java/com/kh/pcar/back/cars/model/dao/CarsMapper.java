@@ -17,5 +17,7 @@ public interface CarsMapper {
 	
 	List<CarsDTO> findByCarId(Long carId);
 	
-	void saveReservation(ReservationDTO reservationDTO);
+	Long saveReservation(ReservationDTO reservationDTO);
+	
+	List<ReservationDTO> confirmReservation(Long reservationNo);
 }

@@ -9,8 +9,6 @@ import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.cars.model.dao.CarsMapper;
 import com.kh.pcar.back.cars.model.dto.CarsDTO;
 import com.kh.pcar.back.cars.model.dto.ReservationDTO;
-import com.kh.pcar.back.exception.CarAuthorizationException;
-import com.kh.pcar.back.exception.CustomAuthenticationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,12 +40,20 @@ public class CarsServiceImpl implements CarsService {
 	}
 	
 	@Override
-	public void saveReservation(ReservationDTO reservationDTO, CustomUserDetails userDetails) {
+	public Long saveReservation(ReservationDTO reservationDTO, CustomUserDetails userDetails) {
 		
 	    reservationDTO.setUserNo(userDetails.getUserNo());
 	    
-	    reservationDTO.setReservationStatus("R");
+	    reservationDTO.setReservationStatus("Y");
 		
 	    carsMapper.saveReservation(reservationDTO);
+	    
+	    return reservationDTO.getReservationNo();
+	}
+	
+	@Override
+	public List<ReservationDTO> confirmReservation(Long reservationNo) {
+		
+		return carsMapper.confirmReservation(reservationNo);
 	}
 }
