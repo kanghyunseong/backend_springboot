@@ -1,12 +1,13 @@
 package com.kh.pcar.back.admin.cars.model.dao;
 
 import java.util.List;
-
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
 
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO;
+import com.kh.pcar.back.admin.cars.model.dto.AdminCarsReservationDTO;
 
 @Mapper
 public interface AdminCarMapper {
@@ -14,12 +15,16 @@ public interface AdminCarMapper {
 	// 전체 목록을 페이징 처리
 	List<AdminCarDTO> findAllCars(RowBounds rowBounds);
 	
-	 int getTotalCount();
+	int getTotalCount();
 
 	void insertCar(AdminCarDTO carDTO);
 
 	void updateCar(AdminCarDTO carDTO);
 
 	int updateCarStatus(Long carId);
+	
+	List<AdminCarsReservationDTO> findAllReservations();
+	List<Map<String, Object>> getWeeklyCarbonSavings();
+	List<Map<String, Object>> getDailyReservationStats();
 	
 }

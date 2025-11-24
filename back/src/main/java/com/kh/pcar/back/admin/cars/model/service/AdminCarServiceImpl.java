@@ -2,6 +2,7 @@ package com.kh.pcar.back.admin.cars.model.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.pcar.back.admin.cars.model.dao.AdminCarMapper;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarPageResponseDTO;
+import com.kh.pcar.back.admin.cars.model.dto.AdminCarsReservationDTO;
 import com.kh.pcar.back.exception.CarNotFoundException;
+import com.kh.pcar.back.exception.ReservationNotFoundException;
 import com.kh.pcar.back.util.PageInfo;
 import com.kh.pcar.back.util.Pagenation;
 
@@ -74,7 +77,6 @@ public class AdminCarServiceImpl implements AdminCarService {
 
 	@Override
 	public Object findCarById(Long carId) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -88,4 +90,25 @@ public class AdminCarServiceImpl implements AdminCarService {
 		
 	}
 
+	@Override
+	public List<AdminCarsReservationDTO> findAllReservations() {
+		
+		List<AdminCarsReservationDTO> list = adminCarMapper.findAllReservations();
+		
+		if(list == null || list.isEmpty()) {
+			throw new ReservationNotFoundException("조회된예약 내역이 없습니다.");
+		}
+
+		return list;
+	}
+	
+	@Override
+	public List<Map<String, Object>> getWeeklyCarbonSavings() {
+		return adminCarMapper.getWeeklyCarbonSavings();
+	}
+
+	@Override
+	public List<Map<String, Object>> getDailyReservationStats() {
+	    return adminCarMapper.getDailyReservationStats();
+	}
 }
