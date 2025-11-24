@@ -23,3 +23,4 @@ public interface AdminCarMapper {
 	int updateCarStatus(Long carId);
 	
 }
+  
