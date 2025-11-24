@@ -2,7 +2,6 @@ package com.kh.pcar.back.cars.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.cars.model.dto.CarReservationDTO;
 import com.kh.pcar.back.cars.model.dto.CarsDTO;
 import com.kh.pcar.back.cars.model.dto.ReservationDTO;
 import com.kh.pcar.back.cars.model.service.CarsService;
@@ -48,6 +48,7 @@ public class CarsController {
 		return ResponseEntity.ok(car);
 	}
 
+	// 예약 (INSERT)
 	@PostMapping("/reserve")
 	public ResponseEntity<Long> saveReservation(
 	        @RequestBody ReservationDTO reservationDTO,
@@ -58,6 +59,7 @@ public class CarsController {
 	    return ResponseEntity.ok(reservationNo);
 	}
 	
+	// 예약 확인창
 	@GetMapping("/reserve/{reservationNo}/confirm")
 	public ResponseEntity<List<ReservationDTO>> confirmReservation(@PathVariable(name="reservationNo")Long reservationNo) {
 		
@@ -66,5 +68,19 @@ public class CarsController {
 		return ResponseEntity.ok(reservation);
 	}
 	
+	
+	// 예약 내역창
+	@GetMapping("/reserve/searchList")
+	public ResponseEntity<List<CarReservationDTO>> findReservation(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		
+		List<CarReservationDTO> reservation = carsService.findReservation(userDetails);
+		
+		return ResponseEntity.ok(reservation);
+	}
+	
+	
+	public ResponseEntity<?> updateReservation() {
+		return null;
+	}
 	
 }

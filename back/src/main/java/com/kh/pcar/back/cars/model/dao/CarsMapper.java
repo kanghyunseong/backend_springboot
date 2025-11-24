@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.kh.pcar.back.cars.model.dto.CarReservationDTO;
 import com.kh.pcar.back.cars.model.dto.CarsDTO;
 import com.kh.pcar.back.cars.model.dto.ReservationDTO;
 
@@ -20,4 +21,6 @@ public interface CarsMapper {
 	Long saveReservation(ReservationDTO reservationDTO);
 	
 	List<ReservationDTO> confirmReservation(Long reservationNo);
+	
+	List<CarReservationDTO> findReservation(Long userNo);
 }
