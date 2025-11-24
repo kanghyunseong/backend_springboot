@@ -90,7 +90,7 @@ public class AdminCarController {
 		return ResponseEntity.ok(adminCarService.findAllReservations());
 	}
 	
-	@GetMapping("/carbon")
+	@GetMapping("/carbon")  
     public ResponseEntity<List<Map<String, Object>>> getCarbonStats() {
         return ResponseEntity.ok(adminCarService.getWeeklyCarbonSavings());
     }
