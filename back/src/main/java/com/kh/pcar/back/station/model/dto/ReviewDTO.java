@@ -19,7 +19,7 @@ public class ReviewDTO {
 	private Long reviewId;
 	private String commentContent;
 	private String recommend;
-	private Long stationId;
+	private String stationId;
 	private Long userNo;
 	private Date createAt;
 

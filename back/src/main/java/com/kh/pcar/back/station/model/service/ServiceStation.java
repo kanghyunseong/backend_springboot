@@ -8,7 +8,10 @@ import com.kh.pcar.back.station.model.dto.StationDTO;
 
 public interface ServiceStation {
 
-	List<StationDTO> stations(String lat, String lng);
-	List<StationDTO> searchByName(String keyword);
-//	void insertReview(ReviewDTO reviewDto,Long stationId,CustomUserDetails userDetails);
+	List<StationDTO> stations(String lat, String lng,String stationId);
+	List<StationDTO> searchByName(String keyword);	
+	int insertReview(ReviewDTO reviewDto);
+	int deleteReview(ReviewDTO reviewDto);
+	List<ReviewDTO> findAll(ReviewDTO reviewDto);
+	
 }

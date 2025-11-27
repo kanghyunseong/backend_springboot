@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service 
 @Slf4j
 public class ServiceStationImpl implements ServiceStation {
-
+	private final ReviewDTO reviewDto = new ReviewDTO();
     private final RestTemplate restTemplate = new RestTemplate();
     private final StationDAO stationDao;
     private  final String API_KEY =
@@ -81,7 +81,7 @@ public class ServiceStationImpl implements ServiceStation {
 
     // 내 위치 기준 3km 이내 충전소 리스트
     @Override
-    public List<StationDTO> stations(String lat, String lng) {
+    public List<StationDTO> stations(String lat, String lng,String stationId) {
 
         List<Map<String, Object>> data = StationData();
 
@@ -127,15 +127,30 @@ public class ServiceStationImpl implements ServiceStation {
                 .toList();
         //최종 타입은List<StationDTO>타입임
     }
-//
-//	@Override
-//	public void insertReview(ReviewDTO reviewDto,Long stationId ,CustomUserDetails userDetails) {
-//		reviewDto.setUserNo(userDetails.getUserNo());
-//		stationDao.insertReview(reviewDto,stationId,userDetails);
-//		
+
+
+	@Override
+	public int insertReview(ReviewDTO reviewDto) {
+//		log.info("{}",reviewDto.getRecommend());
 		
+		return stationDao.insertReview(reviewDto);
 		
+	}
+
+	@Override
+	public int deleteReview(ReviewDTO reviewDto) {
+		log.info("{}",reviewDto.getStationId());
+		int result = stationDao.deleteReview(reviewDto);
+		return result;
+	}
+
+	@Override
+	public List<ReviewDTO> findAll(ReviewDTO reviewDto) {
+
+	 stationDao.deleteReview(reviewDto);
 		
+		return stationDao.findAll(reviewDto);
+	}		
 		
-//	}
+
 }
