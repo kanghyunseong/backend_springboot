@@ -33,18 +33,23 @@ import lombok.extern.slf4j.Slf4j;
 public class ImgBoardController {
 	private final ImgBoardService imgBoardService;
 	
-	// 게시글 작성 + 첨부파일이 있는
+	// 게시글 작성 + 첨부파일
 	@PostMapping
-	public ResponseEntity<?> save(@Valid ImgBoardDTO imgBoard, 
-			@RequestParam(name="file", required=false) MultipartFile file,
-			@AuthenticationPrincipal CustomUserDetails userDetails){
-		if (userDetails == null) {
+	public ResponseEntity<?> save(
+	        @Valid ImgBoardDTO imgBoard,
+	        @RequestParam(name = "files", required = false) MultipartFile[] files,
+	        @AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+	    if (userDetails == null) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	    }
-		
-		log.info("게시글 정보 : {}, 파일정보 : {}", imgBoard, file.getOriginalFilename());
-		imgBoardService.imgSave(imgBoard, file, userDetails.getUsername());
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+
+	    log.info("게시글 정보 : {}, 업로드 파일 개수 : {}", imgBoard, 
+	             (files != null ? files.length : 0));
+
+	    imgBoardService.imgSave(imgBoard, files, userDetails.getUsername());
+
+	    return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	// 전체조회
@@ -71,6 +76,7 @@ public class ImgBoardController {
 	@GetMapping("/{imgBoardNo}")
 	public ResponseEntity<ImgBoardDTO> findByImgBoardNo(@PathVariable(name="imgBoardNo") 
 												  @Min(value=1, message="넘작아용") Long imgBoardNo){
+		imgBoardService.increaseImgView(imgBoardNo);
 		ImgBoardDTO imgBoard = imgBoardService.findByImgBoardNo(imgBoardNo);
 		return ResponseEntity.ok(imgBoard);
 	}

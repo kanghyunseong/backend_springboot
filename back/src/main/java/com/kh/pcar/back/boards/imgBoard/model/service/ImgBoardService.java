@@ -9,7 +9,7 @@ import com.kh.pcar.back.boards.imgBoard.model.dto.ImgPageResponseDTO;
 
 public interface ImgBoardService {
 	
-	void imgSave(ImgBoardDTO imgBoard, MultipartFile file, String username);
+	void imgSave(ImgBoardDTO imgBoard, MultipartFile[] files, String username);
 	
 	ImgPageResponseDTO<ImgBoardDTO> imgFindAll(int PageNo);
 	

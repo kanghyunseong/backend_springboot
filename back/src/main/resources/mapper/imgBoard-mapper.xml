@@ -18,6 +18,10 @@
     <!-- 게시글 INSERT (boardWriter = USER_ID 문자열 → USER_NO로 변환) -->
     <insert id="imgSave" 
     parameterType="com.kh.pcar.back.boards.imgBoard.model.vo.ImgBoardVO">
+     <!-- 먼저 시퀀스 값 뽑아서 VO.imgBoardNo에 넣기 -->
+    <selectKey keyProperty="imgBoardNo" resultType="long" order="BEFORE">
+        SELECT SEQ_INO.NEXTVAL FROM DUAL
+    </selectKey>
         INSERT 
           INTO 
         	   TB_IMG_BOARD I
@@ -70,6 +74,7 @@
     <select id="findByImgBoardNo" 
     resultType="com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO" 
     parameterType="long">
+    <include refid="imgBoardColumn" />
         FROM 
         	 TB_IMG_BOARD I
         JOIN 
@@ -80,11 +85,11 @@
          	 I.IMG_BOARD_STATUS = 'Y'
     </select>
     
-   	<update id="increaseView">
+   	<update id="increaseImgView">
 	    UPDATE
 	    	   TB_IMG_BOARD I
 	       SET 
-	       	   COUNT = COUNT + 1
+	       	   I.IMG_COUNT = I.IMG_COUNT + 1
 	     WHERE 
 	     	   I.IMG_BOARD_NO = #{imgBoardNo}
 	</update>

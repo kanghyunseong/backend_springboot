@@ -1,6 +1,7 @@
 package com.kh.pcar.back.boards.imgBoard.model.dto;
 
 import java.sql.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,4 +23,5 @@ public class ImgBoardDTO {
    private String fileUrl;
    private String imgBoardStatus;
    private Date imgBoardDate;
+   private List<AttachmentDTO> attachments;
 }
