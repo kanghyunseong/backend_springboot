@@ -40,33 +40,5 @@ public class CarsServiceImpl implements CarsService {
 		return carsMapper.findByCarId(carId);
 	}
 	
-	@Override
-	public Long saveReservation(ReservationDTO reservationDTO, CustomUserDetails userDetails) {
-		
-	    reservationDTO.setUserNo(userDetails.getUserNo());
-	    
-	    reservationDTO.setReservationStatus("Y");
-		
-	    carsMapper.saveReservation(reservationDTO);
-	    
-	    return reservationDTO.getReservationNo();
-	}
-	
-	@Override // 확인창
-	public List<ReservationDTO> confirmReservation(Long reservationNo) {
-		
-		return carsMapper.confirmReservation(reservationNo);
-	}
-	
-	@Override //예약내역창
-	public List<CarReservationDTO> findReservation(CustomUserDetails userDetails) {
-		
-		Long userNo = userDetails.getUserNo();
-		
-		return carsMapper.findReservation(userNo);
-	}
-	
-	public void updateReservation() {
-		
-	}
+
 }

@@ -59,25 +59,25 @@ public class SecurityConfigure {
 
 				.authorizeHttpRequests(requests -> {
 
-					requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh", "/cars/**" , "/members/**")
+					requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh", "/cars/**" , "/members/**", "/reserve/**")
 							.permitAll();
 
 					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
 
 							"/cars/**", "/station/**", "/boards/boards/search", "/boards/boards",
 							"/boards/boards/","/station/search", "/comments/**", "/boards/notices", "/boards/notices/**"
-							, "/boards/imgBoards", "/boards/imgBoards/**", "/boards/imgBoards/search").permitAll();
+							, "/boards/imgBoards", "/boards/imgBoards/**", "/boards/imgBoards/search","/reserve/**").permitAll();
 					
-					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**")
+					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**","/reserve/**")
 							.authenticated();
 
-					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**")
+					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**","/reserve")
 							.authenticated();
 
 					requests.requestMatchers(HttpMethod.POST, "/boards", "/boards/boards", "/comments",
 							"/boards/boards/*/view", "/comments/**").authenticated();
 
-					requests.requestMatchers(HttpMethod.GET, "/boards/boards/*").authenticated();
+					requests.requestMatchers(HttpMethod.GET, "/boards/boards/*","/reserve/**").authenticated();
 
 					requests.requestMatchers(HttpMethod.GET, "/admin/**", "/admin/api/settings/**")
 							.hasAuthority("ROLE_ADMIN");

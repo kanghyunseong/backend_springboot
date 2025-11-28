@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,39 +50,5 @@ public class CarsController {
 		return ResponseEntity.ok(car);
 	}
 
-	// 예약 (INSERT)
-	@PostMapping("/reserve")
-	public ResponseEntity<Long> saveReservation(
-	        @RequestBody ReservationDTO reservationDTO,
-	        @AuthenticationPrincipal CustomUserDetails userDetails) {
-	    
-	    Long reservationNo = carsService.saveReservation(reservationDTO, userDetails);
-	    
-	    return ResponseEntity.ok(reservationNo);
-	}
-	
-	// 예약 확인창
-	@GetMapping("/reserve/{reservationNo}/confirm")
-	public ResponseEntity<List<ReservationDTO>> confirmReservation(@PathVariable(name="reservationNo")Long reservationNo) {
-		
-		List<ReservationDTO> reservation = carsService.confirmReservation(reservationNo);
-		
-		return ResponseEntity.ok(reservation);
-	}
-	
-	
-	// 예약 내역창
-	@GetMapping("/reserve/searchList")
-	public ResponseEntity<List<CarReservationDTO>> findReservation(@AuthenticationPrincipal CustomUserDetails userDetails) {
-		
-		List<CarReservationDTO> reservation = carsService.findReservation(userDetails);
-		
-		return ResponseEntity.ok(reservation);
-	}
-	
-	
-	public ResponseEntity<?> updateReservation() {
-		return null;
-	}
-	
+
 }

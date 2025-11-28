@@ -13,11 +13,4 @@ public interface CarsService {
 	
 	List<CarsDTO> findByCarId(Long carId);
 	
-	Long saveReservation(ReservationDTO reservationDTO, CustomUserDetails userDetails);
-	
-	List<ReservationDTO> confirmReservation(Long reservationNo);
-	
-	List<CarReservationDTO> findReservation(CustomUserDetails userDetails);
-	
-	void updateReservation();
 }
