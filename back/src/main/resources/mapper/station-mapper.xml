@@ -35,19 +35,17 @@
 		       REVIEW_ID=#{reviewId}
 		
 	</delete>	
-	<select id="findAll" resultType="ReviewDTO">
+	<select id="findAll" parameterType="string" resultType="ReviewDTO">
 			SELECT
-				   REVIEW_ID,
-			       COMMENT_CONTENT,
-			       RECOMMEND,
-			       STATION_ID,
-			       REF_USER_NO,
-			       CREATED_AT
+				   REVIEW_ID reviewId,
+			       COMMENT_CONTENT commentContent,
+			        DECODE(RECOMMEND ,'Y','추천','비추천') recommend,
+			       STATION_ID stationId,
+			       REF_USER_NO userNo,
+			       CREATED_AT createdAt
 			  FROM 
 			  	   TB_STATION_REVIEW
 			 WHERE
-			       REF_USER_NO = #{userNo}
-			   AND
 			       STATION_ID = #{stationId}
 	</select>
 	

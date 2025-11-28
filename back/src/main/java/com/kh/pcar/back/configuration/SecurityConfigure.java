@@ -59,7 +59,7 @@ public class SecurityConfigure {
 
 				.authorizeHttpRequests(requests -> {
 
-					requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh", "/cars/**" , "/members/**","/station/insert")
+					requests.requestMatchers(HttpMethod.POST, "/members/**", "/members", "/auth/refresh", "/cars/**" , "/members/**","/station/**")
 							.permitAll();
 
 					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
@@ -73,7 +73,7 @@ public class SecurityConfigure {
 
 					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**")
 							.authenticated();
-					requests.requestMatchers(HttpMethod.DELETE, "/station")
+					requests.requestMatchers(HttpMethod.DELETE, "/station/**")
 					.permitAll();
 
 					requests.requestMatchers(HttpMethod.POST, "/boards", "/boards/boards", "/comments",

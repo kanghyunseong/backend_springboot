@@ -2,7 +2,8 @@ package com.kh.pcar.back.station.model.dto;
 
 
 
-import java.util.Date;
+
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +22,6 @@ public class ReviewDTO {
 	private String recommend;
 	private String stationId;
 	private Long userNo;
-	private Date createAt;
+	private Date createdAt;
 
 }

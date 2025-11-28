@@ -2,6 +2,7 @@ package com.kh.pcar.back.station.controller;
 
 import java.util.List;
 
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,17 +36,17 @@ public class StationController {
 //		log.info("{}",page);
 //		log.info("{}",serviceKey);
 //		log.info("{}",perPage);
-		log.info("{}",stationId);
-		//현재 위치
-		log.info("{},{}",lat,lng);
+//		log.info("{}",stationId);
+//		//현재 위치
+//		log.info("{},{}",lat,lng);
 		List<StationDTO> stations = service.stations(lat,lng,stationId);
-		log.info("{}",stations);
+//		log.info("{}",stations);
 		return stations;
 	}
 	@GetMapping("/search")
 	public List<StationDTO> searchStation(@RequestParam(name="keyword") String keyword) {		
 		List<StationDTO> result =service.searchByName(keyword);		
-		log.info("{}",result);		
+//		log.info("{}",result);		
 		return result;
 	}
 	
@@ -61,22 +62,23 @@ public class StationController {
 		 }
 	}
 	@DeleteMapping
-	public ResponseEntity<String> deleteReview(@RequestBody ReviewDTO reviewDto) {
-		log.info("{}",reviewDto);
-		int result =service.deleteReview(reviewDto);		
-		if(result>0) {
+	public ResponseEntity<?> deleteReview(@RequestBody ReviewDTO reviewDto  ) {
+//		log.info("{}",reviewDto);
+		service.deleteReview(reviewDto);		
+	
 			return ResponseEntity.ok().body("리뷰 삭제 성공");
-		}else{
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+		
 	}
 	
 	@GetMapping("/findAll")
 	public ResponseEntity<List<ReviewDTO>> findAll(
-												   @RequestBody ReviewDTO reviewDto
+												   @RequestParam(name="stationId") String stationId
+			
 												   ) {
-		List<ReviewDTO> review = service.findAll(reviewDto);
-		
+		log.info("{}",stationId);
+		List<ReviewDTO> review = service.findAll(stationId);
+//		
 		return ResponseEntity.ok(review);
+	
 	}
 }

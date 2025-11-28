@@ -11,6 +11,6 @@ public interface StationDAO {
 	
 	int insertReview(ReviewDTO reviewDto);
 	int deleteReview(ReviewDTO reviewDto);
-	List<ReviewDTO> findAll(ReviewDTO reviewDto);
+	List<ReviewDTO> findAll(String stationId);
 	
 }

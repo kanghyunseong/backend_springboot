@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,15 +26,15 @@ public class ServiceStationImpl implements ServiceStation {
 	private final ReviewDTO reviewDto = new ReviewDTO();
     private final RestTemplate restTemplate = new RestTemplate();
     private final StationDAO stationDao;
-    private  final String API_KEY =
-            "?serviceKey=379f167eb3f41af06081d27f407899ed21955011b09d34a54e3519d8544a89cb&perPage=300";
-    private  final String BASE_URL =
-            "https://api.odcloud.kr/api/15039545/v1/uddi:f8f879ad-68cf-40fb-8ccc-cb36eaf1baca";
-
+    @Value("${charge.client.id}")
+    private String chargeClientId;
+    @Value("${charge.redirect.url}")
+    private String chargeRedirectUrl;
+  
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> StationData() {
-
-        String url = BASE_URL + API_KEY;
+    	
+        String url = chargeRedirectUrl+"&perPage=300&"+chargeClientId;
         URI uri;
         try {
             uri = new URI(url);
@@ -41,7 +42,7 @@ public class ServiceStationImpl implements ServiceStation {
             throw new RuntimeException("잘못된 충전소 API URL", e);
         }
         String response = restTemplate.getForObject(uri, String.class);
-        log.info("{}",response);
+//        log.info("{}",response);
         try {
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> map = mapper.readValue(response, Map.class);
@@ -93,7 +94,7 @@ public class ServiceStationImpl implements ServiceStation {
                     double stLat = Double.parseDouble(String.valueOf(item.get("위도")));
                     double stLng = Double.parseDouble(String.valueOf(item.get("경도")));
                     double dist = distance(userLat, userLng, stLat, stLng);
-                    return dist <= 3; // 3km 이내
+                    return dist <= 50; // 3km 이내
                 })
                 .map(item -> stationDTO(item))
                 .toList();
@@ -139,17 +140,18 @@ public class ServiceStationImpl implements ServiceStation {
 
 	@Override
 	public int deleteReview(ReviewDTO reviewDto) {
-		log.info("{}",reviewDto.getStationId());
+//		log.info("{}",reviewDto.getStationId());
+	
 		int result = stationDao.deleteReview(reviewDto);
 		return result;
 	}
 
 	@Override
-	public List<ReviewDTO> findAll(ReviewDTO reviewDto) {
+	public List<ReviewDTO> findAll(String stationId) {
 
-	 stationDao.deleteReview(reviewDto);
+	 
 		
-		return stationDao.findAll(reviewDto);
+		return stationDao.findAll(stationId);
 	}		
 		
 
