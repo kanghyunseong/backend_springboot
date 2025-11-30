@@ -71,7 +71,7 @@ public class SecurityConfigure {
 					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**","/reserve/**")
 							.authenticated();
 
-					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**","/reserve")
+					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**","/reserve/**")
 							.authenticated();
 
 					requests.requestMatchers(HttpMethod.POST, "/boards", "/boards/boards", "/comments",

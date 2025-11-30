@@ -8,6 +8,7 @@ import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.cars.model.dao.ReservationMapper;
 import com.kh.pcar.back.cars.model.dto.CarReservationDTO;
 import com.kh.pcar.back.cars.model.dto.ReservationDTO;
+import com.kh.pcar.back.exception.ReservationNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +45,14 @@ public class ReservationServiceImpl implements ReservationService {
 	
 	@Override // 예약반납
 	public int returnReservation(Long resevationNo, CustomUserDetails userDetails) {
+		
+//	    int result = reservationMapper.returnReservation(resevationNo);
+//	    
+//	    if(result == 0) {
+//	        throw new ReservationNotFoundException("예약번호를 찾을 수 없습니다.");
+//	    }
+//	    
+//		return result;
 		
 		return reservationMapper.returnReservation(resevationNo);
 	}

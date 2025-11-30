@@ -1,7 +1,6 @@
 package com.kh.pcar.back.cars.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
@@ -80,12 +80,11 @@ public class ReservationController {
 	}
 	
 	// 예약 취소
-	@DeleteMapping
-	public ResponseEntity<?> cancelReservation(@RequestBody Map<String, String> reservationNo, 
+	@DeleteMapping("/{reservationNo}")
+	public ResponseEntity<String> cancelReservation(@PathVariable(name="reservationNo") Long reservationNo, 
 											   @AuthenticationPrincipal CustomUserDetails userDetails) {
 		
-		log.info("{}",reservationNo);
-//		reservationService.cancelReservation(reservationNo, userDetails);
+		reservationService.cancelReservation(reservationNo, userDetails);
 		
 		return ResponseEntity.ok().body("예약 취소 완료");
 	}
