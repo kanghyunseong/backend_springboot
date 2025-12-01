@@ -64,6 +64,7 @@ public class StationController {
 	@DeleteMapping
 	public ResponseEntity<?> deleteReview(@RequestBody ReviewDTO reviewDto  ) {
 //		log.info("{}",reviewDto);
+		log.info("{}",reviewDto.getReviewId());
 		service.deleteReview(reviewDto);		
 	
 			return ResponseEntity.ok().body("리뷰 삭제 성공");

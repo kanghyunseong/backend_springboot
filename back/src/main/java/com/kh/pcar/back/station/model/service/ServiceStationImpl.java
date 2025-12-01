@@ -141,7 +141,7 @@ public class ServiceStationImpl implements ServiceStation {
 	@Override
 	public int deleteReview(ReviewDTO reviewDto) {
 //		log.info("{}",reviewDto.getStationId());
-	
+		log.info("{}",reviewDto.getReviewId());
 		int result = stationDao.deleteReview(reviewDto);
 		return result;
 	}
