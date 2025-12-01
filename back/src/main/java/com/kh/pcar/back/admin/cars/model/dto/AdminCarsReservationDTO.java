@@ -13,6 +13,7 @@ import lombok.ToString;
 @ToString
 public class AdminCarsReservationDTO {
 	
+	private Long reservationNo;
 	private String customer;    
     private String affiliation;
     private String car;

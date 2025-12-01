@@ -76,21 +76,21 @@
                CAR_ID = #{carId}
     </update>
     <select id="findCarById" resultType="com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO">
-        SELECT
-               CAR_ID AS carId
-             , CAR_NAME AS carName
-             , CAR_DRIVING AS carDriving
-             , BATTERY AS battery
-             , CAR_EFFICIENCY AS carEfficiency
-             , CAR_STATUS AS carStatus
-             , CAR_SIZE AS carSize
-             , CAR_IMAGE AS carImage
-          FROM 
-               TB_CAR
-         WHERE
-               CAR_ID = #{carId}
-           AND
-               CAR_STATUS = 'Y'
+       SELECT
+           CAR_ID AS carId
+         , CAR_NAME AS carName
+         , COALESCE(CAR_DRIVING, 0) AS carDriving
+         , COALESCE(BATTERY, 0) AS battery
+         , COALESCE(CAR_EFFICIENCY, 0) AS carEfficiency
+         , CAR_STATUS AS carStatus
+         , CAR_SIZE AS carSize
+         , CAR_IMAGE AS carImage
+      FROM 
+           TB_CAR
+     WHERE
+           CAR_ID = #{carId}
+       AND
+           CAR_STATUS = 'Y'
     </select>
     
     <update id="updateCarStatus" parameterType="Long">
@@ -104,6 +104,7 @@
 <select id="findAllReservations" resultType="com.kh.pcar.back.admin.cars.model.dto.AdminCarsReservationDTO">
     SELECT 
           M.USER_NAME  AS "customer"
+        , R.RESERVATION_NO AS "reservationNo"
         , 'khacademy'  AS "affiliation"
         , C.CAR_NAME   AS "car"
         , M.USER_ID    AS "userId"
@@ -112,11 +113,11 @@
         , TO_CHAR(R.END_TIME,   'YYYY-MM-DD HH24:MI') AS "end"
 
         , CASE 
-            WHEN R.RESERVATION_STATUS = 'N' THEN '취소됨'
-            WHEN R.RETURN_STATUS = 'Y' THEN '반납완료'
+            WHEN R.RESERVATION_STATUS = 'N' AND R.RETURN_STATUS = 'N'THEN '취소됨'
+            WHEN R.RETURN_STATUS = 'Y' AND R.RESERVATION_STATUS = 'N' THEN '반납완료'
             WHEN R.RETURN_STATUS = 'N' AND SYSDATE > R.END_TIME THEN '연체중'
             WHEN R.RETURN_STATUS = 'N' AND SYSDATE BETWEEN R.START_TIME AND R.END_TIME THEN '이용중'
-            ELSE '예약대기'
+            ELSE '예약완료'
           END AS "status"
 
     FROM TB_RESERVATION R
@@ -156,4 +157,19 @@
 	    BY 
 	       "date" ASC 
 </select>
+
+<update id="updateReservationStatus">
+    UPDATE 
+           TB_RESERVATION
+       SET 
+           RESERVATION_STATUS = 'N'
+         , RETURN_STATUS = 'N'   
+     WHERE 
+           RESERVATION_NO = #{reservationNo}
+       AND 
+           RESERVATION_STATUS = 'Y' 
+       AND
+           RETURN_STATUS = 'N'       
+ </update>
+ 
 </mapper>
