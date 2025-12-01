@@ -68,7 +68,7 @@ public class SecurityConfigure {
 							"/boards/boards/","/station/search", "/comments/**", "/boards/notices", "/boards/notices/**"
 							, "/boards/imgBoards", "/boards/imgBoards/**", "/boards/imgBoards/search").permitAll();
 					
-					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**")
+					requests.requestMatchers(HttpMethod.PUT, "/members","members/**", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**")
 							.authenticated();
 
 					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**")

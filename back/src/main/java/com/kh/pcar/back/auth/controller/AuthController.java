@@ -1,4 +1,4 @@
-package com.kh.pcar.back.auth.model.controller;
+package com.kh.pcar.back.auth.controller;
 
 import java.util.Map;
 
@@ -39,13 +39,7 @@ public class AuthController {
 	    return ResponseEntity.ok(loginResponse);
 	}
 	
-	@GetMapping("/kakao")
-	public ResponseEntity<?> kakaoLogin(){
-		
-		
-		return null;
-	}
-	
+
 
 	   
 	  
@@ -93,9 +87,9 @@ public class AuthController {
 		        	
 		        	
 		        	
-		        	Map<String,String> loginResponse = socialAuthService.loginById(userInfo.get("id"));
+		        	Map<String,String> loginResponse = socialAuthService.loginById(userInfo);
 		        	
-		        	log.info("555555555{}",loginResponse);
+		        	//log.info("555555555{}",loginResponse);
 		        	
 		        	return ResponseEntity.ok(loginResponse);
 		        }

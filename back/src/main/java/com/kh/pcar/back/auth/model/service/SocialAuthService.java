@@ -11,7 +11,7 @@ public interface SocialAuthService {
 	public Map<String, String> socialLogin(String code, String state, String provider);
 
 	
-	public Map<String,String> loginById(String id);
+	public Map<String,String> loginById(Map<String,String> userInfo);
 	
 	public int checkUserById(Map<String,String> userInfo);
 	
