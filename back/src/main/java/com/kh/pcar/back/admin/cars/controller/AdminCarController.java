@@ -1,5 +1,8 @@
 package com.kh.pcar.back.admin.cars.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -7,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,8 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarPageResponseDTO;
+import com.kh.pcar.back.admin.cars.model.dto.AdminCarsReservationDTO;
 import com.kh.pcar.back.admin.cars.model.service.AdminCarService;
 import com.kh.pcar.back.exception.CarNotFoundException;
+import com.kh.pcar.back.exception.ReservationNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -66,10 +72,8 @@ public class AdminCarController {
 	
 	@DeleteMapping("/{carId}")
 	public ResponseEntity<String> deleteCar(@PathVariable(name = "carId") Long carId) {
-		
 		try {
 			adminCarService.deleteCarById(carId);
-			
 			return ResponseEntity.ok("차량 삭제에 성공하였습니다.");
 		} catch (CarNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -77,7 +81,32 @@ public class AdminCarController {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("차량 삭제 처리에 문제가 생겼습니다.");
 		}
-		
 	}
+	
+	@GetMapping("/reservations")
+	public ResponseEntity<List<AdminCarsReservationDTO>> getAllReservation() {
+		
+		return ResponseEntity.ok(adminCarService.findAllReservations());
+	}
+	
+	@GetMapping("/daily-stats")
+    public ResponseEntity<List<Map<String, Object>>> getDailyStats() {
+        return ResponseEntity.ok(adminCarService.getDailyReservationStats());
+    }
+	
+	@PutMapping("/reservations/{reservationNo}/cancel")
+	public ResponseEntity<String> cancelReservation(@PathVariable("reservationNo") Long reservationNo) {
+        try {
+            adminCarService.cancelReservation(reservationNo);
+            return ResponseEntity.ok("예약이 성공적으로 취소되었습니다.");
+        } catch (ReservationNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예약 취소 처리에 실패했습니다.");
+        }
+    }
+	
+	
 	
 }

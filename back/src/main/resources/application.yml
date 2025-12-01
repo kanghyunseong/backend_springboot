@@ -41,4 +41,9 @@ kakao:
   client:
     id: 9ab6eed4ca0b2e40761693da623540b9
   redirect:
-    url: http://localhost:5173/members/kakao/callback         
+    url: http://localhost:5173/members/kakao/callback 
+charge:
+  client:
+    id: serviceKey=379f167eb3f41af06081d27f407899ed21955011b09d34a54e3519d8544a89cb
+  redirect:
+    url: https://api.odcloud.kr/api/15039545/v1/uddi:f8f879ad-68cf-40fb-8ccc-cb36eaf1baca?
