@@ -127,6 +127,7 @@
 				   TB_RESERVATION 
 			   SET 
 				   RETURN_STATUS = 'Y' 
+				 , RESERVATION_STATUS = 'N'
 			 WHERE 
 			       RESERVATION_NO = #{reservationNo}
 	</update>

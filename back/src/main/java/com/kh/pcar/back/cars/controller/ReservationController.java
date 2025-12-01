@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
@@ -61,12 +60,16 @@ public class ReservationController {
 	
 	// 예약 반납
 	@PutMapping("/return")
-	public ResponseEntity<?> returnReservation(@RequestBody Long resevationNo, 
+	public ResponseEntity<?> returnReservation(@RequestBody Long reservationNo, 
 											  @AuthenticationPrincipal CustomUserDetails userDetails){
+
+		int result = reservationService.returnReservation(reservationNo, userDetails);
 		
-		reservationService.returnReservation(resevationNo, userDetails);
-		
-		return ResponseEntity.ok().body("반납처리 완료");
+		if(result > 0) { // 200 ok
+			return ResponseEntity.ok("반납 완료 하였습니다.");
+		} else { // 400 badRequest
+			return ResponseEntity.badRequest().body("반납 처리 실패하였습니다.");
+		}
 	}
 	
 	// 예약 변경 

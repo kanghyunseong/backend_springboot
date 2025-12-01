@@ -46,15 +46,13 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override // 예약반납
 	public int returnReservation(Long resevationNo, CustomUserDetails userDetails) {
 		
-//	    int result = reservationMapper.returnReservation(resevationNo);
-//	    
-//	    if(result == 0) {
-//	        throw new ReservationNotFoundException("예약번호를 찾을 수 없습니다.");
-//	    }
-//	    
-//		return result;
-		
-		return reservationMapper.returnReservation(resevationNo);
+	    int result = reservationMapper.returnReservation(resevationNo);
+	    
+	    if(result == 0) {
+	        throw new ReservationNotFoundException("예약번호를 찾을 수 없습니다.");
+	    }
+	    
+		return result;
 	}
 
 	@Override  // 예약 변경
