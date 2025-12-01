@@ -36,7 +36,7 @@
         	   )
         VALUES 
         	   (
-               SEQ_INO.NEXTVAL
+               #{imgBoardNo}
            	 , #{imgBoardTitle}
              , (SELECT M.USER_NO FROM TB_MEMBER M WHERE M.USER_ID = #{imgBoardWriter})
              , #{imgBoardContent}
@@ -100,10 +100,10 @@
         UPDATE 
         	   TB_IMG_BOARD I
            SET 
-           	   I.IMG_BOARD_TITLE   = #{imgBoardTitle}
-             , I.IMG_BOARD_CONTENT = #{imgBoardContent}
+           	   I.IMG_BOARD_TITLE   = #{imgBoard.imgBoardTitle}
+             , I.IMG_BOARD_CONTENT = #{imgBoard.imgBoardContent}
          WHERE 
-         	   I.IMG_BOARD_NO = #{imgBoardNo}
+         	   I.IMG_BOARD_NO = #{imgBoard.imgBoardNo}
            AND 
            	   I.IMG_BOARD_WRITER = #{loginUserNo}
     </update>
@@ -117,7 +117,7 @@
          WHERE 
          	   I.IMG_BOARD_NO = #{imgBoardNo}
            AND 
-           	   I.IMG_BOARD_WRITER = #{loginUserNo};
+           	   I.IMG_BOARD_WRITER = #{loginUserNo}
     </update>
     
     <!-- 이미지 게시판 검색용 총 개수 -->

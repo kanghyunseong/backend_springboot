@@ -46,10 +46,10 @@ public class CommentController {
 	@PutMapping("/{commentNo}")
     public ResponseEntity<Void> update(
             @PathVariable(name="commentNo") Long commentNo,
-            @RequestBody CommentDTO dto,
+            @RequestBody CommentDTO comment,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String loginId = userDetails.getUsername();
-        commentService.update(commentNo, dto.getCommentContent(), loginId);
+        commentService.update(commentNo, comment.getCommentContent(), loginId);
         return ResponseEntity.ok().build();
     }
 

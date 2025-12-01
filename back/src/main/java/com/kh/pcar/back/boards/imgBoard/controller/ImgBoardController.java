@@ -83,26 +83,24 @@ public class ImgBoardController {
 	
 	@PutMapping("/{imgBoardNo}")
 	public ResponseEntity<ImgBoardDTO> imgUpdate(@PathVariable(name="imgBoardNo") Long imgBoardNo,
-										   ImgBoardDTO imgBoard, @RequestParam(name="file", required=false)
-										   MultipartFile file, 
+										   ImgBoardDTO imgBoard, @RequestParam(name="files", required=false)
+										   MultipartFile[] files, 
 										   @AuthenticationPrincipal CustomUserDetails userDetails){
 		if (userDetails == null) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	    }
 		
 		imgBoard.setImgBoardNo(imgBoardNo);
-		imgBoardService.imgUpdate(imgBoard, file, imgBoardNo, userDetails);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		ImgBoardDTO updated = imgBoardService.imgUpdate(imgBoard, files, imgBoardNo, userDetails);
+		
+		return ResponseEntity.ok(updated);
 	}
 	
 	@DeleteMapping("/{imgBoardNo}")
-	public ResponseEntity<?> deleteByImgBoardNo(@PathVariable(name="imgBoardNo") Long imgBoardNo,
-											 @AuthenticationPrincipal CustomUserDetails userDetails){
-		if (userDetails == null) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-	    }
+	public ResponseEntity<Void> deleteByImgBoardNo(@PathVariable(name="imgBoardNo") Long imgBoardNo,
+									@AuthenticationPrincipal CustomUserDetails userDetails) {
 		
-		imgBoardService.deleteByImgBoardNo(imgBoardNo, userDetails);
-		return ResponseEntity.ok().build();
+	    imgBoardService.deleteByImgBoardNo(imgBoardNo, userDetails);
+	    return ResponseEntity.noContent().build(); 
 	}
 }

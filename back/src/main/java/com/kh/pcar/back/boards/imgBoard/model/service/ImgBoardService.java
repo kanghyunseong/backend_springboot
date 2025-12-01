@@ -19,7 +19,7 @@ public interface ImgBoardService {
 	
 	void increaseImgView(Long id);
 	
-	ImgBoardDTO imgUpdate(ImgBoardDTO imgBoard, MultipartFile file, Long imgBoardNo, CustomUserDetails userDetails);
+	ImgBoardDTO imgUpdate(ImgBoardDTO imgBoard, MultipartFile[] files, Long imgBoardNo, CustomUserDetails userDetails);
 	
 	void deleteByImgBoardNo(Long imgBoardNo, CustomUserDetails userDetails);
 }

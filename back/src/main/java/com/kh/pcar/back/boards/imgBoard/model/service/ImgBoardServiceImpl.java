@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
@@ -34,6 +35,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 	private final int pageSize = 10;
 	
     @Override
+    @Transactional
     public void imgSave(ImgBoardDTO imgBoard, MultipartFile[] files, String userId) {
 
         // 1) 게시글 VO 생성
@@ -174,43 +176,76 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 		return imgBoard;
 	}
 	
-	private void validateImgBoard(Long imgBoardNo, CustomUserDetails userDetails) {
+	private ImgBoardDTO validateImgBoard(Long imgBoardNo, CustomUserDetails userDetails) {
 		ImgBoardDTO imgBoard = getImgBoardOrThrow(imgBoardNo);
 		if(!imgBoard.getImgBoardWriter().equals(userDetails.getUsername())) {
 			throw new CustomAuthenticationException("게시글이 존재하지 않습니다.");
 		}
+		
+		return imgBoard;
 	}	
 	
 	@Override
-	public ImgBoardDTO imgUpdate(ImgBoardDTO imgBoard, MultipartFile file
+	public ImgBoardDTO imgUpdate(ImgBoardDTO imgBoard, MultipartFile[] files
 						  ,Long imgBoardNo, CustomUserDetails userDetails) {
 		
-		// 1. 원본 게시글 조회
-		ImgBoardDTO imgOrigin = imgBoardMapper.findByImgBoardNo(imgBoardNo);
-	    if (imgOrigin == null) {
-	        throw new RuntimeException("게시글이 존재하지 않습니다.");
-	    }
+		// 1. 게시글 존재 + 작성자 검증 (공통 함수 사용)
+	    ImgBoardDTO imgOrigin = validateImgBoard(imgBoardNo, userDetails);
 
-	    // 2. 작성자 체크
-	    if (!imgOrigin.getImgBoardWriter().equals(userDetails.getUsername())) {
-	        throw new RuntimeException("작성자만 수정 가능합니다.");
-	    }
-
-	    // 3. 수정 적용
+	    // 2. 수정 적용
 	    imgBoard.setImgBoardNo(imgBoardNo);
 	    imgBoard.setImgBoardWriter(imgOrigin.getImgBoardWriter());
+	    
+	    // 여기서 userDetails 안에 userNo 있다고 가정
+	    Long loginUserNo = userDetails.getUserNo();
 
-	    imgBoardMapper.imgUpdate(imgBoard);
+	    imgBoardMapper.imgUpdate(imgBoard, loginUserNo);
+	    
+		// 기존 첨부파일은 무조건 전부 비활성화 (이미지 전부 삭제 효과)
+	    attachmentMapper.disableByRefIno(imgBoardNo);
 
-	    // 4. 최신 데이터 다시 조회해서 반환
-	    return imgBoardMapper.findByImgBoardNo(imgBoardNo);
+	    // 3. 최신 데이터 다시 조회해서 반환
+	    if (files != null && files.length > 0) {
+	    	// 새 첨부파일들 저장
+	        for (MultipartFile file : files) {
+	            if (file == null || file.isEmpty()) continue;
+
+	            String storedPath = fileService.store(file);
+
+	            String originName = file.getOriginalFilename();
+	            String changeName = extractFileName(storedPath);
+
+	            AttachmentVO avo = AttachmentVO.builder()
+	                    .refIno(imgBoardNo)
+	                    .originName(originName)
+	                    .changeName(changeName)
+	                    .filePath(storedPath)
+	                    .status("Y")
+	                    .build();
+
+	            attachmentMapper.insertAttachment(avo);
+	        }
+	    }
+	    // 4. 최신 데이터 다시 조회해서 반환 
+	    return findByImgBoardNo(imgBoardNo);
 	}
 
 	@Override
+	@Transactional
 	public void deleteByImgBoardNo(Long imgBoardNo, CustomUserDetails userDetails) {
 		
-		validateImgBoard(imgBoardNo, userDetails);
-		imgBoardMapper.deleteByImgBoardNo(imgBoardNo);
+		// 1. 게시글 존재 + 작성자 검증 (공통 함수)
+	    validateImgBoard(imgBoardNo, userDetails);
 
+	    // 2. 실제 삭제는 userNo 기준으로
+	    Long loginUserNo = userDetails.getUserNo();
+
+	    int result = imgBoardMapper.deleteByImgBoardNo(imgBoardNo, loginUserNo);
+	    if (result == 0) {
+	        throw new RuntimeException("삭제할 수 없습니다.");
+	    }
+
+	    // 3. 첨부파일도 같이 논리 삭제 (이미 이렇게 쓰고 있으면 유지)
+	    attachmentMapper.disableByRefIno(imgBoardNo);
 	}
 }

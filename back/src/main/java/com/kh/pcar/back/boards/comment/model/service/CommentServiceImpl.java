@@ -23,10 +23,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
 	public CommentDTO save(CommentDTO comment, CustomUserDetails userDetails) {
 		
-		boardService.findByBoardNo(comment.getRefBno()); // 외부에 노출된 메소드 호출ㄴ
+		boardService.findByBoardNo(comment.getRefBno()); // 외부에 노출된 메소드 호출
 		String memberId = userDetails.getUsername();
 		
-		CommentDTO c =CommentDTO.builder()
+		CommentDTO c = CommentDTO.builder()
 							  .commentWriter(memberId)
 							  .commentContent(comment.getCommentContent())
 							  .refBno(comment.getRefBno())
