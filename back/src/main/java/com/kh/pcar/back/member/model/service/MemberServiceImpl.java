@@ -195,21 +195,20 @@ public void changePassword(ChangePasswordDTO password) {
     // 새 비밀번호 암호화
     String newPassword = passwordEncoder.encode(password.getChangePwd());
 
-    // Mapper에 전달할 값 준비
+    // Mapper에 전달할 값 
     Map<String, Object> changeRequest = Map.of(
         "userNo", user.getUserNo(),
         "newPassword", newPassword
     );
 
-    // 🔹 여기에 로그를 찍음
-    log.info("Password change requested for userNo={} with newPassword={}", 
-             user.getUserNo(), newPassword);
+   
+    
 
     // Mapper 호출
     mapper.changePassword(changeRequest);
 
-    // 🔹 Mapper 호출 후 확인용 로그
-    log.info("Password change executed for userNo={}", user.getUserNo());
+   
+    
 }
 private CustomUserDetails  validatePassword(String password) {
 	
