@@ -52,6 +52,7 @@ public class ServiceStationImpl implements ServiceStation {
             throw new RuntimeException("충전소 API 응답 파싱 실패", e);
         }
     }
+    
 
     // Map → StationDTO 변환
     private StationDTO stationDTO(Map<String, Object> item) {
@@ -60,8 +61,17 @@ public class ServiceStationImpl implements ServiceStation {
         String stationName = String.valueOf(item.get("충전소명"));
         String address     = String.valueOf(item.get("충전소주소")); 
         String stationId  = String.valueOf(item.get("충전소아이디"));
+        String detailAddress = String.valueOf(item.get("상세주소"));
+        String tel = String.valueOf(item.get("연락처"));
+        String useTime = String.valueOf(item.get("이용가능시간"));
+        String regDate = String.valueOf(item.get("등록일자"));
+        
+        		
+       
+        
 
-        return new StationDTO(latitude, longitude, stationName, address,stationId);
+        return new StationDTO(latitude, longitude, stationName, address,stationId,
+        		detailAddress, tel,useTime,regDate);
     }
 
     // 거리 계산 
@@ -129,6 +139,16 @@ public class ServiceStationImpl implements ServiceStation {
         //최종 타입은List<StationDTO>타입임
     }
 
+    @Override
+    public List<StationDTO> searchDetail(Long stationId) {
+    	List<Map<String,Object>> data = StationData();
+//    	log.info("{}",data);
+    	return data.stream().map(this::stationDTO).toList();
+    	
+    	
+    	}
+   	
+    
 
 	@Override
 	public int insertReview(ReviewDTO reviewDto) {
@@ -152,7 +172,7 @@ public class ServiceStationImpl implements ServiceStation {
 	 
 		
 		return stationDao.findAll(stationId);
-	}		
-		
+	}
+
 
 }

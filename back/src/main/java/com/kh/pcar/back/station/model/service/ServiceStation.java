@@ -13,5 +13,6 @@ public interface ServiceStation {
 	int insertReview(ReviewDTO reviewDto);
 	int deleteReview(ReviewDTO reviewDto);
 	List<ReviewDTO> findAll(String stationId);
+	List<StationDTO> searchDetail(Long stationId);
 	
 }
