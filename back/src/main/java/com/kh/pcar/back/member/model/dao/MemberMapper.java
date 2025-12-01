@@ -2,7 +2,6 @@ package com.kh.pcar.back.member.model.dao;
 
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -12,6 +11,7 @@ import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
 import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
 import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberDTO;
+import com.kh.pcar.back.member.model.vo.MemberUpdateVO;
 import com.kh.pcar.back.member.model.vo.MemberVO;
 
 @Mapper
@@ -52,4 +52,6 @@ public interface MemberMapper {
 	
 	@Update("UPDATE TB_MEMBER SET STATUS = 'N' WHERE USER_NO = #{userNo} ")
 	void deleteUserNo(String userNo);
+	
+	void updateUser(Map<String,Object> updateParam);
 }

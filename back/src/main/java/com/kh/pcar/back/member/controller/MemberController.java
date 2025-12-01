@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.member.model.dto.ChangePasswordDTO;
 import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberDTO;
@@ -68,29 +70,40 @@ public class MemberController {
 	}
 	
 	@PutMapping
-	public ResponseEntity<?> updatePassword(@Valid @RequestBody ChangePasswordDTO password){
+	public ResponseEntity<?> updatePassword(@Valid @RequestBody ChangePasswordDTO password
+			, @AuthenticationPrincipal CustomUserDetails userDetails){
 		
 		//log.info(" password : {}" , password);
 		
-		memberService.changePassword(password);
+		memberService.changePassword(password,userDetails);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	@PutMapping("/updateUser")
-	public ResponseEntity<?> updateUserInfo(@Valid @ModelAttribute MemberUpdateDTO member ,  @RequestParam(name="licenseImg" , required = false ) MultipartFile licenseImg){
+	public ResponseEntity<?> updateUser(@Valid @ModelAttribute MemberUpdateDTO member ,  @RequestParam(name="licenseImg" , required = false ) MultipartFile licenseImg ,
+										@AuthenticationPrincipal CustomUserDetails userDetails){
 		
-		log.info("member : {} , file : {}" , member ,licenseImg);
+	//	log.info("member : {} , file : {}" , member ,licenseImg);
+	  //  log.info("user : {} " , userDetails );
 		
-		return null;
+		  MemberDTO updatedMember = memberService.updateUser(member, licenseImg, userDetails);
+		
+		  log.info(" update : {} " , updatedMember);
+		  
+		  return ResponseEntity.ok(updatedMember);
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<?> deleteByPassword(@RequestBody Map<String,String> request){
+	public ResponseEntity<?> deleteByPassword(@RequestBody Map<String,String> request
+			, @AuthenticationPrincipal CustomUserDetails userDetails
+			){
 		
 		//log.info("이게 오나? {} ", request);
 		
-		memberService.deleteByPassword(request.get("userPwd"));
+		memberService.deleteByPassword(request.get("userPwd"),userDetails);
+		
+		
 		
 		return ResponseEntity.ok("회원 탈퇴 완료");
 	}

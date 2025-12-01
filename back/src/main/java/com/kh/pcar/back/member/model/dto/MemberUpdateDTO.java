@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class MemberUpdateDTO {
 
-	@Pattern(regexp = "^[가-힣]{2,5}$", message = "이름은 한글만 사용할 수 있습니다.")
+	@Pattern(regexp = "^[가-힣]{2,5}$", message = "이름은 한글만 사용할 수 있습니다. 이름은 2글자 이상 5글자 이하만 사용할 수 있습니다.")
 	@Size(min = 2, max = 5, message = "이름은 2글자 이상 5글자 이하만 사용할 수 있습니다. ")
 	@NotBlank(message = "사용자 이름은 비어있을 수 없습니다.")
 	private String memberName;
