@@ -220,12 +220,13 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		
 	};
 	
-	public Map<String,String> loginById(String id){
+	public Map<String,String> loginById(Map<String,String> userInfo){
 		
 		
-		KakaoMemberDTO member = memberMapper.findByUserId(id);
+		KakaoMemberDTO member = memberMapper.findByUserId(userInfo.get("id"));
 		
-		
+		member.setAccessToken(userInfo.get("accessToken"));
+		member.setRefreshToken(userInfo.get("refreshToken"));
 		
 		
 		
@@ -240,6 +241,8 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 	private Map<String, String> getLoginResponse(KakaoMemberDTO member) {
 	    Map<String, String> loginResponse = new HashMap<>();
 
+	    //log.info("member : {}" , member );
+	    
 	    loginResponse.put("userId", member.getMemberId());
 	    loginResponse.put("userNo", String.valueOf(member.getUserNo()));
 	    loginResponse.put("birthDay", member.getBirthDay());
@@ -247,6 +250,8 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 	    loginResponse.put("email", member.getEmail());
 	    loginResponse.put("phone", member.getPhone());
 	    loginResponse.put("role", member.getRole());
+	    loginResponse.put("refreshToken", member.getRefreshToken());
+	    loginResponse.put("accessToken", member.getAccessToken());
 	    loginResponse.put("licenseImg", member.getLicenseUrl());
 	    loginResponse.put("provider", member.getProvider());
 

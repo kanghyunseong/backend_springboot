@@ -73,7 +73,7 @@ public class AuthServcieImpl implements AuthService {
 		loginResponse.put("email", user.getEmail());
 		loginResponse.put("phone", user.getPhone());
 		loginResponse.put("role", user.getAuthorities().toString());
-		loginResponse.put("role", role);
+		loginResponse.put("licenseUrl", user.getLicenseUrl());
 		
 		return loginResponse;
 		

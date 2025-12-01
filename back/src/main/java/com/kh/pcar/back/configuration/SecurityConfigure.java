@@ -58,9 +58,6 @@ public class SecurityConfigure {
 
 				.authorizeHttpRequests(requests -> {
 
-					requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh", "/cars/**",
-							"/members/**").permitAll();
-
 					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
 
 							"/cars/**", "/station/**", "/boards/boards/search", "/boards/boards", "/boards/boards/",
@@ -72,6 +69,23 @@ public class SecurityConfigure {
 
 					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**",
 							"/comments/**").authenticated();
+					
+					requests.requestMatchers(HttpMethod.POST, "/members/**", "/members", "/auth/refresh", "/cars/**" ,"/station/**")
+							.permitAll();
+					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
+
+							"/cars/**", "/station/**", "/boards/boards/search", "/boards/boards",
+							"/boards/boards/","/station/search", "/comments/**", "/boards/notices", "/boards/notices/**"
+							, "/boards/imgBoards", "/boards/imgBoards/**", "/boards/imgBoards/search").permitAll();
+					
+					requests.requestMatchers(HttpMethod.PUT, "/members","members/**", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**")
+							.authenticated();
+
+					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**")
+							.authenticated();
+					requests.requestMatchers(HttpMethod.DELETE, "/station/**")
+					.permitAll();
+
 
 					requests.requestMatchers(HttpMethod.POST, "/boards", "/boards/boards", "/comments",
 							"/boards/boards/*/view", "/comments/**").authenticated();

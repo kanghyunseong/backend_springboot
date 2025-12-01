@@ -1,15 +1,17 @@
 package com.kh.pcar.back.member.model.dao;
 
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
-import com.kh.pcar.back.auth.model.dto.KakaoProfileDTO;
 import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
 import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
 import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberDTO;
-import com.kh.pcar.back.member.model.vo.KakaoMemberVO;
+import com.kh.pcar.back.member.model.vo.MemberUpdateVO;
 import com.kh.pcar.back.member.model.vo.MemberVO;
 
 @Mapper
@@ -43,4 +45,13 @@ public interface MemberMapper {
 	void joinSocial(NaverProfileDTO naverMember);
 	
 	KakaoMemberDTO findByUserId(String id);
+	
+
+	@Update("UPDATE TB_LOCAL SET PASSWORD = #{newPassword} WHERE USER_NO = #{userNo}")
+	void changePassword(Map<String, Object> changeRequest);
+	
+	@Update("UPDATE TB_MEMBER SET STATUS = 'N' WHERE USER_NO = #{userNo} ")
+	void deleteUserNo(String userNo);
+	
+	void updateUser(Map<String,Object> updateParam);
 }
