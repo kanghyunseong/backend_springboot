@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
+import com.kh.pcar.back.member.model.dto.ChangePasswordDTO;
 import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberDTO;
 
@@ -19,5 +20,7 @@ public interface MemberService {
 	
 	NaverProfileDTO socialJoin(NaverProfileDTO naverMember);
 	
-
+	void changePassword(ChangePasswordDTO password);
+	
+	void deleteByPassword(String password);
 }

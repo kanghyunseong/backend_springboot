@@ -3,22 +3,28 @@ package com.kh.pcar.back.member.model.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
-import com.kh.pcar.back.auth.model.vo.NaverProfileVO;
+import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.exception.CustomAuthenticationException;
 import com.kh.pcar.back.exception.IdDuplicateException;
 import com.kh.pcar.back.exception.MemberJoinException;
 import com.kh.pcar.back.file.service.FileService;
 import com.kh.pcar.back.member.model.dao.MemberMapper;
+import com.kh.pcar.back.member.model.dto.ChangePasswordDTO;
 import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberDTO;
 import com.kh.pcar.back.member.model.vo.KakaoMemberVO;
 import com.kh.pcar.back.member.model.vo.MemberVO;
+import com.kh.pcar.back.token.model.dao.TokenMapper;
 
+import ch.qos.logback.core.subst.Token;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +36,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberMapper mapper;
 	private final FileService fileService;
 	private final PasswordEncoder passwordEncoder;
+	private final TokenMapper tokenMapper;
 	
 	// 아이디 중복체크 메소드 
 	private void checkId(String id) {
@@ -180,5 +187,54 @@ private KakaoMemberDTO generateFileName(KakaoMemberDTO member,MultipartFile lice
 }
 	
 	
+@Transactional
+public void changePassword(ChangePasswordDTO password) {
+    // 비밀번호 검증
+    CustomUserDetails user = validatePassword(password.getUserPwd());
 
+    // 새 비밀번호 암호화
+    String newPassword = passwordEncoder.encode(password.getChangePwd());
+
+    // Mapper에 전달할 값 준비
+    Map<String, Object> changeRequest = Map.of(
+        "userNo", user.getUserNo(),
+        "newPassword", newPassword
+    );
+
+    // 🔹 여기에 로그를 찍음
+    log.info("Password change requested for userNo={} with newPassword={}", 
+             user.getUserNo(), newPassword);
+
+    // Mapper 호출
+    mapper.changePassword(changeRequest);
+
+    // 🔹 Mapper 호출 후 확인용 로그
+    log.info("Password change executed for userNo={}", user.getUserNo());
+}
+private CustomUserDetails  validatePassword(String password) {
+	
+	// 사용자가 입력한 비밀번호가 DB에 저장된 비밀번호 암호문이 쿵짜작 이게 맞는지 검증
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+			// 검증이 맞다면
+			if(!passwordEncoder.matches(password, user.getPassword())) {
+				throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
+			}
+			
+			
+			return user;
+	
+}
+
+@Override
+@Transactional
+public void deleteByPassword(String password) {
+	
+	
+	
+	CustomUserDetails user = validatePassword(password);
+	tokenMapper.deleteTokenByUserNo(user.getUserNo());
+	mapper.deleteUserNo(String.valueOf(user.getUserNo()));
+	
+}
 }

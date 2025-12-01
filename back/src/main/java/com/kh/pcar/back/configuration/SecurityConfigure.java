@@ -64,11 +64,11 @@ public class SecurityConfigure {
 
 					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
 
-							"/cars/**", "/station/EvCharge", "/boards/boards/search", "/boards/boards",
+							"/cars/**", "/station/**", "/boards/boards/search", "/boards/boards",
 							"/boards/boards/","/station/search", "/comments/**", "/boards/notices", "/boards/notices/**"
 							, "/boards/imgBoards", "/boards/imgBoards/**", "/boards/imgBoards/search").permitAll();
 					
-					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**")
+					requests.requestMatchers(HttpMethod.PUT, "/members","members/**", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**")
 							.authenticated();
 
 					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**")
