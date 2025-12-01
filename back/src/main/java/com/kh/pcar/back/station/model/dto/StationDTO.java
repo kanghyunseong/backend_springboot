@@ -22,5 +22,9 @@ public class StationDTO {
 	private String stationName;
 	private String address;
 	private String stationId;
+	private String detailAddress;
+	private String tel;
+	private String  useTime;
+	private String regDate;
 
 }

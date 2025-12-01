@@ -51,7 +51,6 @@ public class SecurityConfigure {
 
 		// Example ) 회원가입, 로그인 => 누구나 다 할 수 있어야함
 
-
 		// 회원정보수정, 회원탈퇴 => 로그인 된 사용자만 할 수 있어야 함
 
 		return httpSecurity.formLogin(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable)
@@ -59,36 +58,44 @@ public class SecurityConfigure {
 
 				.authorizeHttpRequests(requests -> {
 
-					requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh", "/cars/**" , "/members/**", "/reserve/**")
-							.permitAll();
 
+					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**",
+							"/boards/imgBoards", "/boards/imgBoards/**", "/comments/**").authenticated();
+
+					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**",
+							"/comments/**").authenticated();
+					
+					requests.requestMatchers(HttpMethod.POST, "/members/**", "/members", "/auth/refresh", "/cars/**" ,"/station/**","/reserve/**")
+							.permitAll();
 					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
 
 							"/cars/**", "/station/**", "/boards/boards/search", "/boards/boards",
 							"/boards/boards/","/station/search", "/comments/**", "/boards/notices", "/boards/notices/**"
 							, "/boards/imgBoards", "/boards/imgBoards/**", "/boards/imgBoards/search","/reserve/**").permitAll();
 					
-					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**","/reserve/**")
+					requests.requestMatchers(HttpMethod.PUT, "/members","members/**", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**","/reserve/**")
 							.authenticated();
 
 					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**","/reserve/**")
 							.authenticated();
+					requests.requestMatchers(HttpMethod.DELETE, "/station/**")
+					.permitAll();
+
 
 					requests.requestMatchers(HttpMethod.POST, "/boards", "/boards/boards", "/comments",
 							"/boards/boards/*/view", "/comments/**").authenticated();
 
 					requests.requestMatchers(HttpMethod.GET, "/boards/boards/*","/reserve/**").authenticated();
 
-					requests.requestMatchers(HttpMethod.GET, "/admin/**", "/admin/api/settings/**")
-							.hasAuthority("ROLE_ADMIN");
+					requests.requestMatchers(HttpMethod.GET, "/admin/api/ranking/users").hasRole("ADMIN"); 
 
-					requests.requestMatchers(HttpMethod.POST, "/admin/**", "/admin/api/settings/**")
-							.hasAuthority("ROLE_ADMIN");
+					requests.requestMatchers(HttpMethod.GET, "/admin/**", "/admin/api/settings/**").hasRole("ADMIN"); 
 
-					requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasAuthority("ROLE_ADMIN");
+					requests.requestMatchers(HttpMethod.POST, "/admin/**", "/admin/api/settings/**").hasRole("ADMIN");
 
-					requests.requestMatchers(HttpMethod.DELETE, "/admin/**", "/api/admin/**")
-							.hasAuthority("ROLE_ADMIN");
+					requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasRole("ADMIN");
+
+					requests.requestMatchers(HttpMethod.DELETE, "/admin/**", "/api/admin/**").hasRole("ADMIN");
 				})
 
 				/*
@@ -96,7 +103,6 @@ public class SecurityConfigure {
 				 */
 				.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).build();
-
 
 	}
 
