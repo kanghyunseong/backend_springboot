@@ -42,7 +42,7 @@ public class MemberDTO {
 	@NotBlank(message = "사용자 이메일은 비어있을 수 없습니다.")
 	private String email;
 	
-	@Pattern(regexp="^010\\d{8}$" , message = "휴대전화 번호는 010으로 시작해 총 11글자가 되어야합니다.")
+	@Pattern(regexp="^010-\\d{4}-\\d{4}$" , message = "휴대전화 번호는 010으로 시작해 총 11글자가 되어야합니다.")
 	@NotBlank(message = "사용자 휴대전화번호는 비어있을 수 없습니다.")
     private String phone;
 	

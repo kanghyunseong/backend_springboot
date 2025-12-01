@@ -1,5 +1,8 @@
 package com.kh.pcar.back.admin.cars.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarPageResponseDTO;
+import com.kh.pcar.back.admin.cars.model.dto.AdminCarsReservationDTO;
 import com.kh.pcar.back.admin.cars.model.service.AdminCarService;
 import com.kh.pcar.back.exception.CarNotFoundException;
 
@@ -79,5 +83,21 @@ public class AdminCarController {
 		}
 		
 	}
+
 	
+	@GetMapping("/reservations")
+	public ResponseEntity<List<AdminCarsReservationDTO>> getAllReservation() {
+		
+		return ResponseEntity.ok(adminCarService.findAllReservations());
+	}
+	
+	@GetMapping("/carbon")  
+    public ResponseEntity<List<Map<String, Object>>> getCarbonStats() {
+        return ResponseEntity.ok(adminCarService.getWeeklyCarbonSavings());
+    }
+	@GetMapping("/daily-stats")
+    public ResponseEntity<List<Map<String, Object>>> getDailyStats() {
+        return ResponseEntity.ok(adminCarService.getDailyReservationStats());
+    }
+
 }
