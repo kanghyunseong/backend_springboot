@@ -4,13 +4,22 @@ import java.util.List;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.boards.imgComment.model.dto.ImgCommentDTO;
-import com.kh.pcar.back.boards.imgComment.model.vo.ImgCommentVO;
 
 public interface ImgCommentService {
 	
-	// 인서트 하나
-	ImgCommentVO save(ImgCommentDTO comment, CustomUserDetails userDetails);
-	
-	// 조회 하나
-	List<ImgCommentDTO> findAll(Long boardNo);
+	// 댓글 작성
+	ImgCommentDTO save(ImgCommentDTO imgComment, CustomUserDetails userDetails);
+
+	// 특정 게시글의 댓글 전체 조회
+    List<ImgCommentDTO> findAll(Long imgBoardNo);
+
+    // 댓글 수정
+    void update(Long imgCommentNo, String imgCommentContent, String loginId);
+
+    // 댓글 삭제(STATUS 변경)
+    void delete(Long imgCommentNo, String loginId);
+
+    // 댓글 신고
+    void report(Long imgCommentNo, String loginId, String reason);
+
 }

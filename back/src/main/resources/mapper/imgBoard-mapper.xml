@@ -18,6 +18,10 @@
     <!-- 게시글 INSERT (boardWriter = USER_ID 문자열 → USER_NO로 변환) -->
     <insert id="imgSave" 
     parameterType="com.kh.pcar.back.boards.imgBoard.model.vo.ImgBoardVO">
+     <!-- 먼저 시퀀스 값 뽑아서 VO.imgBoardNo에 넣기 -->
+    <selectKey keyProperty="imgBoardNo" resultType="long" order="BEFORE">
+        SELECT SEQ_INO.NEXTVAL FROM DUAL
+    </selectKey>
         INSERT 
           INTO 
         	   TB_IMG_BOARD I
@@ -32,7 +36,7 @@
         	   )
         VALUES 
         	   (
-               SEQ_INO.NEXTVAL
+               #{imgBoardNo}
            	 , #{imgBoardTitle}
              , (SELECT M.USER_NO FROM TB_MEMBER M WHERE M.USER_ID = #{imgBoardWriter})
              , #{imgBoardContent}
@@ -70,6 +74,7 @@
     <select id="findByImgBoardNo" 
     resultType="com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO" 
     parameterType="long">
+    <include refid="imgBoardColumn" />
         FROM 
         	 TB_IMG_BOARD I
         JOIN 
@@ -80,11 +85,11 @@
          	 I.IMG_BOARD_STATUS = 'Y'
     </select>
     
-   	<update id="increaseView">
+   	<update id="increaseImgView">
 	    UPDATE
 	    	   TB_IMG_BOARD I
 	       SET 
-	       	   COUNT = COUNT + 1
+	       	   I.IMG_COUNT = I.IMG_COUNT + 1
 	     WHERE 
 	     	   I.IMG_BOARD_NO = #{imgBoardNo}
 	</update>
@@ -95,10 +100,10 @@
         UPDATE 
         	   TB_IMG_BOARD I
            SET 
-           	   I.IMG_BOARD_TITLE   = #{imgBoardTitle}
-             , I.IMG_BOARD_CONTENT = #{imgBoardContent}
+           	   I.IMG_BOARD_TITLE   = #{imgBoard.imgBoardTitle}
+             , I.IMG_BOARD_CONTENT = #{imgBoard.imgBoardContent}
          WHERE 
-         	   I.IMG_BOARD_NO = #{imgBoardNo}
+         	   I.IMG_BOARD_NO = #{imgBoard.imgBoardNo}
            AND 
            	   I.IMG_BOARD_WRITER = #{loginUserNo}
     </update>
@@ -112,7 +117,7 @@
          WHERE 
          	   I.IMG_BOARD_NO = #{imgBoardNo}
            AND 
-           	   I.IMG_BOARD_WRITER = #{loginUserNo};
+           	   I.IMG_BOARD_WRITER = #{loginUserNo}
     </update>
     
     <!-- 이미지 게시판 검색용 총 개수 -->

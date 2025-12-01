@@ -53,56 +53,100 @@ public class SecurityConfigure {
 
 		// 회원정보수정, 회원탈퇴 => 로그인 된 사용자만 할 수 있어야 함
 
-		return httpSecurity.formLogin(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable)
-				.cors(Customizer.withDefaults())
+		return httpSecurity
+		        .formLogin(AbstractHttpConfigurer::disable)
+		        .csrf(AbstractHttpConfigurer::disable)
+		        .cors(Customizer.withDefaults())
+		        .authorizeHttpRequests(requests -> {
 
-				.authorizeHttpRequests(requests -> {
+		            // 1. POST - 비로그인 허용 (회원가입/로그인, 차량/예약 등)
+		            requests.requestMatchers(HttpMethod.POST,
+		                    "/members/login",
+		                    "/members",
+		                    "/auth/refresh",
+		                    "/cars/**",
+		                    "/station/**",
+		                    "/reserve/**"
+		            ).permitAll();
 
+		            // 2. GET - 비로그인 허용 (목록/조회용)
+		            requests.requestMatchers(HttpMethod.GET,
+		                    "/uploads/**",
+		                    "/members/**",
+		                    "/cars/**",
+		                    "/station/**",
+		                    "/station/search",
+		                    "/boards/boards",
+		                    "/boards/boards/search",
+		                    "/boards/imgBoards",
+		                    "/boards/imgBoards/search",
+		                    "/boards/notices",
+		                    "/boards/notices/search",
+		                    "/comments/**",
+		                    "/imgComments/**",
+		                    "/reserve/**"
+		            ).permitAll();
 
-					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**", "/boards/boards/**",
-							"/boards/imgBoards", "/boards/imgBoards/**", "/comments/**").authenticated();
+		            // 3. GET - 로그인 필요 (상세 페이지들)
+		            requests.requestMatchers(HttpMethod.GET,
+		                    "/boards/boards/*",
+		                    "/boards/imgBoards/*",
+		                    "/boards/notices/*"
+		            ).authenticated();
 
-					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**",
-							"/comments/**").authenticated();
-					
-					requests.requestMatchers(HttpMethod.POST, "/members/**", "/members", "/auth/refresh", "/cars/**" ,"/station/**","/reserve/**")
-							.permitAll();
-					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**", "/members/**",
+		            // 4. PUT - 로그인 필요
+		            requests.requestMatchers(HttpMethod.PUT,
+		                    "/members", "/members/**",
+		                    "/boards/**", "/boards/boards/**",
+		                    "/boards/imgBoards", "/boards/imgBoards/**",
+		                    "/comments/**", "/imgComments/**",
+		                    "/reserve/**"
+		            ).authenticated();
 
-							"/cars/**", "/station/**", "/boards/boards/search", "/boards/boards",
-							"/boards/boards/","/station/search", "/comments/**", "/boards/notices", "/boards/notices/**"
-							, "/boards/imgBoards", "/boards/imgBoards/**", "/boards/imgBoards/search","/reserve/**").permitAll();
-					
-					requests.requestMatchers(HttpMethod.PUT, "/members","members/**", "/boards/**", "/boards/boards/**", "/boards/imgBoards", "/boards/imgBoards/**", "/comments/**","/reserve/**")
-							.authenticated();
+		            // 5. DELETE - 로그인 필요
+		            requests.requestMatchers(HttpMethod.DELETE,
+		                    "/members",
+		                    "/boards/**", "/boards/boards/**",
+		                    "/comments/**", "/imgComments/**",
+		                    "/reserve/**"
+		            ).authenticated();
 
-					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**", "/boards/boards/**", "/comments/**","/reserve/**")
-							.authenticated();
-					requests.requestMatchers(HttpMethod.DELETE, "/station/**")
-					.permitAll();
+		            requests.requestMatchers(HttpMethod.DELETE, "/station/**").permitAll();
 
+		            // 6. POST - 게시글/댓글/공지 작성 (로그인 필요)
+		            requests.requestMatchers(HttpMethod.POST,
+		                    "/boards/**",
+		                    "/boards/imgBoards/**",
+		                    "/comments/**",
+		                    "/imgComments/**",
+		                    "/boards/notices/**"
+		            ).authenticated();
 
-					requests.requestMatchers(HttpMethod.POST, "/boards", "/boards/boards", "/comments",
-							"/boards/boards/*/view", "/comments/**").authenticated();
+		            // 7. 관리자 전용
+		            requests.requestMatchers(HttpMethod.GET,
+		                    "/admin/api/ranking/users",
+		                    "/admin/**",
+		                    "/admin/api/settings/**"
+		            ).hasRole("ADMIN");
 
-					requests.requestMatchers(HttpMethod.GET, "/boards/boards/*","/reserve/**").authenticated();
+		            requests.requestMatchers(HttpMethod.POST,
+		                    "/admin/**",
+		                    "/admin/api/settings/**"
+		            ).hasRole("ADMIN");
 
-					requests.requestMatchers(HttpMethod.GET, "/admin/api/ranking/users").hasRole("ADMIN"); 
+		            requests.requestMatchers(HttpMethod.PUT,
+		                    "/admin/**"
+		            ).hasRole("ADMIN");
 
-					requests.requestMatchers(HttpMethod.GET, "/admin/**", "/admin/api/settings/**").hasRole("ADMIN"); 
+		            requests.requestMatchers(HttpMethod.DELETE,
+		                    "/admin/**",
+		                    "/api/admin/**"
+		            ).hasRole("ADMIN");
+		        })
+		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+		        .build();
 
-					requests.requestMatchers(HttpMethod.POST, "/admin/**", "/admin/api/settings/**").hasRole("ADMIN");
-
-					requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasRole("ADMIN");
-
-					requests.requestMatchers(HttpMethod.DELETE, "/admin/**", "/api/admin/**").hasRole("ADMIN");
-				})
-
-				/*
-				 * SessionManagement : 세션을 어떻게 관리할것인지 지정 sessionCreatePolicy : 세션 사용 정책을 설정
-				 */
-				.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).build();
 
 	}
 
