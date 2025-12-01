@@ -54,6 +54,12 @@ public class GlobalExceptionHandler {
 	     return createResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
 	 }
 	 
+	 @ExceptionHandler(ReservationNotFoundException.class)
+	    public ResponseEntity<Map<String, String>> handlerReservationNotFoundException(ReservationNotFoundException e) {
+	        log.warn("예약 내역 조회 실패 : {} ", e.getMessage());
+	        return createResponseEntity(e, HttpStatus.NOT_FOUND);
+	    }
+	 
 
 	 @ExceptionHandler(LoginException.class)
 	 public ResponseEntity<Map<String, String>> handleLogin(LoginException e) {
