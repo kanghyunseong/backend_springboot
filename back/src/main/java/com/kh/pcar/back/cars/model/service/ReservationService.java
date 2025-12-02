@@ -13,6 +13,8 @@ public interface ReservationService {
 	
 	List<CarReservationDTO> findReservation(CustomUserDetails userDetails);
 	
+	List<CarReservationDTO> getHistoryReservation(CustomUserDetails userDetails);
+	
 	int returnReservation(Long resevationNo, CustomUserDetails userDetails);
 	
 	int changeReservation(ReservationDTO reservation, CustomUserDetails userDetails);

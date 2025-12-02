@@ -40,7 +40,7 @@ public class ReservationController {
 	}
 	
 	// 예약 확인창
-	@GetMapping("/{reservationNo}")
+	@GetMapping("/{reservationNo:[0-9]+}")
 	public ResponseEntity<List<ReservationDTO>> confirmReservation(@PathVariable(name="reservationNo")Long reservationNo) {
 		
 		List<ReservationDTO> reservation = reservationService.confirmReservation(reservationNo);
@@ -54,6 +54,15 @@ public class ReservationController {
 	public ResponseEntity<List<CarReservationDTO>> findReservation(@AuthenticationPrincipal CustomUserDetails userDetails) {
 		
 		List<CarReservationDTO> reservation = reservationService.findReservation(userDetails);
+		
+		return ResponseEntity.ok(reservation); // 사용자가 예약한 예약정보 
+	}
+	
+	// 예약 히스토리창
+	@GetMapping("/history")
+	public ResponseEntity<List<CarReservationDTO>> getHistoryReservation(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		
+		List<CarReservationDTO> reservation = reservationService.getHistoryReservation(userDetails);
 		
 		return ResponseEntity.ok(reservation); // 사용자가 예약한 예약정보 
 	}
@@ -83,7 +92,7 @@ public class ReservationController {
 	}
 	
 	// 예약 취소
-	@DeleteMapping("/{reservationNo}")
+	@DeleteMapping("/{reservationNo:[0-9]+}")
 	public ResponseEntity<String> cancelReservation(@PathVariable(name="reservationNo") Long reservationNo, 
 											   @AuthenticationPrincipal CustomUserDetails userDetails) {
 		

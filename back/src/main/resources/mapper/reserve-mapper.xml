@@ -33,7 +33,7 @@
     </association>
 
 </resultMap>
-
+  
 	<insert id="saveReservation"
 			parameterType="com.kh.pcar.back.cars.model.dto.ReservationDTO">
 			
@@ -119,6 +119,38 @@
 				   RESERVATION_STATUS = 'Y'
 			   AND 
 			       RETURN_STATUS = 'N'
+	</select>
+	
+	<select id="getHistoryReservation"
+		resultMap="CarReservationDTO">
+			SELECT 
+				   R.RESERVATION_NO reservationNo
+			     , R.USER_NO userNo
+			     , R.CAR_ID carId
+			     , R.RESERVATION_DATE reservationDate
+			     , R.START_TIME startTime
+			     , R.END_TIME endTime
+			     , R.DESTINATION destination
+			     , R.RESERVATION_STATUS reservationStatus
+			     , R.RETURN_STATUS returnStatus
+			     , C.CAR_ID carId
+			     , C.CAR_NAME carName
+			     , C.CAR_CONTENT carContent
+			     , C.CAR_SEET carSeet
+			     , C.CAR_SIZE carSize
+			     , C.BATTERY battery
+			     , C.CAR_IMAGE carImage
+			     , C.CAR_STATUS carStatus
+			     , C.CAR_DRIVING carDriving
+			     , C.CAR_EFFICIENCY carEfficiency
+			  FROM
+			  	   TB_RESERVATION R
+			  	   INNER JOIN TB_CAR C ON R.CAR_ID = C.CAR_ID
+			 WHERE
+			   	   USER_NO = #{userNo}
+			 ORDER
+			    BY
+			       R.RESERVATION_NO DESC
 	</select>
 	
 	<update id="returnReservation"
