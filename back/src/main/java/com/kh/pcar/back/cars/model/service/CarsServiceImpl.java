@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.cars.model.dao.CarsMapper;
+import com.kh.pcar.back.cars.model.dto.CarReservationDTO;
 import com.kh.pcar.back.cars.model.dto.CarsDTO;
 import com.kh.pcar.back.cars.model.dto.ReservationDTO;
 
@@ -39,21 +40,5 @@ public class CarsServiceImpl implements CarsService {
 		return carsMapper.findByCarId(carId);
 	}
 	
-	@Override
-	public Long saveReservation(ReservationDTO reservationDTO, CustomUserDetails userDetails) {
-		
-	    reservationDTO.setUserNo(userDetails.getUserNo());
-	    
-	    reservationDTO.setReservationStatus("Y");
-		
-	    carsMapper.saveReservation(reservationDTO);
-	    
-	    return reservationDTO.getReservationNo();
-	}
-	
-	@Override
-	public List<ReservationDTO> confirmReservation(Long reservationNo) {
-		
-		return carsMapper.confirmReservation(reservationNo);
-	}
+
 }

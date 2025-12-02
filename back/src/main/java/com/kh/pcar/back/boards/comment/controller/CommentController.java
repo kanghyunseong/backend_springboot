@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.boards.comment.model.dto.CommentDTO;
 import com.kh.pcar.back.boards.comment.model.service.CommentService;
-import com.kh.pcar.back.boards.comment.model.vo.CommentVO;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -47,10 +46,10 @@ public class CommentController {
 	@PutMapping("/{commentNo}")
     public ResponseEntity<Void> update(
             @PathVariable(name="commentNo") Long commentNo,
-            @RequestBody CommentDTO dto,
+            @RequestBody CommentDTO comment,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String loginId = userDetails.getUsername();
-        commentService.update(commentNo, dto.getCommentContent(), loginId);
+        commentService.update(commentNo, comment.getCommentContent(), loginId);
         return ResponseEntity.ok().build();
     }
 

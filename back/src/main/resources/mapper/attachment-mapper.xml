@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.pcar.back.boards.imgBoard.model.dao.AttachmentMapper">
+
+    <insert id="insertAttachment"
+            parameterType="com.kh.pcar.back.boards.imgBoard.model.vo.AttachmentVO">
+        INSERT 
+          INTO 
+        	   TB_ATTACHMENT 
+        	   (
+               FILE_NO
+          	 , REF_INO
+          	 , ORIGIN_NAME
+          	 , CHANGE_NAME
+          	 , FILE_PATH
+          	 , STATUS
+        	   )
+        VALUES 
+        	   (
+               SEQ_FNO.NEXTVAL
+           	 , #{refIno}
+           	 , #{originName}
+          	 , #{changeName}
+          	 , #{filePath}
+          	 , #{status}
+        	   )
+    </insert>
+
+    <!-- 특정 게시글의 첨부파일 목록 -->
+    <select id="findByRefIno"
+            resultType="com.kh.pcar.back.boards.imgBoard.model.vo.AttachmentVO"
+            parameterType="long">
+        SELECT
+               FILE_NO fileNo
+          	 , REF_INO refIno
+           	 , ORIGIN_NAME originName
+           	 , CHANGE_NAME changeName
+          	 , FILE_PATH filePath
+           	 , STATUS status
+          FROM 
+          	   TB_ATTACHMENT
+         WHERE 
+         	   REF_INO = #{refIno}
+           AND 
+           	   STATUS = 'Y'
+         ORDER 
+            BY 
+               FILE_NO
+    </select>
+    
+    <update id="disableByRefIno">
+	    UPDATE 
+	    	   TB_ATTACHMENT
+	       SET 
+	       	   STATUS = 'N'
+	     WHERE 
+	     	   REF_INO = #{refIno}
+	</update>
+
+</mapper>

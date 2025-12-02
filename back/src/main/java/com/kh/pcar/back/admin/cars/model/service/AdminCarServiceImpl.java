@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.admin.cars.model.dao.AdminCarMapper;
@@ -76,8 +77,16 @@ public class AdminCarServiceImpl implements AdminCarService {
     }
 
 	@Override
-	public Object findCarById(Long carId) {
-		return null;
+	public AdminCarDTO findCarById(Long carId) {
+		AdminCarDTO carDTO = adminCarMapper.findCarById(carId);
+		
+		if (carDTO == null) {
+	        throw new CarNotFoundException("차량 ID " + carId + "에 대한 정보를 찾을 수 없습니다.");
+	    }
+	    
+	    // 3. DTO 반환
+	    return carDTO;
+		
 	}
 
 	@Override
@@ -102,13 +111,26 @@ public class AdminCarServiceImpl implements AdminCarService {
 		return list;
 	}
 	
-	@Override
-	public List<Map<String, Object>> getWeeklyCarbonSavings() {
-		return adminCarMapper.getWeeklyCarbonSavings();
-	}
+	
 
 	@Override
 	public List<Map<String, Object>> getDailyReservationStats() {
 	    return adminCarMapper.getDailyReservationStats();
 	}
+
+	@Override
+	@Transactional
+	public void cancelReservation(Long reservationNo) {
+		
+		int result = adminCarMapper.updateReservationStatus(reservationNo, "N");
+	
+		if(result == 0) {
+			throw new ReservationNotFoundException("예약 ID " + reservationNo + "를 찾을 수 없거나 취소할 수 없는 상태입니다.");
+		}
+	}
+
+	
+
+	
+	
 }
