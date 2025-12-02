@@ -103,6 +103,29 @@ public class GlobalExceptionHandler {
 		 return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 
 	 }
+	 @ExceptionHandler( URISyntaxException.class)
+	 public ResponseEntity<Map<String,String>> handlerURISyntaxException( URISyntaxException e) {
+//		 log.warn("URL 문법 오류 : {}" , e.getMessage());
+		 
+		 return createResponseEntity(e,HttpStatus.BAD_REQUEST);
+		 
+	 }
+	 @ExceptionHandler(HttpClientErrorException.class)
+	 public ResponseEntity<Map<String,String>> handlerHttpClientErrorException(HttpClientErrorException e){
+		 log.warn("외부 API버서 오류: {} ",e.getMessage()); 
+//		 warn 노랑색으로 찍심 error 빨간 색오류 뜨는 거 INFO 오류 없음
+		 return createResponseEntity(e,HttpStatus.BAD_REQUEST);
+	 }
+	 @ExceptionHandler(ResourceAccessException.class)
+	 public ResponseEntity<Map<String,String>> handlerResourceAccessException(ResourceAccessException e){
+		 log.error("네트워크 오류{}",e.getMessage());
+		 return createResponseEntity(e,HttpStatus.BAD_REQUEST);
+	 }
+	 @ExceptionHandler( JsonProcessingException.class)
+	 public ResponseEntity<Map<String , String>> hadlerJsonProcessingException(JsonProcessingException e) {
+		 log.warn("JSON 파싱 오류 {}",e.getMessage());
+		 return  createResponseEntity(e,HttpStatus.BAD_REQUEST);
+	 }
 	 
 	 @ExceptionHandler(NaverAuthException.class)
 	 public ResponseEntity<Map<String, String>> handlerNaverAuthException(NaverAuthException e) {
