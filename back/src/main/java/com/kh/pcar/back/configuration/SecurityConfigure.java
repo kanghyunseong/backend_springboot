@@ -84,7 +84,8 @@ public class SecurityConfigure {
 		                    "/boards/notices/search",
 		                    "/comments/**",
 		                    "/imgComments/**",
-		                    "/reserve/**"
+		                    "/reserve/**",
+		                    "/reviews/**"
 		            ).permitAll();
 
 		            // 3. GET - 로그인 필요 (상세 페이지들)
@@ -108,7 +109,7 @@ public class SecurityConfigure {
 		                    "/members",
 		                    "/boards/**", "/boards/boards/**",
 		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**"
+		                    "/reserve/**", "/reviews/**"
 		            ).authenticated();
 
 		            requests.requestMatchers(HttpMethod.DELETE, "/station/**").permitAll();
@@ -119,7 +120,8 @@ public class SecurityConfigure {
 		                    "/boards/imgBoards/**",
 		                    "/comments/**",
 		                    "/imgComments/**",
-		                    "/boards/notices/**"
+		                    "/boards/notices/**",
+		                    "/reviews/**"
 		            ).authenticated();
 
 		            // 7. 관리자 전용

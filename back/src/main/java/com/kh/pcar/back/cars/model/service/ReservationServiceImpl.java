@@ -22,7 +22,7 @@ public class ReservationServiceImpl implements ReservationService {
 		
 	    reservationDTO.setUserNo(userDetails.getUserNo());
 	    
-	    reservationDTO.setReservationStatus("Y");
+	    reservationDTO.setReservationStatus("Y"); // DB수정사항 DEFAULT로 들어가게 
 		
 	    reservationMapper.saveReservation(reservationDTO);
 	    
@@ -43,6 +43,14 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservationMapper.findReservation(userNo);
 	}
 	
+	@Override
+	public List<CarReservationDTO> getHistoryReservation(CustomUserDetails userDetails) {
+		
+		Long userNo = userDetails.getUserNo();
+		
+		return reservationMapper.getHistoryReservation(userNo);
+	}
+	
 	@Override // 예약반납
 	public int returnReservation(Long resevationNo, CustomUserDetails userDetails) {
 		
@@ -58,7 +66,13 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override  // 예약 변경
 	public int changeReservation(ReservationDTO reservation, CustomUserDetails userDetails) {
 		
-		return reservationMapper.changeReservation(reservation);
+		int result = reservationMapper.changeReservation(reservation);
+		
+	    if(result == 0) {
+	        throw new ReservationNotFoundException("예약번호를 찾을 수 없습니다.");
+	    }
+		
+		return result;
 	}
 
 	@Override  // 예약 취소
@@ -66,5 +80,7 @@ public class ReservationServiceImpl implements ReservationService {
 		
 		reservationMapper.cancelReservation(reservationNo);
 	}
+
+
 	
 }

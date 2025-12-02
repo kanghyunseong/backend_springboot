@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 public class CarsController {
 	
 	private final CarsService carsService;
-	private final CarsReviewService carsReviewService;
 	
 	// 차량 전체 조회
 	@GetMapping
@@ -45,14 +44,5 @@ public class CarsController {
 		return ResponseEntity.ok(car);
 	}
 	
-	// 차량 리뷰 조회 
-	@GetMapping("/{carId}/reviews")
-	public ResponseEntity<List<CarsReviewDTO>> findReview(@PathVariable(name="carId") Long carId) {
-		
-		List<CarsReviewDTO> review = carsReviewService.findReview(carId);
-		
-		return ResponseEntity.ok(review);
-	}
-
 
 }
