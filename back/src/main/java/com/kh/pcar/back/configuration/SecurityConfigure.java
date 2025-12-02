@@ -128,22 +128,28 @@ public class SecurityConfigure {
 		            requests.requestMatchers(HttpMethod.GET,
 		                    "/admin/api/ranking/users",
 		                    "/admin/**",
-		                    "/admin/api/settings/**"
-		            ).hasRole("ADMIN");
+		                    "/admin/api/settings/**",
+		                    "/admin/api/notice/list"
+		                    
+		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.POST,
 		                    "/admin/**",
-		                    "/admin/api/settings/**"
-		            ).hasRole("ADMIN");
+		                    "/admin/api/settings/**",
+		                    "/admin/api/notice/**"
+		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.PUT,
-		                    "/admin/**"
-		            ).hasRole("ADMIN");
+		                    "/admin/**",
+		                    "/admin/api/notice/**"
+		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.DELETE,
 		                    "/admin/**",
-		                    "/api/admin/**"
-		            ).hasRole("ADMIN");
+		                    "/api/admin/**",
+		                    "/admin/api/**",
+		                    "/admin/api/notice/**"
+		            ).hasAuthority("ROLE_ADMIN");
 		        })
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

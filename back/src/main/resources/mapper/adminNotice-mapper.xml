@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.pcar.back.admin.notice.model.dao.AdminNoticeMapper">
+    
+    <select id="findAllNotice" resultType="com.kh.pcar.back.admin.notice.model.dto.AdminNoticeDTO">
+    SELECT
+          N.NOTICE_NO      AS noticeNo
+        , N.NOTICE_TITLE   AS noticeTitle
+        , M.USER_NAME      AS noticeWriter  
+        , N.NOTICE_CONTENT AS noticeContent
+        , N.NOTICE_DATE    AS noticeDate
+        , N.NOTICE_COUNT   AS noticeCount
+        , N.NOTICE_STATUS  AS noticeStatus
+    FROM
+        TB_NOTICE N
+    JOIN
+        TB_MEMBER M ON N.NOTICE_WRITER = M.USER_NO
+    WHERE
+        N.NOTICE_STATUS = 'Y'
+    ORDER BY
+        N.NOTICE_NO DESC
+</select>
+	
+		<select id="findNoticeByNo" resultType="com.kh.pcar.back.admin.notice.model.dto.AdminNoticeDTO"> 
+    SELECT
+           NOTICE_NO      AS noticeNo
+         , NOTICE_TITLE   AS noticeTitle
+         , NOTICE_WRITER  AS noticeWriter
+         , NOTICE_CONTENT AS noticeContent
+         , NOTICE_COUNT   AS noticeCount
+         , NOTICE_DATE    AS noticeDate
+         , NOTICE_STATUS  AS noticeStatus
+      FROM 
+           TB_NOTICE
+     WHERE 
+           NOTICE_NO = #{noticeNo}
+</select>
+
+<update id="deleteNotice"> 
+	UPDATE 
+	       TB_NOTICE
+       SET 
+           NOTICE_STATUS = 'N'
+     WHERE 
+           NOTICE_NO = #{noticeNo}
+</update>
+
+<insert id="insertNotice">
+    INSERT INTO TB_NOTICE (
+          NOTICE_NO
+        , NOTICE_TITLE
+        , NOTICE_WRITER
+        , NOTICE_CONTENT
+    ) 
+    VALUES (
+          SEQ_NNO.NEXTVAL
+        , #{noticeTitle}
+        , (
+          SELECT
+                 USER_NO
+            FROM 
+                 TB_MEMBER
+           WHERE
+                 USER_ID = #{writerId})
+        , #{noticeContent}
+    )
+</insert>
+
+<update id="updateNotice"> 
+	UPDATE
+	       TB_NOTICE
+	   SET
+	       NOTICE_TITLE = #{noticeTitle}
+	     , NOTICE_CONTENT = #{noticeContent}
+	 WHERE
+	       NOTICE_NO = #{noticeNo}
+</update>
+</mapper>

@@ -127,6 +127,12 @@ public class GlobalExceptionHandler {
 		 return  createResponseEntity(e,HttpStatus.BAD_REQUEST);
 	 }
 	 
+
+	 @ExceptionHandler(NoticeNotFoundException.class)
+	 public ResponseEntity<Map<String, String>> handlerNotFoundException(NoticeNotFoundException e) {
+		 return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+	 }
+
 	 @ExceptionHandler(NaverAuthException.class)
 	 public ResponseEntity<Map<String, String>> handlerNaverAuthException(NaverAuthException e) {
 		 log.error("Naver인증 실패 : {} " , e.getMessage());
@@ -137,5 +143,6 @@ public class GlobalExceptionHandler {
 	 public ResponseEntity<Map<String, String>> handlerKakaoAuthException(KakaoAuthException e) {
 	     log.error("Kakao 인증 실패: {}", e.getMessage());
 	     return createResponseEntity(e, HttpStatus.UNAUTHORIZED);
+
 	 }
 }

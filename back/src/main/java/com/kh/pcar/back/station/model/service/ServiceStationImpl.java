@@ -151,7 +151,7 @@ public class ServiceStationImpl implements ServiceStation {
                     String name = String.valueOf(item.get("충전소명"));
                     String addr = String.valueOf(item.get("충전소주소"));
                     String latStr = String.valueOf(item.get("위도"));
-                    String lngStr = String.valugeOf(item.get("경도"));
+                    String lngStr = String.valueOf(item.get("경도"));
                     return name.contains(kw) || addr.contains(kw) || latStr.contains(kw) || lngStr.contains(kw);
                 })
                 .map(this::stationDTO)

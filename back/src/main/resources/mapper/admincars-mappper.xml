@@ -56,7 +56,7 @@
              , #{carSize}
              , #{carImage}
              , 'Y'
-             , '기본 설명'
+             , #{carContent}
              , '5인승'
         )
     </insert>
@@ -72,6 +72,7 @@
                <if test="carImage != null">
              , CAR_IMAGE = #{carImage}
                </if>
+             , CAR_CONTENT = #{carContent}
          WHERE 
                CAR_ID = #{carId}
     </update>
