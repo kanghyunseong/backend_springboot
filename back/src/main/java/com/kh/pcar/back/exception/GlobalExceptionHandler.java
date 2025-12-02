@@ -103,4 +103,9 @@ public class GlobalExceptionHandler {
 		 return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 
 	 }
+	 
+	 @ExceptionHandler(NoticeNotFoundException.class)
+	 public ResponseEntity<Map<String, String>> handlerNotFoundException(NoticeNotFoundException e) {
+		 return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+	 }
 }
