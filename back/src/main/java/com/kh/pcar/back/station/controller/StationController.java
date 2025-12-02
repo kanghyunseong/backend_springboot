@@ -50,7 +50,7 @@ public class StationController {
 	@GetMapping("/searchDetail/{stationId}")
 	public List<StationDTO> searchDetail(@PathVariable(name="stationId") Long stationId){
 		
-		List<StationDTO> result = service.searchDetail(stationId);
+		List<StationDTO> result =service.searchDetail(stationId);
 		log.info("{}",result);
 		return result;
 		

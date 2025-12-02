@@ -24,8 +24,8 @@
 	       ,#{userNo}
 	       ,DEFAULT
 	       )
-
 	</insert>
+	
 	
 	<delete id="deleteReview" parameterType="com.kh.pcar.back.station.model.dto.ReviewDTO">
 		DELETE
