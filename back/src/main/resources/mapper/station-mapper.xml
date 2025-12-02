@@ -19,7 +19,7 @@
 	       (
 	       SEQ_REVIEW.NEXTVAL,
 	       #{commentContent}
-	       ,DEFAULT
+	       ,#{recommend}
 	       ,#{stationId}
 	       ,#{userNo}
 	       ,DEFAULT
@@ -48,6 +48,17 @@
 			 WHERE
 			       STATION_ID = #{stationId}
 	</select>
+	
+	<select id="searchDetail" parameterType="long" resultType="long">
+			SELECT
+				  REF_USER_NO
+			  FROM 
+			  	   TB_STATION_REVIEW
+			 WHERE
+			       REVIEW_ID = #{reviewId}
+			       
+	</select>
+	
 	
 	
 	

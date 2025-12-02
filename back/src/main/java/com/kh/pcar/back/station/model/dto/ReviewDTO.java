@@ -24,5 +24,6 @@ public class ReviewDTO {
 	private Long userNo;
 	private Date createdAt;
 	private String notRecommend;
+	
 
 }

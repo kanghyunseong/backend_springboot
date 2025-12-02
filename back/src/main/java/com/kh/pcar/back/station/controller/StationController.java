@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.station.model.dto.ReviewDTO;
 import com.kh.pcar.back.station.model.dto.StationDTO;
 import com.kh.pcar.back.station.model.service.ServiceStation;
@@ -58,8 +60,10 @@ public class StationController {
 	
 	
 	@PostMapping("/insert")
-	public ResponseEntity<String> insertReview(@RequestBody ReviewDTO reviewDto) {
-		 int result = service.insertReview(reviewDto);
+	public ResponseEntity<String> insertReview(@RequestBody ReviewDTO reviewDto ,@AuthenticationPrincipal CustomUserDetails userDetails) {
+//		log.info("34213213{}",reviewDto);
+		
+		 int result = service.insertReview(reviewDto,userDetails);
 		 if(result>0) {
 	
 			 return ResponseEntity.ok().body("리뷰등록성공");
@@ -67,11 +71,12 @@ public class StationController {
 			 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		 }
 	}
-	@DeleteMapping
-	public ResponseEntity<?> deleteReview(@RequestBody ReviewDTO reviewDto  ) {
-//		log.info("{}",reviewDto);
-		log.info("{}",reviewDto.getReviewId());
-		service.deleteReview(reviewDto);		
+
+	
+	 @DeleteMapping
+	public ResponseEntity<?> deleteReview(@RequestBody ReviewDTO reviewDto,@AuthenticationPrincipal CustomUserDetails userDetails  ) {
+		 log.error("Principal 111111111111{}",userDetails);
+		service.deleteReview(reviewDto,userDetails);		
 	
 			return ResponseEntity.ok().body("리뷰 삭제 성공");
 		

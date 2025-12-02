@@ -4,14 +4,21 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.security.InvalidParameterException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.exception.CustomAuthenticationException;
+import com.kh.pcar.back.exception.HttpClientErrorException;
+import com.kh.pcar.back.exception.ReservationNotFoundException;
 import com.kh.pcar.back.station.model.dao.StationDAO;
 import com.kh.pcar.back.station.model.dto.ReviewDTO;
 import com.kh.pcar.back.station.model.dto.StationDTO;
@@ -34,67 +41,57 @@ public class ServiceStationImpl implements ServiceStation {
     @Value("${charge.redirect.url}")
     private String chargeRedirectUrl;
 
-    // 재사용 가능한 ObjectMapper
     private final ObjectMapper mapper = new ObjectMapper();
 
-
-     // API 응답에서 "data" 필드(배열)를 Map 리스트로 안전하게 파싱해서 반환.
-    
+    /**
+     * API 응답에서 "data" 필드(배열)를 Map 리스트로 안전하게 반환
+     */
     private List<Map<String, Object>> StationData() {
         String url = chargeRedirectUrl + "&perPage=300&" + chargeClientId;
         URI uri = URI.create(url);
+
+        // RestTemplate에서 발생하는 예외는 전역 핸들러에서 처리됨
         String response = restTemplate.getForObject(uri, String.class);
 
+        // JSON 파싱 실패 시 HttpClientErrorException 발생
+        Map<String, Object> root;
         try {
-            
-            Map<String, Object> root = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
-            
-            Object dataObj = root.get("data");
-            
-            if (dataObj == null) return Collections.emptyList();
-
-            // 안전하게 List<Map<String,Object>>로 변환
-            List<Map<String, Object>> dataList = mapper.convertValue(
-                    dataObj,
-                    new TypeReference<List<Map<String, Object>>>() {}
-            );
-            
-            return dataList != null ? dataList : Collections.emptyList();
+            root = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("충전소 API 응답 파싱 실패", e);
+            throw new HttpClientErrorException("충전소 API 응답 파싱 실패");
         }
+
+        Object dataObj = root.get("data");
+        if (dataObj == null) return Collections.emptyList();
+
+        return mapper.convertValue(dataObj, new TypeReference<List<Map<String, Object>>>() {});
     }
 
     /**
-     * 상세 1건 조회 (StatioDetail로 호출부와 일치시킴)
+     * stationId로 특정 충전소 조회
      */
     private List<StationDTO> getStationById(Long stationId) {
-        String url = chargeRedirectUrl + "&perPage=300&" + chargeClientId; // 전체 데이터
-        URI uri = URI.create(url);
-        String response = restTemplate.getForObject(uri, String.class);
-
-        try {
-            Map<String, Object> root = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
-            Object dataObj = root.get("data");
-            if (dataObj == null) return Collections.emptyList();
-
-            List<Map<String, Object>> dataList = mapper.convertValue(
-                    dataObj,
-                    new TypeReference<List<Map<String, Object>>>() {}
-            );
-
-            // stationId로 필터링
-            return dataList.stream()
-                    .filter(item -> String.valueOf(item.get("충전소아이디")).equals(String.valueOf(stationId)))
-                    .map(this::stationDTO)
-                    .toList();
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("API 파싱 실패", e);
+        if (stationId == null) {
+            throw new InvalidParameterException("stationId가 필요합니다.");
         }
+
+        List<Map<String, Object>> dataList = StationData();
+
+        List<StationDTO> result = dataList.stream()
+                .filter(item -> String.valueOf(item.get("충전소아이디")).equals(String.valueOf(stationId)))
+                .map(this::stationDTO)
+                .toList();
+
+        if (result.isEmpty()) {
+            throw new ReservationNotFoundException("해당 충전소를 찾을 수 없습니다. stationId=" + stationId);
+        }
+
+        return result;
     }
 
-    // Map → StationDTO 변환 (네가 작성한 키 사용: "위도","경도",...)
+    /**
+     * Map → StationDTO 변환
+     */
     private StationDTO stationDTO(Map<String, Object> item) {
         String latitude    = String.valueOf(item.get("위도"));
         String longitude   = String.valueOf(item.get("경도"));
@@ -110,7 +107,9 @@ public class ServiceStationImpl implements ServiceStation {
                 detailAddress, tel, useTime, regDate);
     }
 
-    // 거리 계산 (km 단위)
+    /**
+     * 두 좌표 사이 거리 계산 (km)
+     */
     private double distance(double lat1, double lon1, double lat2, double lon2) {
         double R = 6371;
         double dLat = Math.toRadians(lat2 - lat1);
@@ -124,7 +123,6 @@ public class ServiceStationImpl implements ServiceStation {
         return R * c;
     }
 
-    // 내 위치 기준 충전소 리스트 (기본 반경 비교 유지)
     @Override
     public List<StationDTO> stations(String lat, String lng, String stationId) {
         List<Map<String, Object>> data = StationData();
@@ -137,7 +135,7 @@ public class ServiceStationImpl implements ServiceStation {
                     double stLat = Double.parseDouble(String.valueOf(item.get("위도")));
                     double stLng = Double.parseDouble(String.valueOf(item.get("경도")));
                     double dist = distance(userLat, userLng, stLat, stLng);
-                    return dist <= 50; // 필요하면 50 -> 3으로 변경하세요 (단위 km)
+                    return dist <= 3; // 단위 km
                 })
                 .map(this::stationDTO)
                 .toList();
@@ -154,11 +152,7 @@ public class ServiceStationImpl implements ServiceStation {
                     String addr = String.valueOf(item.get("충전소주소"));
                     String latStr = String.valueOf(item.get("위도"));
                     String lngStr = String.valueOf(item.get("경도"));
-
-                    return name.contains(kw)
-                            || addr.contains(kw)
-                            || latStr.contains(kw)
-                            || lngStr.contains(kw);
+                    return name.contains(kw) || addr.contains(kw) || latStr.contains(kw) || lngStr.contains(kw);
                 })
                 .map(this::stationDTO)
                 .toList();
@@ -166,22 +160,24 @@ public class ServiceStationImpl implements ServiceStation {
 
     @Override
     public List<StationDTO> searchDetail(Long stationId) {
-      List<StationDTO> data = getStationById(stationId);
-      
-      log.info("data : {} " , data);
-      
-      return data;
-        //return data.stream().map(this::stationDTO).toList();
+        return getStationById(stationId);
     }
 
     @Override
-    public int insertReview(ReviewDTO reviewDto) {
+    public int insertReview(ReviewDTO reviewDto, CustomUserDetails userDetails) {
+        reviewDto.setUserNo(userDetails.getUserNo());
         return stationDao.insertReview(reviewDto);
     }
 
     @Override
-    public int deleteReview(ReviewDTO reviewDto) {
-        log.info("{}", reviewDto.getReviewId());
+    public int deleteReview(ReviewDTO reviewDto, CustomUserDetails userDetails) {
+    	log.info("흐에에에에에에에에에에에에 {} , {}" ,reviewDto , userDetails);
+    	 reviewDto.setUserNo(stationDao.searchDetail(reviewDto.getReviewId()));
+    	 
+    	 log.info("sival {} " , reviewDto);
+       if( reviewDto.getUserNo()!=userDetails.getUserNo()) {
+    	   throw new CustomAuthenticationException("로그인한 유저와  게시글 글 작성자와 다릅니다.");
+       }
         return stationDao.deleteReview(reviewDto);
     }
 
