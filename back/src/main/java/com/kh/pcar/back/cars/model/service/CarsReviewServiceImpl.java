@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.cars.model.dao.CarsReviewMapper;
 import com.kh.pcar.back.cars.model.dto.CarsReviewDTO;
 
@@ -23,5 +24,31 @@ public class CarsReviewServiceImpl implements CarsReviewService{
 		
 		return review;
 	}
+
+	@Override
+	public int insertReview(CarsReviewDTO dto, CustomUserDetails userDetails) {
+		
+		dto.setReviewWriter(userDetails.getUserNo());
+		
+		int result = carsReviewMapper.insertReview(dto);
+		
+		return result;
+	}
+	
+	@Override
+	public int updateReview(CarsReviewDTO dto) {
+
+		int result = carsReviewMapper.updateReview(dto);
+		
+		return result;
+	}
+
+	@Override
+	public void deleteReview(Long reviewId) {
+		
+		carsReviewMapper.deleteReview(reviewId);
+		
+	}
+
 	
 }

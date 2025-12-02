@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.pcar.back.cars.model.dao.CarsReviewMapper">
+	<select id="findReview" 
+		resultType="CarsReviewDTO">
+	   SELECT
+			  R.REVIEW_NO reviewNo
+			, R.RESERVATION_NO reservationNo
+			, M.USER_NAME userName
+			, R.REVIEW_WRITER reviewWriter
+			, R.REF_CARID refCarId
+			, R.REVIEW_CONTENT reviewContent
+			, R.CREATE_DATE createDate
+			, R.REVIEW_STATUS reviewStatus 
+	     FROM 
+			  TB_REVIEW R
+		 JOIN 
+		      TB_MEMBER M
+		   ON 
+		      R.REVIEW_WRITER = M.USER_NO
+	    WHERE  
+		      R.REF_CARID = #{carId}
+		  AND 
+		      R.REVIEW_STATUS = 'Y'
+		ORDER 
+		   BY 
+		      R.CREATE_DATE DESC
+	</select>
+	
+	<insert id="insertReview" 
+		parameterType="com.kh.pcar.back.cars.model.dto.CarsReviewDTO">
+			INSERT 
+			  INTO 
+			       TB_REVIEW 
+			       (
+				   REVIEW_NO
+			     , RESERVATION_NO
+			     , REVIEW_WRITER
+			     , REF_CARID
+			     , REVIEW_CONTENT
+			     , REVIEW_STATUS
+				   ) 
+				   VALUES
+				   (
+				   SEQ_C_REVIEW_NO.NEXTVAL
+				 , #{reservationNo}
+				 , #{reviewWriter}
+				 , (SELECT CAR_ID FROM TB_RESERVATION WHERE RESERVATION_NO = #{reservationNo})
+				 , #{reviewContent}
+				 , DEFAULT
+				 )
+	</insert>
+	  
+	<update id="updateReview"
+		parameterType="CarsReviewDTO">
+		UPDATE
+			   TB_REVIEW
+		   SET
+		       REVIEW_CONTENT = #{reviewContent}
+		     , CREATE_DATE = SYSDATE
+		 WHERE
+		 	   REVIEW_NO = #{reviewNo}
+	</update>
+	
+	<update id="deleteReview"> 
+		UPDATE
+			   TB_REVIEW
+		   SET
+		       REVIEW_STATUS = 'N'
+		 WHERE
+		 	   REVIEW_NO = #{reviewNo}
+	</update>
+</mapper>

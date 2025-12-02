@@ -14,7 +14,7 @@
 		 WHERE
 		 	   CAR_STATUS = 'Y'
 	</select>
-	
+	  
 	<select id="findAll"
 			resultType="CarsDTO">
 	SELECT 

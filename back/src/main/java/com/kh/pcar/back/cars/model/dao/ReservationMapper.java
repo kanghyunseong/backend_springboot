@@ -15,6 +15,8 @@ public interface ReservationMapper {
 	
 	List<CarReservationDTO> findReservation(Long userNo);
 	
+	List<CarReservationDTO> getHistoryReservation(Long userNo);
+	
 	int returnReservation(Long resevationNo);
 	
 	int changeReservation(ReservationDTO reservation);
