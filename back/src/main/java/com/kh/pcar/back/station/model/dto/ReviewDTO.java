@@ -23,5 +23,7 @@ public class ReviewDTO {
 	private String stationId;
 	private Long userNo;
 	private Date createdAt;
+	private String notRecommend;
+	
 
 }
