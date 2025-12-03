@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.pcar.back.admin.boardsDeclaration.model.dao.AdminBoardsDeclarationMapper">
+    <select id="findAllDeclaration" resultType="com.kh.pcar.back.admin.boardsDeclaration.model.dto.AdminBoardsDeclarationDTO">
+        SELECT 
+               R.REPORT_NO      AS reportNo
+             , R.TARGET_TYPE    AS targetType
+             , R.TARGET_NO      AS targetNo
+             , R.REASON         AS reason
+             , R.STATUS         AS status
+             , R.REJECTED       AS rejected
+             , R.REPORT_DATE    AS reportDate
+             , R.REPORTED_USER  AS reportedUser
+             , M1.USER_NAME     AS reportedUserName
+             , R.REPORTER       AS reporter
+             , M2.USER_NAME     AS reporterName
+             , CASE 
+                 WHEN R.TARGET_TYPE = 'BOARD'    THEN B.BOARD_TITLE
+                 WHEN R.TARGET_TYPE = 'IMGBOARD' THEN I.IMG_BOARD_TITLE
+                 ELSE '삭제된 글' 
+           END 
+               AS targetTitle
+          FROM 
+               TB_REPORT R
+          LEFT JOIN TB_MEMBER M1 ON (R.REPORTED_USER = M1.USER_NO)
+          LEFT JOIN TB_MEMBER M2 ON (R.REPORTER = M2.USER_NO)
+          LEFT JOIN TB_BOARD B ON (R.TARGET_TYPE = 'BOARD' AND R.TARGET_NO = B.BOARD_NO)
+          LEFT JOIN TB_IMG_BOARD I ON (R.TARGET_TYPE = 'IMGBOARD' AND R.TARGET_NO = I.IMG_BOARD_NO)
+         WHERE 
+               R.TARGET_TYPE IN ('BOARD', 'IMGBOARD')
+           AND 
+               R.REJECTED IS NULL
+         ORDER
+               BY R.REPORT_NO DESC
+    </select>
+    <update id="deleteDelcaration" parameterType="Long">
+		UPDATE 
+		       TB_REPORT
+		   SET
+		       REJECTED = 'N'
+		 WHERE
+		       REPORT_NO = #{reportNo}
+	</update>
+</mapper>
