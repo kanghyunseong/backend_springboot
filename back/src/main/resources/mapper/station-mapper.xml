@@ -19,13 +19,13 @@
 	       (
 	       SEQ_REVIEW.NEXTVAL,
 	       #{commentContent}
-	       ,DEFAULT
+	       ,#{recommend}
 	       ,#{stationId}
 	       ,#{userNo}
 	       ,DEFAULT
 	       )
-
 	</insert>
+	
 	
 	<delete id="deleteReview" parameterType="com.kh.pcar.back.station.model.dto.ReviewDTO">
 		DELETE
@@ -48,6 +48,17 @@
 			 WHERE
 			       STATION_ID = #{stationId}
 	</select>
+	
+	<select id="searchDetail" parameterType="long" resultType="long">
+			SELECT
+				  REF_USER_NO
+			  FROM 
+			  	   TB_STATION_REVIEW
+			 WHERE
+			       REVIEW_ID = #{reviewId}
+			       
+	</select>
+	
 	
 	
 	

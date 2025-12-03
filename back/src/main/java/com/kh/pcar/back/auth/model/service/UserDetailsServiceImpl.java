@@ -28,16 +28,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		//log.info("userId :  {}" , userId);
 		
+		
 		MemberDTO user = mapper.loadUser(userId);
 		
-		if (user == null) {
-		    log.info("쿼리 결과가 없습니다.");
-		} else {
-		    log.info("이거 오나요 : {}", user);
-		}
 		
 		if(user == null) {
-			throw new UsernameNotFoundException("그럼 죽어!!");
+			throw new UsernameNotFoundException("유저 결과가 없습니다.");
 		}
 		return CustomUserDetails.builder().userNo(user.getUserNo())
 				      					  .username(user.getMemberId())

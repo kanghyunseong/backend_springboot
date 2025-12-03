@@ -84,7 +84,8 @@ public class SecurityConfigure {
 		                    "/boards/notices/search",
 		                    "/comments/**",
 		                    "/imgComments/**",
-		                    "/reserve/**"
+		                    "/reserve/**",
+		                    "/reviews/**"
 		            ).permitAll();
 
 		            // 3. GET - 로그인 필요 (상세 페이지들)
@@ -108,7 +109,7 @@ public class SecurityConfigure {
 		                    "/members",
 		                    "/boards/**", "/boards/boards/**",
 		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**"
+		                    "/reserve/**", "/reviews/**"
 		            ).authenticated();
 
 		            requests.requestMatchers(HttpMethod.DELETE, "/station/**").permitAll();
@@ -119,29 +120,36 @@ public class SecurityConfigure {
 		                    "/boards/imgBoards/**",
 		                    "/comments/**",
 		                    "/imgComments/**",
-		                    "/boards/notices/**"
+		                    "/boards/notices/**",
+		                    "/reviews/**"
 		            ).authenticated();
 
 		            // 7. 관리자 전용
 		            requests.requestMatchers(HttpMethod.GET,
 		                    "/admin/api/ranking/users",
 		                    "/admin/**",
-		                    "/admin/api/settings/**"
-		            ).hasRole("ADMIN");
+		                    "/admin/api/settings/**",
+		                    "/admin/api/notice/list"
+		                    
+		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.POST,
 		                    "/admin/**",
-		                    "/admin/api/settings/**"
-		            ).hasRole("ADMIN");
+		                    "/admin/api/settings/**",
+		                    "/admin/api/notice/**"
+		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.PUT,
-		                    "/admin/**"
-		            ).hasRole("ADMIN");
+		                    "/admin/**",
+		                    "/admin/api/notice/**"
+		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.DELETE,
 		                    "/admin/**",
-		                    "/api/admin/**"
-		            ).hasRole("ADMIN");
+		                    "/api/admin/**",
+		                    "/admin/api/**",
+		                    "/admin/api/notice/**"
+		            ).hasAuthority("ROLE_ADMIN");
 		        })
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
