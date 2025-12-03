@@ -36,6 +36,7 @@ public class AdminNoticeController {
 	public ResponseEntity<Object> getNoticeNo(@PathVariable(name = "noticeNo") Long noticeNo) {
 		return ResponseEntity.ok(adminNoticeService.findNoticeByNo(noticeNo));
 	}
+	
 
 	@DeleteMapping("/delete/{noticeNo}")
 	public ResponseEntity<String> deleteNotice(@PathVariable(name = "noticeNo") Long noticeNo) {
