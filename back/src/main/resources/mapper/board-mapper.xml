@@ -9,6 +9,7 @@
            B.BOARD_NO boardNo
          , B.BOARD_TITLE boardTitle
          , M.USER_ID boardWriter
+         , M.USER_NO writerNo
          , B.BOARD_CONTENT boardContent
          , B.COUNT count
          , B.BOARD_STATUS boardStatus
@@ -68,7 +69,9 @@
     
 
     <!-- 단일 게시글 조회 -->
-    <select id="findByBoardNo" resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO" parameterType="long">
+    <select id="findByBoardNo" 
+    		resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO" 
+    		parameterType="long">
 		<include refid="boardColumn" />
         FROM 
         	 TB_BOARD B

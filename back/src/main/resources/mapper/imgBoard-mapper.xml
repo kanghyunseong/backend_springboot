@@ -9,6 +9,7 @@
            I.IMG_BOARD_NO imgBoardNo
          , I.IMG_BOARD_TITLE imgBoardTitle
          , M.USER_ID imgBoardWriter
+         , M.USER_NO imgWriterNo
          , I.IMG_BOARD_CONTENT imgBoardContent
          , I.IMG_COUNT imgCount
          , I.IMG_BOARD_STATUS imgBoardStatus

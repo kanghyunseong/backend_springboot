@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.Report.dto.ReportDTO;
+import com.kh.pcar.back.boards.Report.service.ReportService;
 import com.kh.pcar.back.boards.board.model.service.BoardService;
 import com.kh.pcar.back.boards.comment.model.dao.CommentMapper;
 import com.kh.pcar.back.boards.comment.model.dto.CommentDTO;
@@ -19,6 +21,7 @@ public class CommentServiceImpl implements CommentService {
 	
 	private final BoardService boardService;
     private final CommentMapper commentMapper;
+    private final ReportService reportService; // 신고 기능 서비스 호출
 
     @Override
 	public CommentDTO save(CommentDTO comment, CustomUserDetails userDetails) {
@@ -64,10 +67,23 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void report(Long commentNo, String loginId, String reason) {
-        int result = commentMapper.reportRequest(commentNo, loginId, reason);
-        if (result <= 0) {
-            throw new RuntimeException("댓글 신고에 실패했습니다.");
+    public void report(Long commentNo, Long reporterNo, String reason) {
+        // 1. 댓글이 존재하는지 간단히 검증
+        // findWriterUserNo가 null 이면 없는 댓글로 보면 됨.
+
+        Long reportedUserNo = commentMapper.findWriterUserNo(commentNo);
+        if (reportedUserNo == null) {
+            throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
         }
+
+        ReportDTO reportDTO = ReportDTO.builder()
+                .targetType("COMMENT")
+                .targetNo(commentNo)
+                .reportedUser(reportedUserNo)
+                .reason(reason)
+                .build();
+        
+        // 통합 신고 서비스 호출
+        reportService.report(reporterNo, reportDTO);
     }
 }

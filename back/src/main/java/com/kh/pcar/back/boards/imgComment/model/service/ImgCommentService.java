@@ -20,6 +20,6 @@ public interface ImgCommentService {
     void delete(Long imgCommentNo, String loginId);
 
     // 댓글 신고
-    void report(Long imgCommentNo, String loginId, String reason);
+    void report(Long imgCommentNo, Long reporterNo, String reason);
 
 }

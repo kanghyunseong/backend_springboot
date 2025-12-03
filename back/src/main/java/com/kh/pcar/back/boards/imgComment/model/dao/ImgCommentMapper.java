@@ -22,9 +22,7 @@ public interface ImgCommentMapper {
     // 댓글 삭제(STATUS = 'N')
     int delete(@Param("imgCommentNo") Long imgCommentNo);
 
-    // 댓글 신고
-    int reportRequest(@Param("imgCommentNo") Long imgCommentNo,
-		              @Param("reporterId") String reporterId,
-		              @Param("reason") String reason);
+    // 댓글 신고용: 댓글 작성자 USER_NO 조회
+    Long findWriterUserNo(@Param("imgCommentNo") Long imgCommentNo);
 
 }

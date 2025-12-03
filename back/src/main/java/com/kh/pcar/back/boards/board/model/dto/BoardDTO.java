@@ -17,6 +17,7 @@ public class BoardDTO {
 	private Long boardNo;
 	private String boardTitle;
 	private String boardWriter;
+	private Long writerNo;
 	private String boardContent;
 	private int count;
 	private String boardStatus;

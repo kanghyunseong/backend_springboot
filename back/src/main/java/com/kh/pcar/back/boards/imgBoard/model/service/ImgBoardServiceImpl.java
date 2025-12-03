@@ -11,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.PageResponseDTO;
 import com.kh.pcar.back.boards.imgBoard.model.dao.AttachmentMapper;
 import com.kh.pcar.back.boards.imgBoard.model.dao.ImgBoardMapper;
 import com.kh.pcar.back.boards.imgBoard.model.dto.AttachmentDTO;
 import com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO;
-import com.kh.pcar.back.boards.imgBoard.model.dto.ImgPageResponseDTO;
 import com.kh.pcar.back.boards.imgBoard.model.vo.AttachmentVO;
 import com.kh.pcar.back.boards.imgBoard.model.vo.ImgBoardVO;
 import com.kh.pcar.back.exception.CustomAuthenticationException;
@@ -91,8 +91,8 @@ public class ImgBoardServiceImpl implements ImgBoardService {
     }		
 
 	@Override
-	public ImgPageResponseDTO<ImgBoardDTO> imgFindAll(int pageNo) {
-		 int size = 10;
+	public PageResponseDTO<ImgBoardDTO> imgFindAll(int pageNo) {
+		int size = 10;
 	    int offset = pageNo * size;
 
 
@@ -108,7 +108,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 	    // 총 페이지 수
 	    int totalPages = (int) Math.ceil(total / (double) size);
 
-	    return new ImgPageResponseDTO<>(
+	    return new PageResponseDTO<>(
 	            list,
 	            totalPages,
 	            total,
@@ -118,7 +118,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 	}
 	
 	@Override
-    public ImgPageResponseDTO<ImgBoardDTO> searchImgBoards(String type, String keyword, int pageNo) {
+    public PageResponseDTO<ImgBoardDTO> searchImgBoards(String type, String keyword, int pageNo) {
 
         log.info("검색 service - type: {}, keyword: {}, page: {}", type, keyword, pageNo);
 
@@ -139,7 +139,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 
         int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 
-        return new ImgPageResponseDTO<>(list, pageNo, pageSize, totalPages, totalCount);
+        return new PageResponseDTO<>(list, pageNo, pageSize, totalPages, totalCount);
     }
 	
 
@@ -248,4 +248,5 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 	    // 3. 첨부파일도 같이 논리 삭제 (이미 이렇게 쓰고 있으면 유지)
 	    attachmentMapper.disableByRefIno(imgBoardNo);
 	}
+
 }

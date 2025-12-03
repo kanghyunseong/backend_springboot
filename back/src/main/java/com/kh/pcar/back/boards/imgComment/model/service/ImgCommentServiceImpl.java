@@ -5,10 +5,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.Report.dto.ReportDTO;
+import com.kh.pcar.back.boards.Report.service.ReportService;
 import com.kh.pcar.back.boards.imgBoard.model.service.ImgBoardService;
 import com.kh.pcar.back.boards.imgComment.model.dao.ImgCommentMapper;
 import com.kh.pcar.back.boards.imgComment.model.dto.ImgCommentDTO;
-import com.kh.pcar.back.boards.imgComment.model.vo.ImgCommentVO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ public class ImgCommentServiceImpl implements ImgCommentService {
 
 	private final ImgBoardService imgBoardService;
 	private final ImgCommentMapper imgCommentMapper;
+	private final ReportService reportService; // 신고 기능 서비스 호출
 	
 	@Override
 	public ImgCommentDTO save(ImgCommentDTO imgComment, CustomUserDetails userDetails) {
@@ -63,10 +65,23 @@ public class ImgCommentServiceImpl implements ImgCommentService {
     }
 
     @Override
-    public void report(Long imgCommentNo, String loginId, String reason) {
-        int result = imgCommentMapper.reportRequest(imgCommentNo, loginId, reason);
-        if (result <= 0) {
-            throw new RuntimeException("갤러리 댓글 신고에 실패했습니다.");
+    public void report(Long imgCommentNo, Long reporterNo, String reason) {
+    	// 1. 댓글이 존재하는지 간단히 검증
+        // findWriterUserNo가 null 이면 없는 댓글로 보면 됨.
+
+        Long reportedUserNo = imgCommentMapper.findWriterUserNo(imgCommentNo);
+        if (reportedUserNo == null) {
+            throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
         }
+
+        ReportDTO reportDTO = ReportDTO.builder()
+                .targetType("IMGCOMMENT")
+                .targetNo(imgCommentNo)
+                .reportedUser(reportedUserNo)
+                .reason(reason)
+                .build();
+        
+        // 통합 신고 서비스 호출
+        reportService.report(reporterNo, reportDTO);
     }
 }

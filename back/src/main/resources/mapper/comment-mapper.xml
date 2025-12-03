@@ -67,25 +67,13 @@
         SET COMMENT_STATUS = 'N'
         WHERE COMMENT_NO = #{commentNo}
     </update>
-
-    <!-- 댓글 신고 등록 : 예시용, 실제 테이블/칼럼명에 맞게 수정 필요 -->
-    <insert id="reportRequest">
-        INSERT INTO TB_COMMENT_REPORT (
-            REPORT_NO,
-            COMMENT_NO,
-            REPORTER_NO,
-            REASON,
-            REPORT_DATE,
-            STATUS
-        ) VALUES (
-            SEQ_COMMENT_REPORT_NO.NEXTVAL,
-            #{commentNo},
-            (SELECT USER_NO FROM TB_MEMBER WHERE USER_ID = #{reporterId}),
-            #{reason},
-            SYSDATE,
-            'Y'
-        )
-    </insert>
     
+    <!-- 댓글 신고용: 댓글 작성자 USER_NO 조회록 -->
+    <select id="findWriterUserNo" parameterType="long" resultType="long">
+	    SELECT COMMENT_WRITER
+	    FROM TB_COMMENT
+	    WHERE COMMENT_NO = #{commentNo}
+	</select>
+
 </mapper>
   

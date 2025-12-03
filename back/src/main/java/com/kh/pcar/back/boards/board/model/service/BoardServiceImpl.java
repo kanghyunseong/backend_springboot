@@ -9,9 +9,9 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.PageResponseDTO;
 import com.kh.pcar.back.boards.board.model.dao.BoardMapper;
 import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
-import com.kh.pcar.back.boards.board.model.dto.PageResponseDTO;
 import com.kh.pcar.back.boards.board.model.vo.BoardVO;
 import com.kh.pcar.back.exception.CustomAuthenticationException;
 

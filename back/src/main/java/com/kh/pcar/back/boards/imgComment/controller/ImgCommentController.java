@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.Report.dto.ReportRequestDTO;
 import com.kh.pcar.back.boards.imgComment.model.dto.ImgCommentDTO;
 import com.kh.pcar.back.boards.imgComment.model.service.ImgCommentService;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,18 +73,17 @@ public class ImgCommentController {
 
     // 댓글 신고
     @PostMapping("/{imgCommentNo}/report")
-    public ResponseEntity<Void> report(
+    public ResponseEntity<?> report(
             @PathVariable("imgCommentNo") Long imgCommentNo,
-            @RequestBody ReportRequest request,
+            @RequestBody ReportRequestDTO request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        String loginId = userDetails.getUsername();
-        imgCommentService.report(imgCommentNo, loginId, request.getReason());
-        return ResponseEntity.ok().build();
+    	
+    	Long reporterNo = userDetails.getUserNo();
+        String reason = request.getReason();
+        
+        imgCommentService.report(imgCommentNo, reporterNo, reason);
+        
+        return ResponseEntity.ok("신고가 접수되었습니다.");
     }
 
-    @Data
-    public static class ReportRequest {
-        private String reason;
-    }
 }

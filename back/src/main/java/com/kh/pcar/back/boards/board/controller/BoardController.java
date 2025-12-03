@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.PageResponseDTO;
+import com.kh.pcar.back.boards.Report.dto.ReportDTO;
+import com.kh.pcar.back.boards.Report.service.ReportService;
 import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
-import com.kh.pcar.back.boards.board.model.dto.PageResponseDTO;
 import com.kh.pcar.back.boards.board.model.service.BoardService;
 
 import jakarta.validation.Valid;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BoardController {
 	
 private final BoardService boardService;
+private final ReportService reportService;
 	
 	// 게시글 작성
 	@PostMapping
@@ -98,6 +101,36 @@ private final BoardService boardService;
 		
 		boardService.deleteByBoardNo(boardNo, userDetails);
 		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/{boardNo}/report")
+	public ResponseEntity<?> reportBoard(@PathVariable(name="boardNo") Long boardNo,
+	                                     @RequestBody ReportDTO request,
+	                                     @AuthenticationPrincipal CustomUserDetails userDetails) {
+	    if (userDetails == null) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    }
+
+	    // 1. 게시글 정보 조회 (작성자 USER_NO 필요)
+	    BoardDTO board = boardService.findByBoardNo(boardNo);
+	    Long reportedUser = board.getWriterNo(); // 신고 당하는 사람(게시글 작성자)
+	    Long reporter = userDetails.getUserNo(); // 신고하는 사람
+
+	    // 2. ReportDTO 생성
+	    ReportDTO dto = ReportDTO.builder()
+	            .targetType("BOARD")
+	            .targetNo(boardNo)
+	            .reportedUser(reportedUser)
+	            .reason(request.getReason()) // 프론트에서 넘어온 신고 사유
+	            .build();
+	    
+	    try {
+	        reportService.report(reporter, dto);
+	    } catch (IllegalStateException e) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
+
+	    return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 }
 

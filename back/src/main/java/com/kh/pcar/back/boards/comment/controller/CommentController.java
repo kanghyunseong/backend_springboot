@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.Report.dto.ReportRequestDTO;
 import com.kh.pcar.back.boards.comment.model.dto.CommentDTO;
 import com.kh.pcar.back.boards.comment.model.service.CommentService;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,7 +53,6 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
-    // DELETE /comments/{commentNo}
     @DeleteMapping("/{commentNo}")
     public ResponseEntity<Void> delete(
             @PathVariable(name="commentNo") Long commentNo,
@@ -63,20 +62,18 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
-    // POST /comments/{commentNo}/report
     @PostMapping("/{commentNo}/report")
-    public ResponseEntity<Void> report(
+    public ResponseEntity<?> report(
             @PathVariable(name="commentNo") Long commentNo,
-            @RequestBody ReportRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails    ) {
-        String loginId = userDetails.getUsername();
-        commentService.report(commentNo, loginId, request.getReason());
-        return ResponseEntity.ok().build();
-    }
+            @RequestBody ReportRequestDTO request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    @Data
-    public static class ReportRequest {
-        private String reason;
+    	Long reporterNo = userDetails.getUserNo();  // 로그인한 사람 USER_NO
+        String reason = request.getReason();
+
+        commentService.report(commentNo, reporterNo, reason);
+
+        return ResponseEntity.ok("신고가 접수되었습니다.");
     }
 	
 
