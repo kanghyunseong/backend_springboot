@@ -44,4 +44,12 @@
 		 WHERE
 		       REPORT_NO = #{reportNo}
 	</update>
+	<update id="rejectDeclaration" parameterType="Long">
+		UPDATE
+		       TB_REPORT
+		   SET
+		       REJECTED = 'Y'
+		 WHERE
+		       REPROT_NO = #{reportNo}
+	</update>
 </mapper>

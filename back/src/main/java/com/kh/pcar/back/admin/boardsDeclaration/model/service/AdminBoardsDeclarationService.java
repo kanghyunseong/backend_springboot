@@ -11,4 +11,6 @@ public interface AdminBoardsDeclarationService {
 
 	void deleteDelcaration(Long reportNo);
 
+	void rejectDeclaration(Long reportNo);
+
 }

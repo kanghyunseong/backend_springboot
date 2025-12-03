@@ -13,4 +13,6 @@ public interface AdminBoardsDeclarationMapper {
 
 	int deleteDelcaration(Long reportNo);
 
+	int rejectDeclaration(Long reportNo);
+
 }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +29,8 @@ public class AdminBoardsDeclarationController {
 		return ResponseEntity.ok(adminBoardsDeclarationService.findAllDeclaration());
 	}
 
-	@DeleteMapping("/declaration/{reportNo}")
+	// 신고된 게시글 삭제
+	@DeleteMapping("/declaration/delete/{reportNo}")
 	public ResponseEntity<String> deleteDeclaration(@PathVariable(name = "reportNo") Long reportNo) {
 		try {
 			adminBoardsDeclarationService.deleteDelcaration(reportNo);
@@ -39,5 +41,17 @@ public class AdminBoardsDeclarationController {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 삭제 처리에 문제가 생겼습니다.");
 		}
+	}
+
+	// 신고된 게시글 반려
+	@PutMapping("/declaration/reject/{reportNo}")
+	public ResponseEntity<String> rejectDeclaration(@PathVariable(name="reportNo")Long reportNo) {
+	 try {
+		 adminBoardsDeclarationService.rejectDeclaration(reportNo);
+		return ResponseEntity.ok("게시글 반려 성공 ");
+	 } catch(Exception e) {
+		 e.printStackTrace();
+		 return ResponseEntity.internalServerError().body("반려 실패 ");
+	 }
 	}
 }
