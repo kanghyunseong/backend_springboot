@@ -84,7 +84,7 @@ public class AdminCarController {
 	}
 	
 	@GetMapping("/reservations")
-	public ResponseEntity<List<AdminCarsReservationDTO>> getAllReservation() {
+	public ResponseEntity<List<AdminCarsReservationDTO>> getAllReservation() {  
 		
 		return ResponseEntity.ok(adminCarService.findAllReservations());
 	}

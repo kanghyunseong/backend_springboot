@@ -43,14 +43,11 @@ public class AdminCarServiceImpl implements AdminCarService {
                 pageLimit
             );
         
-        // 4. RowBounds 생성 (몇 개 건너뛰고(offset), 몇 개 가져와라(limit))
         int offset = (pi.getCurrentPage() - 1) * pi.getBoardLimit();
         RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
         
-        // 5. Mapper 호출 (RowBounds 전달)
 		List<AdminCarDTO> cars = adminCarMapper.findAllCars(rowBounds);
 		
-        // 6. PageInfo 객체와 List<UserDTO>를 하나의 응답 DTO로 묶어서 반환
 		return new AdminCarPageResponseDTO(pi, cars);
         
 		
