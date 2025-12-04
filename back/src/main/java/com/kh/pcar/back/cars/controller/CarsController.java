@@ -22,27 +22,26 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RequestMapping("/cars")
 public class CarsController {
-	
+
 	private final CarsService carsService;
-	
+
 	// 차량 전체 조회
 	@GetMapping
-	public ResponseEntity<List<CarsDTO>> findAll(@RequestParam(value = "page", defaultValue = "0")int pageNo) {
-		
+	public ResponseEntity<List<CarsDTO>> findAll(@RequestParam(value = "page", defaultValue = "0") int pageNo) {
+
 		List<CarsDTO> cars = carsService.findAll(pageNo);
-		
+
 		return ResponseEntity.ok(cars);
 	}
-	
+
 	// 차량 상세 조회
 	// GET /
 	@GetMapping("/{carId}")
-	public ResponseEntity<List<CarsDTO>> findByCarId(@PathVariable(name="carId") Long carId) {
-		
+	public ResponseEntity<List<CarsDTO>> findByCarId(@PathVariable(name = "carId") Long carId) {
+
 		List<CarsDTO> car = carsService.findByCarId(carId);
-		
+
 		return ResponseEntity.ok(car);
 	}
-	
 
 }

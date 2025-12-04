@@ -63,6 +63,7 @@ public class SecurityConfigure {
 		            requests.requestMatchers(HttpMethod.POST,
 		                    "/members/login",
 		                    "/members",
+		                    "members/**",
 		                    "/auth/refresh",
 		                    "/cars/**",
 		                    "/station/**",
@@ -102,7 +103,7 @@ public class SecurityConfigure {
 		                    "/boards/**", "/boards/boards/**",
 		                    "/boards/imgBoards", "/boards/imgBoards/**",
 		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**"
+		                    "/reserve/**", "/reviews/**"
 		            ).authenticated();
 
 		            // 5. DELETE - 로그인 필요
@@ -129,8 +130,8 @@ public class SecurityConfigure {
 		                    "/admin/api/ranking/users",
 		                    "/admin/**",
 		                    "/admin/api/settings/**",
-		                    "/admin/api/notice/list"
-		                    
+		                    "/admin/api/notice/list",
+		                    "/admin/api/community/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.POST,
@@ -148,7 +149,8 @@ public class SecurityConfigure {
 		                    "/admin/**",
 		                    "/api/admin/**",
 		                    "/admin/api/**",
-		                    "/admin/api/notice/**"
+		                    "/admin/api/notice/**",
+		                    "/admin/api/community/**"
 		            ).hasAuthority("ROLE_ADMIN");
 		        })
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

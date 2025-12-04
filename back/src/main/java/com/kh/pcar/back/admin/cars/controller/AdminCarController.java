@@ -31,82 +31,83 @@ import lombok.RequiredArgsConstructor;
 public class AdminCarController {
 
 	private final AdminCarService adminCarService;
-	
+
 	@GetMapping
-	public AdminCarPageResponseDTO getAllCar(@RequestParam(name = "page", defaultValue = "1") int page) {
-		return adminCarService.findAllCars(page);
-	}
-	
+    public ResponseEntity<AdminCarPageResponseDTO> getAllCar(
+            @RequestParam(name = "page", defaultValue = "1") int page) {
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(adminCarService.findAllCars(page));
+    }
+
+
 	@PostMapping
     public ResponseEntity<String> registerCar(
             @ModelAttribute AdminCarDTO carDTO,
-            @RequestParam(value = "file", required = false) MultipartFile file
-    ) {
-        try {
-            adminCarService.registerCar(carDTO, file);
-            return ResponseEntity.ok("차량 등록 성공");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("등록 실패: " + e.getMessage());
-        }
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+
+        adminCarService.registerCar(carDTO, file);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("차량 등록이 완료되었습니다.");
     }
 	
-	@PostMapping("/update")
+	
+
+	@PutMapping("/update")
     public ResponseEntity<String> updateCar(
             @ModelAttribute AdminCarDTO carDTO,
-            @RequestParam(value = "file", required = false) MultipartFile file
-    ) {
-        try {
-            adminCarService.updateCar(carDTO, file);
-            return ResponseEntity.ok("차량 수정 성공");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("수정 실패: " + e.getMessage());
-        }
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+
+        adminCarService.updateCar(carDTO, file);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("차량 정보가 수정되었습니다.");
     }
-	
+
 	@GetMapping("/{carId}")
-    public ResponseEntity<Object> getCar(@PathVariable(name = "carId") Long carId) {
-        return ResponseEntity.ok(adminCarService.findCarById(carId));
+    public ResponseEntity<AdminCarDTO> getCar(@PathVariable Long carId) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(adminCarService.findCarById(carId));
     }
-	
+
 	@DeleteMapping("/{carId}")
-	public ResponseEntity<String> deleteCar(@PathVariable(name = "carId") Long carId) {
-		try {
-			adminCarService.deleteCarById(carId);
-			return ResponseEntity.ok("차량 삭제에 성공하였습니다.");
-		} catch (CarNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("차량 삭제 처리에 문제가 생겼습니다.");
-		}
-	}
-	
+    public ResponseEntity<String> deleteCar(@PathVariable Long carId) {
+
+        adminCarService.deleteCarById(carId);
+
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body("차량 삭제가 완료되었습니다.");
+    }
+
 	@GetMapping("/reservations")
-	public ResponseEntity<List<AdminCarsReservationDTO>> getAllReservation() {
-		
-		return ResponseEntity.ok(adminCarService.findAllReservations());
-	}
-	
+    public ResponseEntity<List<AdminCarsReservationDTO>> getAllReservation() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(adminCarService.findAllReservations());
+    }
+
 	@GetMapping("/daily-stats")
     public ResponseEntity<List<Map<String, Object>>> getDailyStats() {
-        return ResponseEntity.ok(adminCarService.getDailyReservationStats());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(adminCarService.getDailyReservationStats());
     }
-	
+
 	@PutMapping("/reservations/{reservationNo}/cancel")
-	public ResponseEntity<String> cancelReservation(@PathVariable("reservationNo") Long reservationNo) {
-        try {
-            adminCarService.cancelReservation(reservationNo);
-            return ResponseEntity.ok("예약이 성공적으로 취소되었습니다.");
-        } catch (ReservationNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예약 취소 처리에 실패했습니다.");
-        }
+    public ResponseEntity<String> cancelReservation(
+            @PathVariable Long reservationNo) {
+
+        adminCarService.cancelReservation(reservationNo);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("예약이 성공적으로 취소되었습니다.");
     }
-	
-	
-	
+
 }

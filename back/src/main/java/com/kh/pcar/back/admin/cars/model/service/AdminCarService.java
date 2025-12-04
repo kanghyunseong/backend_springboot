@@ -14,9 +14,9 @@ public interface AdminCarService {
 
 	AdminCarPageResponseDTO findAllCars(int currentPage);
 
-	void registerCar(AdminCarDTO carDTO, MultipartFile file) throws IOException;
+	void registerCar(AdminCarDTO carDTO, MultipartFile file);
 
-	void updateCar(AdminCarDTO carDTO, MultipartFile file) throws IOException;
+	void updateCar(AdminCarDTO carDTO, MultipartFile file);
 
 	AdminCarDTO findCarById(Long carId);
 
