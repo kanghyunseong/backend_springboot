@@ -9,8 +9,15 @@ public interface AdminBoardsDeclarationService {
 
 	List<AdminBoardsDeclarationDTO> findAllDeclaration();
 
-	void deleteDelcaration(Long reportNo);
+	void deleteDeclaration(Long reportNo);
 
 	void rejectDeclaration(Long reportNo);
+
+	List<AdminBoardsDeclarationDTO> findAllCommentDeclaration();
+
+
+	void deleteCommentDeclaration(Long reportNo);
+
+	void rejectCommentDeclaration(Long reportNo);
 
 }

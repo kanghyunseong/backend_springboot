@@ -16,7 +16,9 @@ import com.kh.pcar.back.admin.boardsDeclaration.model.service.AdminBoardsDeclara
 import com.kh.pcar.back.exception.BoardsNotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/api/community")
@@ -32,26 +34,34 @@ public class AdminBoardsDeclarationController {
 	// 신고된 게시글 삭제
 	@DeleteMapping("/declaration/delete/{reportNo}")
 	public ResponseEntity<String> deleteDeclaration(@PathVariable(name = "reportNo") Long reportNo) {
-		try {
-			adminBoardsDeclarationService.deleteDelcaration(reportNo);
+		
+			adminBoardsDeclarationService.deleteDeclaration(reportNo);
 			return ResponseEntity.ok("게시글 삭제 성공");
-		} catch (BoardsNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 삭제 처리에 문제가 생겼습니다.");
-		}
 	}
 
 	// 신고된 게시글 반려
 	@PutMapping("/declaration/reject/{reportNo}")
 	public ResponseEntity<String> rejectDeclaration(@PathVariable(name="reportNo")Long reportNo) {
-	 try {
 		 adminBoardsDeclarationService.rejectDeclaration(reportNo);
 		return ResponseEntity.ok("게시글 반려 성공 ");
-	 } catch(Exception e) {
-		 e.printStackTrace();
-		 return ResponseEntity.internalServerError().body("반려 실패 ");
-	 }
+	}
+	
+	// 댓글 조회
+	@GetMapping("/comment/declaration")
+	public ResponseEntity<List<AdminBoardsDeclarationDTO>> findAllCommentDeclaration() {
+		return ResponseEntity.ok(adminBoardsDeclarationService.findAllCommentDeclaration());
+	}
+	
+	// 댓글 삭제
+	@DeleteMapping("/comment/declaration/delete/{reportNo}")
+	public ResponseEntity<String> deleteCommentDeclaration(@PathVariable(name="reportNo")Long reportNo) {
+			adminBoardsDeclarationService.deleteDeclaration(reportNo);
+			return ResponseEntity.ok("댓글 삭제 성공");
+	}
+	
+	@PutMapping("/comment/declaration/reject/{reportNo}")
+	public ResponseEntity<String> rejectCommentDeclaration(@PathVariable(name="reportNo")Long reportNo) {
+		adminBoardsDeclarationService.rejectDeclaration(reportNo);
+		return ResponseEntity.ok("댓글 반려 성공");
 	}
 }

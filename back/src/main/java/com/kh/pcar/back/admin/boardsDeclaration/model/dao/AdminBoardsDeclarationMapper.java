@@ -11,8 +11,14 @@ public interface AdminBoardsDeclarationMapper {
 
 	List<AdminBoardsDeclarationDTO> findAllDeclaration();
 
-	int deleteDelcaration(Long reportNo);
+	int deleteDeclaration(Long reportNo);
 
 	int rejectDeclaration(Long reportNo);
+
+	List<AdminBoardsDeclarationDTO> findAllCommentDeclaration();
+
+	int deleteCommentDeclaration(Long reportNo);
+
+	int rejectCommentDeclaration(Long reportNo);
 
 }

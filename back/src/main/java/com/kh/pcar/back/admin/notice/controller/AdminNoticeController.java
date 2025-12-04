@@ -40,39 +40,20 @@ public class AdminNoticeController {
 
 	@DeleteMapping("/delete/{noticeNo}")
 	public ResponseEntity<String> deleteNotice(@PathVariable(name = "noticeNo") Long noticeNo) {
-		try {
 			adminNoticeService.deleteNotice(noticeNo);
 			return ResponseEntity.ok("공지사항 삭제에 성공하셨습니다.");
-		} catch (NoticeNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공지사항 삭제 처리에 문제가 생겼습니다.");
-		}
 	}
 
 	@PostMapping("insert")
 	public ResponseEntity<String> registerNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
 
-		try {
 			adminNoticeService.registerNotice(adminNoticeDTO);
 			return ResponseEntity.ok("공지사항 등록 성공");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.internalServerError().body("등록 실패: " + e.getMessage());
-		}
 	}
 	
 	@PutMapping("/modify")
 	public ResponseEntity<String> modifyNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
-		try {
 			adminNoticeService.modifyNotice(adminNoticeDTO);
 			return ResponseEntity.ok("공지사항 수정 성공");
-		} catch(NoticeNotFoundException e) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("수정 실패: " + e.getMessage());
-		}
 	}
 }
