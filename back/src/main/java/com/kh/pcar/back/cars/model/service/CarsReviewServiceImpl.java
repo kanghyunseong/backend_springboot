@@ -22,6 +22,8 @@ public class CarsReviewServiceImpl implements CarsReviewService{
 	
 		List<CarsReviewDTO> review = carsReviewMapper.findReview(carId);
 		
+		// 리뷰가 없으면 없는대로 조회되기때문에 예외처리는 하지않음
+		
 		return review;
 	}
 
@@ -31,6 +33,10 @@ public class CarsReviewServiceImpl implements CarsReviewService{
 		dto.setReviewWriter(userDetails.getUserNo());
 		
 		int result = carsReviewMapper.insertReview(dto);
+		
+		if(result < 1) {
+			throw new RuntimeException("리뷰 등록 실패");
+		}
 		
 		return result;
 	}
