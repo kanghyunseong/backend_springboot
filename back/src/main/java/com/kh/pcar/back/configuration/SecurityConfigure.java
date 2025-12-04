@@ -129,8 +129,8 @@ public class SecurityConfigure {
 		                    "/admin/api/ranking/users",
 		                    "/admin/**",
 		                    "/admin/api/settings/**",
-		                    "/admin/api/notice/list"
-		                    
+		                    "/admin/api/notice/list",
+		                    "/admin/api/community/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.POST,
@@ -148,7 +148,8 @@ public class SecurityConfigure {
 		                    "/admin/**",
 		                    "/api/admin/**",
 		                    "/admin/api/**",
-		                    "/admin/api/notice/**"
+		                    "/admin/api/notice/**",
+		                    "/admin/api/community/**"
 		            ).hasAuthority("ROLE_ADMIN");
 		        })
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

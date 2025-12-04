@@ -22,7 +22,6 @@ public class AdminEnviromentsServiceImpl implements AdminEnviromentsService {
 			return List.of();
 		}
 		return list;
-	
 	}
 
 }

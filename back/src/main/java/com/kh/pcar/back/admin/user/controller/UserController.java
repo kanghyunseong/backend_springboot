@@ -44,7 +44,6 @@ public class UserController {
 	        return ResponseEntity.status(HttpStatus.CONFLICT)
 	                             .body("자기 자신의 계정은 삭제할 수 없습니다.");
 	    }
-		
 		userService.deleteUser(userNo);
 		return ResponseEntity.ok("삭제 성공");
 	}
@@ -73,7 +72,6 @@ public class UserController {
 	
 	@GetMapping("/license/trend")
 	public ResponseEntity<List<Map<String, Object>>> getLicenseStatusTrend(@RequestParam(name =  "unit", defaultValue = "month") String unit) {
-	
 		List<Map<String, Object>> trendData = userService.getLicenseStatusTrend(unit);
 		return ResponseEntity.ok(trendData);
 	}
