@@ -30,26 +30,24 @@ public class CarsServiceImpl implements CarsService {
 		int offset = (pageNo - 1) * limit;
 
 		List<CarsDTO> cars = carsMapper.findAll(limit, offset);
-		
+
 		checkedCarsEmpty(cars, "조회된 자동차가 없습니다.");
-		
+
 		return cars;
 	}
 
-	
 	@Override
 	public List<CarsDTO> findByCarId(Long carId) {
-		
+
 		List<CarsDTO> cars = carsMapper.findByCarId(carId);
 
 		checkedCarsEmpty(cars, "차 번호가 조회되지 않습니다.");
-		
+
 		return cars;
 	}
-	
 
-	private void checkedCarsEmpty(List<CarsDTO> cars , String msg) {
-		if(cars.isEmpty()) {
+	private void checkedCarsEmpty(List<CarsDTO> cars, String msg) {
+		if (cars.isEmpty()) {
 			throw new CarNotFoundException(msg);
 		}
 	}

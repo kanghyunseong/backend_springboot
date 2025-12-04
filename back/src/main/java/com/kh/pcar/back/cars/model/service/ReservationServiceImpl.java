@@ -3,6 +3,7 @@ package com.kh.pcar.back.cars.model.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.cars.model.dao.ReservationMapper;
@@ -18,10 +19,17 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ReservationMapper reservationMapper;
 
 	@Override
+	@Transactional
 	public Long saveReservation(ReservationDTO reservationDTO, CustomUserDetails userDetails) {
 
 		reservationDTO.setUserNo(userDetails.getUserNo());
 
+		int result = reservationMapper.countByReservation(reservationDTO);
+		
+		if (result > 0) {
+			throw new RuntimeException("이미 예약된 차량이거나 / 예약중이신게 있습니다.");
+		}
+		
 		reservationMapper.saveReservation(reservationDTO);
 
 		return reservationDTO.getReservationNo();
@@ -50,23 +58,20 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override // 예약 반납
-	public int returnReservation(Long resevationNo, CustomUserDetails userDetails) {
+	public void returnReservation(Long resevationNo, CustomUserDetails userDetails) {
 
 		int result = reservationMapper.returnReservation(resevationNo);
 
 		checkUpdateResult(result);
 
-		return result;
 	}
 
 	@Override // 예약 변경
-	public int changeReservation(ReservationDTO reservation, CustomUserDetails userDetails) {
+	public void changeReservation(ReservationDTO reservation, CustomUserDetails userDetails) {
 
 		int result = reservationMapper.changeReservation(reservation);
 
 		checkUpdateResult(result);
-
-		return result;
 	}
 
 	@Override // 예약 취소

@@ -34,6 +34,10 @@ public class CarsReviewServiceImpl implements CarsReviewService{
 		
 		int result = carsReviewMapper.insertReview(dto);
 		
+		if(result < 1) {
+			throw new RuntimeException("리뷰 등록 실패");
+		}
+		
 		return result;
 	}
 	
