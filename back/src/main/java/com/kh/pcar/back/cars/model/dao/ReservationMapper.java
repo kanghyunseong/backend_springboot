@@ -30,7 +30,7 @@ public interface ReservationMapper {
 		           USER_NO = #{userNo}
 		        OR
 		           CAR_ID = #{carId}
-		       )
+		       ) 
 			""")
 	int countByReservation(ReservationDTO reservationDTO); // 유저가 예약한 내역이 있으면 찾아주는 메서드
 	
