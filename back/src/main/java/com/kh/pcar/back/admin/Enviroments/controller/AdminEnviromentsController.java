@@ -2,6 +2,7 @@ package com.kh.pcar.back.admin.Enviroments.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,9 @@ public class AdminEnviromentsController {
 	@GetMapping("/users") 
     public ResponseEntity<List<AdminEnviromentsDTO>> getUserRankings() {
         List<AdminEnviromentsDTO> rankings = adminEnviromentsService.findUserRankings();
-        return ResponseEntity.ok(rankings);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(rankings);
     }
 
 }

@@ -106,6 +106,10 @@ public class MemberServiceImpl implements MemberService {
 			mapper.socialJoin(naverMember);
 			mapper.joinSocial(naverMember);
 			Long userNo = mapper.findUserNoById(naverMember.getId());
+			
+			if (userNo == null) {
+			    throw new MemberJoinException("사용자 정보를 찾을 수 없습니다.");
+			}
 			naverMember.setUserNo(userNo);
 
 			return naverMember;
