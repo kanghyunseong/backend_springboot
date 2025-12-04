@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.exception.CustomAuthenticationException;
+import com.kh.pcar.back.exception.FileUploadException;
 import com.kh.pcar.back.exception.IdDuplicateException;
 import com.kh.pcar.back.exception.MemberJoinException;
 import com.kh.pcar.back.file.service.FileService;
@@ -101,10 +102,14 @@ public class MemberServiceImpl implements MemberService {
 
 			return naverMember;
 		} else {
-
+			
 			mapper.socialJoin(naverMember);
 			mapper.joinSocial(naverMember);
 			Long userNo = mapper.findUserNoById(naverMember.getId());
+			
+			if (userNo == null) {
+			    throw new MemberJoinException("사용자 정보를 찾을 수 없습니다.");
+			}
 			naverMember.setUserNo(userNo);
 
 			return naverMember;
@@ -162,7 +167,6 @@ public class MemberServiceImpl implements MemberService {
 		return null;
 	}
 
-	@Transactional
 	public void changePassword(ChangePasswordDTO password, CustomUserDetails user) {
 		// 로그인한 유저 비밀번호 검증
 		if (!passwordEncoder.matches(password.getUserPwd(), user.getPassword())) {
@@ -181,51 +185,52 @@ public class MemberServiceImpl implements MemberService {
 
 	@Transactional
 	public MemberDTO updateUser(MemberUpdateDTO member, MultipartFile licenseImg, CustomUserDetails userDetails) {
-	    // 1. 파일 처리
-	    String fileUrl = handleFileUpload(licenseImg);
+		// 1. 파일 처리
+		String fileUrl = handleFileUpload(licenseImg);
 
-	    // 2. 변경된 필드만 추출
-	    Map<String, Object> changes = getChangedFields(member, userDetails, fileUrl);
+		// 2. 변경된 필드만 추출
+		Map<String, Object> changes = getChangedFields(member, userDetails, fileUrl);
 
-	    // 3. 업데이트 실행
-	    if (changes.size() > 1) { // userNo 외 변경필드 존재 시
-	        mapper.updateUser(changes);
-	    }
+		// 3. 업데이트 실행
+		if (changes.size() > 1) { // userNo 외 변경필드 존재 시
+			mapper.updateUser(changes);
+		}
 
-	    // 4. 최신 회원 정보 반환
-	    return mapper.loadUser(userDetails.getUsername());
+		// 4. 최신 회원 정보 반환
+		return mapper.loadUser(userDetails.getUsername());
 	}
-	
-	
+
 	// 변경된 필드 추출
 	private Map<String, Object> getChangedFields(MemberUpdateDTO dto, CustomUserDetails userDetails, String fileUrl) {
-	    Map<String, Object> changes = new HashMap<>();
-	    changes.put("userNo", userDetails.getUserNo());
+		Map<String, Object> changes = new HashMap<>();
+		changes.put("userNo", userDetails.getUserNo());
 
-	    if (fileUrl != null) {
-	        changes.put("licenseUrl", fileUrl);
-	    }
-	    if (!dto.getMemberName().equals(userDetails.getRealName())) {
-	        changes.put("memberName", dto.getMemberName());
-	    }
-	    if (!dto.getEmail().equals(userDetails.getEmail())) {
-	        changes.put("email", dto.getEmail());
-	    }
-	    if (!dto.getPhone().equals(userDetails.getPhone())) {
-	        changes.put("phone", dto.getPhone());
-	    }
+		if (fileUrl != null) {
+			changes.put("licenseUrl", fileUrl);
+		}
+		if (!dto.getMemberName().equals(userDetails.getRealName())) {
+			changes.put("memberName", dto.getMemberName());
+		}
+		if (!dto.getEmail().equals(userDetails.getEmail())) {
+			changes.put("email", dto.getEmail());
+		}
+		if (!dto.getPhone().equals(userDetails.getPhone())) {
+			changes.put("phone", dto.getPhone());
+		}
 
-	    return changes;
+		return changes;
 	}
-	
-	// 파일명 바꾸기 
+
 	private String handleFileUpload(MultipartFile licenseImg) {
 	    if (licenseImg != null && !licenseImg.isEmpty()) {
-	        return fileService.store(licenseImg);
+	        try {
+	            return fileService.store(licenseImg);
+	        } catch (Exception e) {
+	            throw new FileUploadException("파일 업로드에 실패했습니다.");
+	        }
 	    }
 	    return null;
 	}
-	
 	// 원래 사용했으나 현재 로그인한 유저로 인증하고싶어서 삭제
 	/*
 	 * private CustomUserDetails validatePassword(String password) {
@@ -255,6 +260,5 @@ public class MemberServiceImpl implements MemberService {
 		mapper.deleteUserNo(String.valueOf(user.getUserNo()));
 
 	}
-
 
 }
