@@ -85,7 +85,8 @@ public class SecurityConfigure {
 		                    "/comments/**",
 		                    "/imgComments/**",
 		                    "/reserve/**",
-		                    "/reviews/**"
+		                    "/reviews/**",
+		                    "/main"
 		            ).permitAll();
 
 		            // 3. GET - 로그인 필요 (상세 페이지들)
@@ -109,10 +110,9 @@ public class SecurityConfigure {
 		                    "/members",
 		                    "/boards/**", "/boards/boards/**",
 		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**", "/reviews/**"
+		                    "/reserve/**", "/reviews/**","/station/**"
 		            ).authenticated();
 
-		            requests.requestMatchers(HttpMethod.DELETE, "/station/**").permitAll();
 
 		            // 6. POST - 게시글/댓글/공지 작성 (로그인 필요)
 		            requests.requestMatchers(HttpMethod.POST,
