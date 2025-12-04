@@ -29,6 +29,7 @@ public class AdminCarServiceImpl implements AdminCarService {
 	private final FileSaveService fileSaveService;
 
 	@Override
+	@Transactional(readOnly = true)
 	public AdminCarPageResponseDTO findAllCars(int currentPage) {
 
 		int totalCount = adminCarMapper.getTotalCount();

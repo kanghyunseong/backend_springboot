@@ -29,31 +29,43 @@ public class AdminNoticeController {
 	@GetMapping("/list")
 	public ResponseEntity<List<AdminNoticeDTO>> findAllNotice() {
 		List<AdminNoticeDTO> noticeList = adminNoticeService.findAllNotice();
-		return ResponseEntity.ok(noticeList);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(noticeList);
 	}
 
 	@GetMapping("/{noticeNo}")
 	public ResponseEntity<Object> getNoticeNo(@PathVariable(name = "noticeNo") Long noticeNo) {
-		return ResponseEntity.ok(adminNoticeService.findNoticeByNo(noticeNo));
+		AdminNoticeDTO notice = adminNoticeService.findNoticeByNo(noticeNo);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(notice);
 	}
 	
 
 	@DeleteMapping("/delete/{noticeNo}")
 	public ResponseEntity<String> deleteNotice(@PathVariable(name = "noticeNo") Long noticeNo) {
 			adminNoticeService.deleteNotice(noticeNo);
-			return ResponseEntity.ok("공지사항 삭제에 성공하셨습니다.");
+			return ResponseEntity
+					.status(HttpStatus.OK)
+					.body("공지사항 삭제에 성공하셨습니다.");
 	}
 
-	@PostMapping("insert")
+	@PostMapping("/insert")
 	public ResponseEntity<String> registerNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
 
 			adminNoticeService.registerNotice(adminNoticeDTO);
-			return ResponseEntity.ok("공지사항 등록 성공");
+			return ResponseEntity
+					.status(HttpStatus.CREATED)
+					.body("공지사항 등록 성공");
 	}
 	
 	@PutMapping("/modify")
 	public ResponseEntity<String> modifyNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
 			adminNoticeService.modifyNotice(adminNoticeDTO);
-			return ResponseEntity.ok("공지사항 수정 성공");
+			return ResponseEntity
+					.status(HttpStatus.OK)
+					.body("공지사항 수정 성공");
 	}
 }

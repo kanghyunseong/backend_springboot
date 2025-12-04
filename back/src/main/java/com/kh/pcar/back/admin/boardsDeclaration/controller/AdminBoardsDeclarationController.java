@@ -36,14 +36,14 @@ public class AdminBoardsDeclarationController {
 	public ResponseEntity<String> deleteDeclaration(@PathVariable(name = "reportNo") Long reportNo) {
 		
 			adminBoardsDeclarationService.deleteDeclaration(reportNo);
-			return ResponseEntity.ok("게시글 삭제 성공");
+			return ResponseEntity.noContent().build();
 	}
 
 	// 신고된 게시글 반려
 	@PutMapping("/declaration/reject/{reportNo}")
 	public ResponseEntity<String> rejectDeclaration(@PathVariable(name="reportNo")Long reportNo) {
 		 adminBoardsDeclarationService.rejectDeclaration(reportNo);
-		return ResponseEntity.ok("게시글 반려 성공 ");
+		return ResponseEntity.ok().build();
 	}
 	
 	// 댓글 조회
@@ -56,12 +56,12 @@ public class AdminBoardsDeclarationController {
 	@DeleteMapping("/comment/declaration/delete/{reportNo}")
 	public ResponseEntity<String> deleteCommentDeclaration(@PathVariable(name="reportNo")Long reportNo) {
 			adminBoardsDeclarationService.deleteDeclaration(reportNo);
-			return ResponseEntity.ok("댓글 삭제 성공");
+			return ResponseEntity.noContent().build(); 
 	}
 	
 	@PutMapping("/comment/declaration/reject/{reportNo}")
 	public ResponseEntity<String> rejectCommentDeclaration(@PathVariable(name="reportNo")Long reportNo) {
 		adminBoardsDeclarationService.rejectDeclaration(reportNo);
-		return ResponseEntity.ok("댓글 반려 성공");
+		return ResponseEntity.ok().build();
 	}
 }

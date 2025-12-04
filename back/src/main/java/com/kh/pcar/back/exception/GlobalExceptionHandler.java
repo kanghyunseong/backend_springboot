@@ -188,4 +188,5 @@ public class GlobalExceptionHandler {
 	    error.put("error-message", "접근 권한이 없습니다. (관리자 전용)");
 	    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
 	}
+	
 }
