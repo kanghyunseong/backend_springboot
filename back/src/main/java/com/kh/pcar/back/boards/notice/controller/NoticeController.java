@@ -21,9 +21,9 @@ public class NoticeController {
 
     // 전체 목록 조회
     @GetMapping
-    public PageResponseDTO<NoticeDTO> getAllNotices(
+    public PageResponseDTO<NoticeDTO> AllNotices(
             @RequestParam(name = "page", defaultValue = "0") int page) {
-        return noticeService.getNoticeList(page);
+        return noticeService.NoticeList(page);
     }
     
     // 목록 검색
@@ -38,7 +38,7 @@ public class NoticeController {
 
     // 상세 조회 (조회수 증가 포함)
     @GetMapping("/{noticeNo}")
-    public NoticeDTO getNoticeDetail(@PathVariable(name="noticeNo")  Long noticeNo) {
-        return noticeService.getNoticeDetail(noticeNo);
+    public NoticeDTO NoticeDetail(@PathVariable(name="noticeNo")  Long noticeNo) {
+        return noticeService.NoticeDetail(noticeNo);
     }
 }

@@ -1,5 +1,6 @@
 package com.kh.pcar.back.boards.imgComment.model.service;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.kh.pcar.back.boards.Report.service.ReportService;
 import com.kh.pcar.back.boards.imgBoard.model.service.ImgBoardService;
 import com.kh.pcar.back.boards.imgComment.model.dao.ImgCommentMapper;
 import com.kh.pcar.back.boards.imgComment.model.dto.ImgCommentDTO;
+import com.kh.pcar.back.exception.CustomAuthenticationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +28,10 @@ public class ImgCommentServiceImpl implements ImgCommentService {
 	@Override
 	public ImgCommentDTO save(ImgCommentDTO imgComment, CustomUserDetails userDetails) {
 		
-		imgBoardService.findByImgBoardNo(imgComment.getRefIno()); // 외부에 노출된 메소드 호
+		// 1. 게시글 존재 여부 확인 (없으면 InvalidParameterException -> 400)
+		imgBoardService.findByImgBoardNo(imgComment.getRefIno());
+
+		// 2. 작성자 ID 세팅
 		String memberId = userDetails.getUsername();
 		
 		ImgCommentDTO ic = ImgCommentDTO.builder()
@@ -39,13 +44,29 @@ public class ImgCommentServiceImpl implements ImgCommentService {
 	}
 
 	@Override
-	   public List<ImgCommentDTO> findAll(Long boardNo) {
-	       imgBoardService.findByImgBoardNo(boardNo);
-	       return imgCommentMapper.findAll(boardNo);
+	public List<ImgCommentDTO> findAll(Long boardNo) {
+	    // 게시글 존재 체크 (없으면 400)
+	    imgBoardService.findByImgBoardNo(boardNo);
+	    return imgCommentMapper.findAll(boardNo);
 	}
 
     @Override
-    public void update(Long imgCommentNo, String imgCommentContent, String loginId) {
+    public void update(Long imgCommentNo, String imgCommentContent, Long loginUserNo) {
+
+        // 1. 댓글 작성자 USER_NO 조회
+        Long writerUserNo = imgCommentMapper.findWriterUserNo(imgCommentNo);
+
+        // 1-1. 존재하지 않는 댓글
+        if (writerUserNo == null) {
+            throw new InvalidParameterException("존재하지 않는 댓글입니다.");
+        }
+
+        // 1-2. 작성자가 아닌 경우
+        if (!writerUserNo.equals(loginUserNo)) {
+            throw new CustomAuthenticationException("작성자만 댓글을 수정할 수 있습니다.");
+        }
+
+        // 2. 실제 수정 처리
         ImgCommentDTO imgComment = new ImgCommentDTO();
         imgComment.setImgCommentNo(imgCommentNo);
         imgComment.setImgCommentContent(imgCommentContent);
@@ -57,7 +78,22 @@ public class ImgCommentServiceImpl implements ImgCommentService {
     }
 
     @Override
-    public void delete(Long imgCommentNo, String loginId) {
+    public void delete(Long imgCommentNo, Long loginUserNo) {
+
+        // 1. 댓글 작성자 USER_NO 조회
+        Long writerUserNo = imgCommentMapper.findWriterUserNo(imgCommentNo);
+
+        // 1-1. 존재하지 않는 댓글
+        if (writerUserNo == null) {
+            throw new InvalidParameterException("존재하지 않는 댓글입니다.");
+        }
+
+        // 1-2. 작성자가 아닌 경우
+        if (!writerUserNo.equals(loginUserNo)) {
+            throw new CustomAuthenticationException("작성자만 댓글을 삭제할 수 있습니다.");
+        }
+
+        // 2. 실제 삭제 (STATUS = 'N')
         int result = imgCommentMapper.delete(imgCommentNo);
         if (result <= 0) {
             throw new RuntimeException("갤러리 댓글 삭제에 실패했습니다.");
@@ -66,12 +102,10 @@ public class ImgCommentServiceImpl implements ImgCommentService {
 
     @Override
     public void report(Long imgCommentNo, Long reporterNo, String reason) {
-    	// 1. 댓글이 존재하는지 간단히 검증
-        // findWriterUserNo가 null 이면 없는 댓글로 보면 됨.
-
+    	// 1. 댓글이 존재하는지 검증
         Long reportedUserNo = imgCommentMapper.findWriterUserNo(imgCommentNo);
         if (reportedUserNo == null) {
-            throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+            throw new InvalidParameterException("존재하지 않는 댓글입니다.");
         }
 
         ReportDTO reportDTO = ReportDTO.builder()

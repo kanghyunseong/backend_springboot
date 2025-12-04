@@ -69,61 +69,63 @@
     
     <!-- 검색용 총 개수 -->
     <select id="countSearchNotices" parameterType="map" resultType="long">
-        SELECT COUNT(*)
-        FROM TB_NOTICE
-        WHERE NOTICE_STATUS = 'Y'
-        <choose>
-            <when test="type == 'title'">
-                AND NOTICE_TITLE LIKE #{keyword}
-            </when>
-            <when test="type == 'writer'">
-                AND NOTICE_WRITER LIKE #{keyword}
-            </when>
-            <when test="type == 'content'">
-                AND NOTICE_CONTENT LIKE #{keyword}
-            </when>
-            <otherwise>
-                AND (
-                    NOTICE_TITLE   LIKE #{keyword}
-                    OR NOTICE_WRITER  LIKE #{keyword}
-                    OR NOTICE_CONTENT LIKE #{keyword}
-                )
-            </otherwise>
-        </choose>
-    </select>
+	    SELECT COUNT(*)
+	    FROM TB_NOTICE N
+	    JOIN TB_MEMBER M ON N.NOTICE_WRITER = M.USER_NO
+	    WHERE N.NOTICE_STATUS = 'Y'
+	    <choose>
+	        <when test="type == 'title'">
+	            AND N.NOTICE_TITLE LIKE #{keyword}
+	        </when>
+	        <when test="type == 'writer'">
+	            AND M.USER_ID LIKE #{keyword}
+	        </when>
+	        <when test="type == 'content'">
+	            AND N.NOTICE_CONTENT LIKE #{keyword}
+	        </when>
+	        <otherwise>
+	            AND (
+	                N.NOTICE_TITLE   LIKE #{keyword}
+	                OR M.USER_ID     LIKE #{keyword}
+	                OR N.NOTICE_CONTENT LIKE #{keyword}
+	            )
+	        </otherwise>
+	    </choose>
+	</select>
 
     <!-- 검색 결과 목록 (페이징) -->
     <select id="searchNotices" parameterType="map"
-            resultType="com.kh.pcar.back.boards.notice.model.dto.NoticeDTO">
-        SELECT
-               NOTICE_NO      AS noticeNo
-             , NOTICE_TITLE   AS noticeTitle
-             , NOTICE_WRITER  AS noticeWriter
-             , NOTICE_CONTENT AS noticeContent
-             , NOTICE_DATE    AS noticeDate
-             , NOTICE_COUNT   AS noticeCount
-        FROM TB_NOTICE
-        WHERE NOTICE_STATUS = 'Y'
-        <choose>
-            <when test="type == 'title'">
-                AND NOTICE_TITLE LIKE #{keyword}
-            </when>
-            <when test="type == 'writer'">
-                AND NOTICE_WRITER LIKE #{keyword}
-            </when>
-            <when test="type == 'content'">
-                AND NOTICE_CONTENT LIKE #{keyword}
-            </when>
-            <otherwise>
-                AND (
-                    NOTICE_TITLE   LIKE #{keyword}
-                    OR NOTICE_WRITER  LIKE #{keyword}
-                    OR NOTICE_CONTENT LIKE #{keyword}
-                )
-            </otherwise>
-        </choose>
-        ORDER BY NOTICE_NO DESC
-        OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
-    </select>
+	        resultType="com.kh.pcar.back.boards.notice.model.dto.NoticeDTO">
+	    SELECT
+	           N.NOTICE_NO noticeNo
+	         , N.NOTICE_TITLE noticeTitle
+	         , M.USER_ID noticeWriter
+	         , N.NOTICE_CONTENT noticeContent
+	         , N.NOTICE_DATE noticeDate
+	         , N.NOTICE_COUNT noticeCount
+	    FROM TB_NOTICE N
+	    JOIN TB_MEMBER M ON N.NOTICE_WRITER = M.USER_NO
+	    WHERE N.NOTICE_STATUS = 'Y'
+	    <choose>
+	        <when test="type == 'title'">
+	            AND N.NOTICE_TITLE LIKE #{keyword}
+	        </when>
+	        <when test="type == 'writer'">
+	            AND M.USER_ID LIKE #{keyword}
+	        </when>
+	        <when test="type == 'content'">
+	            AND N.NOTICE_CONTENT LIKE #{keyword}
+	        </when>
+	        <otherwise>
+	            AND (
+	                N.NOTICE_TITLE      LIKE #{keyword}
+	                OR M.USER_ID        LIKE #{keyword}
+	                OR N.NOTICE_CONTENT LIKE #{keyword}
+	            )
+	        </otherwise>
+	    </choose>
+	    ORDER BY N.NOTICE_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
 
 </mapper>

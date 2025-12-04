@@ -19,6 +19,7 @@ import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.boards.Report.dto.ReportRequestDTO;
 import com.kh.pcar.back.boards.imgComment.model.dto.ImgCommentDTO;
 import com.kh.pcar.back.boards.imgComment.model.service.ImgCommentService;
+import com.kh.pcar.back.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +34,21 @@ public class ImgCommentController {
 
     // 댓글 등록
     @PostMapping
-    public ResponseEntity<?> save(
+    public ResponseEntity<ApiResponse<ImgCommentDTO>> save(
             @RequestBody ImgCommentDTO imgComment,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    	ImgCommentDTO ic = imgCommentService.save(imgComment, userDetails);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ic);
+        // 로그인 체크
+        if (userDetails == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("로그인이 필요합니다."));
+        }
+
+        ImgCommentDTO ic = imgCommentService.save(imgComment, userDetails);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success("댓글이 등록되었습니다.", ic));
     }
 
     // 특정 갤러리 게시글의 댓글 전체 조회
@@ -50,40 +60,65 @@ public class ImgCommentController {
 
     // 댓글 수정
     @PutMapping("/{imgCommentNo}")
-    public ResponseEntity<Void> update(
+    public ResponseEntity<ApiResponse<Void>> update(
             @PathVariable("imgCommentNo") Long imgCommentNo,
             @RequestBody ImgCommentDTO imgComment,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        String loginId = userDetails.getUsername();
-        imgCommentService.update(imgCommentNo, imgComment.getImgCommentContent(), loginId);
-        return ResponseEntity.ok().build();
+        // ★ 로그인 체크
+        if (userDetails == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("로그인이 필요합니다."));
+        }
+
+        Long loginUserNo = userDetails.getUserNo(); // USER_NO 기준
+        imgCommentService.update(imgCommentNo, imgComment.getImgCommentContent(), loginUserNo);
+
+        return ResponseEntity
+                .ok(ApiResponse.success("댓글이 수정되었습니다."));
     }
 
     // 댓글 삭제
     @DeleteMapping("/{imgCommentNo}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable("imgCommentNo") Long imgCommentNo,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        String loginId = userDetails.getUsername();
-        imgCommentService.delete(imgCommentNo, loginId);
-        return ResponseEntity.noContent().build();
+        // 로그인 체크
+        if (userDetails == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("로그인이 필요합니다."));
+        }
+
+        Long loginUserNo = userDetails.getUserNo(); // USER_NO 기준
+        imgCommentService.delete(imgCommentNo, loginUserNo);
+
+        return ResponseEntity
+                .ok(ApiResponse.success("댓글이 삭제되었습니다."));
     }
 
     // 댓글 신고
     @PostMapping("/{imgCommentNo}/report")
-    public ResponseEntity<?> report(
+    public ResponseEntity<ApiResponse<Void>> report(
             @PathVariable("imgCommentNo") Long imgCommentNo,
             @RequestBody ReportRequestDTO request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-    	
-    	Long reporterNo = userDetails.getUserNo();
-        String reason = request.getReason();
-        
-        imgCommentService.report(imgCommentNo, reporterNo, reason);
-        
-        return ResponseEntity.ok("신고가 접수되었습니다.");
-    }
 
+        // 로그인 체크
+        if (userDetails == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("로그인이 필요합니다."));
+        }
+
+        Long reporterNo = userDetails.getUserNo();
+        String reason = request.getReason();
+
+        imgCommentService.report(imgCommentNo, reporterNo, reason);
+
+        return ResponseEntity
+                .ok(ApiResponse.success("신고가 접수되었습니다."));
+    }
 }

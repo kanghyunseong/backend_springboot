@@ -18,7 +18,6 @@
 	    	 , REPORTER
 	    	 , REASON
 	    	 , STATUS
-	    	 , REJECTED
 	    	 , REPORT_DATE
 	    	   )
 	    VALUES 
@@ -30,7 +29,6 @@
 	      	 , #{reporter}
 	      	 , #{reason}
 	      	 , #{status}
-	      	 , #{rejected}
 	      	 , SYSDATE
 	      	   )
 	</insert>

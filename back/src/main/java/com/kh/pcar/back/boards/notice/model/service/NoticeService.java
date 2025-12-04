@@ -6,11 +6,11 @@ import com.kh.pcar.back.boards.notice.model.dto.NoticeDTO;
 public interface NoticeService {
 
     // 전체 공지 목록
-	PageResponseDTO<NoticeDTO> getNoticeList(int pageNo);
+	PageResponseDTO<NoticeDTO> NoticeList(int pageNo);
 	 
 	// 검색
 	PageResponseDTO<NoticeDTO> searchNotices(String type, String keyword, int pageNo);
 	
     // 공지 상세 (조회수 증가 포함)
-    NoticeDTO getNoticeDetail(Long noticeNo);
+    NoticeDTO NoticeDetail(Long noticeNo);
 }
