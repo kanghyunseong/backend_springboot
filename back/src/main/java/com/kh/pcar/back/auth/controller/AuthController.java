@@ -34,7 +34,7 @@ public class AuthController {
 	private final SocialAuthService socialAuthService;
 	
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@Valid @RequestBody MemberLoginDTO member) {
+	public ResponseEntity<Map<String, String>> login(@Valid @RequestBody MemberLoginDTO member) {
 	    Map<String, String> loginResponse = authService.login(member);
 	    return ResponseEntity.ok(loginResponse);
 	}
@@ -46,7 +46,7 @@ public class AuthController {
 	  
 	  
 	  @GetMapping("/{provider}/callback")
-	    public ResponseEntity<?> callBack( @PathVariable("provider") String provider,@RequestParam("code") String code, @RequestParam(value = "state" , required = false) String state) {
+	    public ResponseEntity<Map<String, String>> callBack( @PathVariable("provider") String provider,@RequestParam("code") String code, @RequestParam(value = "state" , required = false) String state) {
 	      
 		   log.info("콜백 code={}, state={}", code, state);
 		   
@@ -105,7 +105,7 @@ public class AuthController {
 	    
 	
 	@PostMapping("/refresh")
-	public ResponseEntity<?> refresh(@RequestBody Map<String,String> token){
+	public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String,String> token){
 		
 		String refreshToken = token.get("refreshToken");
 		Map<String,String> tokens = tokenService.validateToken(refreshToken);

@@ -101,7 +101,7 @@ public class SecurityConfigure {
 		                    "/boards/**", "/boards/boards/**",
 		                    "/boards/imgBoards", "/boards/imgBoards/**",
 		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**"
+		                    "/reserve/**", "/reviews/**"
 		            ).authenticated();
 
 		            // 5. DELETE - 로그인 필요

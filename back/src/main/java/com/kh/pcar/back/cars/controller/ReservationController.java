@@ -74,11 +74,7 @@ public class ReservationController {
 
 		int result = reservationService.returnReservation(reservationNo, userDetails);
 		
-		if(result > 0) { // 200 ok
-			return ResponseEntity.ok("반납 완료 하였습니다.");
-		} else { // 400 badRequest
-			return ResponseEntity.badRequest().body("반납 처리 실패하였습니다.");
-		}
+			return ResponseEntity.ok("반납 완료 하였습니다."); 
 	}
 	
 	// 예약 변경 

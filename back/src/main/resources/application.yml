@@ -3,7 +3,7 @@ spring:
   name: back
  datasource:
   url: jdbc:oracle:thin:@115.90.212.18:10000:XE
-  username: C##QOWNDUD123
+  username: C##QOWNDUD12
   password: rkdgustjd123
   driver-class-name: oracle.jdbc.driver.OracleDriver
  mvc:

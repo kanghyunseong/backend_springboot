@@ -51,7 +51,6 @@
              , START_TIME
              , END_TIME
              , DESTINATION
-             , RESERVATION_STATUS
              ) 
         VALUES
              (
@@ -62,7 +61,6 @@
 			 , #{startTime}
 			 , #{endTime}
              , #{destination}
-             , #{reservationStatus}
         	 )
 	</insert>
 	

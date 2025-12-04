@@ -60,7 +60,7 @@ public class MemberController {
 	
 	
 	@PostMapping("/kakao")
-	public ResponseEntity<?> kakaoJoin(@Valid @ModelAttribute KakaoMemberDTO member , @RequestParam(name="licenseImg" , required = false ) MultipartFile licenseImg ){
+	public ResponseEntity<Map<String,String>> kakaoJoin(@Valid @ModelAttribute KakaoMemberDTO member , @RequestParam(name="licenseImg" , required = false ) MultipartFile licenseImg ){
 		
 		//log.info("Member에 들어온 값 {} , Multipart : {} " , member , licenseImg);
 		
@@ -81,7 +81,7 @@ public class MemberController {
 	}
 	
 	@PutMapping("/updateUser")
-	public ResponseEntity<?> updateUser(@Valid @ModelAttribute MemberUpdateDTO member ,  @RequestParam(name="licenseImg" , required = false ) MultipartFile licenseImg ,
+	public ResponseEntity<MemberDTO> updateUser(@Valid @ModelAttribute MemberUpdateDTO member ,  @RequestParam(name="licenseImg" , required = false ) MultipartFile licenseImg ,
 										@AuthenticationPrincipal CustomUserDetails userDetails){
 		
 	//	log.info("member : {} , file : {}" , member ,licenseImg);
