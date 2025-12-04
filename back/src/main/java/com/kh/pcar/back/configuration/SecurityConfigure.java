@@ -63,6 +63,7 @@ public class SecurityConfigure {
 		            requests.requestMatchers(HttpMethod.POST,
 		                    "/members/login",
 		                    "/members",
+		                    "members/**",
 		                    "/auth/refresh",
 		                    "/cars/**",
 		                    "/station/**",
@@ -85,7 +86,8 @@ public class SecurityConfigure {
 		                    "/comments/**",
 		                    "/imgComments/**",
 		                    "/reserve/**",
-		                    "/reviews/**"
+		                    "/reviews/**",
+		                    "/main"
 		            ).permitAll();
 
 		            // 3. GET - 로그인 필요 (상세 페이지들)
@@ -101,7 +103,7 @@ public class SecurityConfigure {
 		                    "/boards/**", "/boards/boards/**",
 		                    "/boards/imgBoards", "/boards/imgBoards/**",
 		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**"
+		                    "/reserve/**", "/reviews/**"
 		            ).authenticated();
 
 		            // 5. DELETE - 로그인 필요
@@ -109,10 +111,9 @@ public class SecurityConfigure {
 		                    "/members",
 		                    "/boards/**", "/boards/boards/**",
 		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**", "/reviews/**"
+		                    "/reserve/**", "/reviews/**","/station/**"
 		            ).authenticated();
 
-		            requests.requestMatchers(HttpMethod.DELETE, "/station/**").permitAll();
 
 		            // 6. POST - 게시글/댓글/공지 작성 (로그인 필요)
 		            requests.requestMatchers(HttpMethod.POST,
@@ -129,8 +130,8 @@ public class SecurityConfigure {
 		                    "/admin/api/ranking/users",
 		                    "/admin/**",
 		                    "/admin/api/settings/**",
-		                    "/admin/api/notice/list"
-		                    
+		                    "/admin/api/notice/list",
+		                    "/admin/api/community/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.POST,
@@ -148,7 +149,8 @@ public class SecurityConfigure {
 		                    "/admin/**",
 		                    "/api/admin/**",
 		                    "/admin/api/**",
-		                    "/admin/api/notice/**"
+		                    "/admin/api/notice/**",
+		                    "/admin/api/community/**"
 		            ).hasAuthority("ROLE_ADMIN");
 		        })
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
