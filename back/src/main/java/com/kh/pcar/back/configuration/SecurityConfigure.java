@@ -63,6 +63,7 @@ public class SecurityConfigure {
 		            requests.requestMatchers(HttpMethod.POST,
 		                    "/members/login",
 		                    "/members",
+		                    "members/**",
 		                    "/auth/refresh",
 		                    "/cars/**",
 		                    "/station/**",
@@ -85,7 +86,8 @@ public class SecurityConfigure {
 		                    "/comments/**",
 		                    "/imgComments/**",
 		                    "/reserve/**",
-		                    "/reviews/**"
+		                    "/reviews/**",
+		                    "/main"
 		            ).permitAll();
 
 		            // 3. GET - 로그인 필요 (상세 페이지들)
