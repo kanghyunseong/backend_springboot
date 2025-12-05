@@ -10,7 +10,7 @@ public interface ServiceStation {
 
 	List<StationDTO> stations(String lat, String lng,String stationId);
 	List<StationDTO> searchByName(String keyword);	
-	int insertReview(ReviewDTO reviewDto,CustomUserDetails userDetails);
+	Long insertReview(ReviewDTO reviewDto,CustomUserDetails userDetails);
 	int deleteReview(ReviewDTO reviewDto,CustomUserDetails userDetails);
 	List<ReviewDTO> findAll(String stationId);
 	List<StationDTO> searchDetail(Long stationId);

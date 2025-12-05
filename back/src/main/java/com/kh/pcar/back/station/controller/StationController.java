@@ -67,12 +67,9 @@ public class StationController {
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		int result = service.insertReview(reviewDto, userDetails);
-		if (result > 0) {
 
-			return ResponseEntity.ok().body("리뷰등록성공");
-		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+		return ResponseEntity.ok().body("리뷰등록성공");
+
 	}
 
 	@DeleteMapping

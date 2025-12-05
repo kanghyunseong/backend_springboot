@@ -160,15 +160,15 @@ public class ServiceStationImpl implements ServiceStation {
 	@Override
 	@Valid
 	// 사용자가 이 작업을 할 권한이 있는지 검증
-	public int insertReview(ReviewDTO reviewDto, CustomUserDetails userDetails) {
+	public Long insertReview(ReviewDTO reviewDto, CustomUserDetails userDetails) {
 
 		if (reviewDto == null) {
 			throw new InvalidParameterException("필수 파라미터가 누락되었습니다.");
 		}
 
-		reviewDto.setUserNo(userDetails.getUserNo());
+		int result = reviewDto.setUserNo(userDetails.getUserNo());
 
-		return stationDao.insertReview(reviewDto);
+		return result;
 	}
 
 	@Override
