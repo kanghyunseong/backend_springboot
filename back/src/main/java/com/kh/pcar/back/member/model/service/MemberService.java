@@ -11,20 +11,17 @@ import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberUpdateDTO;
 
-
-
 public interface MemberService {
 
-	
-	void join(MemberDTO member,MultipartFile licenseImg);
-	
-	Map<String,String> kakaoJoin(KakaoMemberDTO member ,MultipartFile licenseImg);
-	
+	void join(MemberDTO member, MultipartFile licenseImg);
+
+	void kakaoJoin(KakaoMemberDTO member, MultipartFile licenseImg);
+
 	NaverProfileDTO socialJoin(NaverProfileDTO naverMember);
-	
+
 	void changePassword(ChangePasswordDTO password, CustomUserDetails userDetails);
-	
-	void deleteByPassword(String inputPassword,CustomUserDetails userDetails);
-	
-	MemberDTO updateUser(MemberUpdateDTO member , MultipartFile licenseImg,CustomUserDetails userDetails);
+
+	void deleteByPassword(String inputPassword, CustomUserDetails userDetails);
+
+	MemberDTO updateUser(MemberUpdateDTO member, MultipartFile licenseImg, CustomUserDetails userDetails);
 }

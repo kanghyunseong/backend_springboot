@@ -12,37 +12,34 @@ public interface MainMapper {
 
 	@Select("SELECT COUNT(*) FROM TB_CAR")
 	String countCar();
-	
+
 	@Select("SELECT COUNT(*) FROM TB_RESERVATION")
 	String countReservation();
-	
+
 	@Select("SELECT COUNT(*) FROM TB_MEMBER")
 	String countMember();
-	
-	
+
 	@Select("""
-			SELECT 
+			SELECT
 				   c.CAR_ID carId,
 			       c.CAR_NAME carName,
 			       c.CAR_IMAGE carImage,
 			       COUNT(r.RESERVATION_NO) AS RESERVATION_COUNT
-			  FROM 
+			  FROM
 			       TB_CAR c
-			  JOIN 
+			  JOIN
 			       TB_RESERVATION r
-			    ON 
+			    ON
 			       c.CAR_ID = r.CAR_ID
 			 WHERE
-			       r.RESERVATION_STATUS = 'Y' 
-		  GROUP BY 
+			       r.RESERVATION_STATUS = 'Y'
+			 GROUP BY
 			       c.CAR_ID, c.CAR_NAME, c.CAR_CONTENT, c.CAR_IMAGE
-		  ORDER BY 
+			 ORDER BY
 			       RESERVATION_COUNT DESC
-			 FETCH 
+			 FETCH
 			       FIRST 4 ROWS ONLY
 			""")
 	List<PopularCarDTO> findPopularCar();
 
-	
-	
 }

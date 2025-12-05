@@ -11,13 +11,12 @@ import lombok.ToString;
 @ToString
 public class MemberVO {
 
-
 	private String memberId;
 	private String memberPwd;
 	private String memberName;
 	private String birthDay;
 	private String email;
-    private String phone;
-    private String licenseUrl;
+	private String phone;
+	private String licenseUrl;
 	private String role;
 }

@@ -9,10 +9,22 @@
            B.BOARD_NO boardNo
          , B.BOARD_TITLE boardTitle
          , M.USER_ID boardWriter
+         , M.USER_NO writerNo
          , B.BOARD_CONTENT boardContent
          , B.COUNT count
          , B.BOARD_STATUS boardStatus
          , B.BOARD_DATE boardDate
+	</sql>
+	
+	<!-- 신고 후 관리자가 승인해서 안보여줄 조건 -->
+	<sql id="boardReportFilter">
+	    AND NOT EXISTS (
+	        SELECT 1
+	          FROM TB_REPORT R
+	         WHERE R.TARGET_TYPE = 'BOARD'
+	           AND R.TARGET_NO   = B.BOARD_NO
+	           AND R.REJECTED    = 'N'   <!-- 관리자 승인되어 숨겨야 하는 것만 -->
+	    )
 	</sql>
 
     <!-- 게시글 INSERT (boardWriter = USER_ID 문자열 → USER_NO로 변환) -->
@@ -52,6 +64,7 @@
         	 TB_MEMBER M ON B.BOARD_WRITER = M.USER_NO
        WHERE 
        		 B.BOARD_STATUS = 'Y'
+       <include refid="boardReportFilter"/>
        ORDER 
        	  BY 
        	  	 B.BOARD_NO DESC
@@ -64,11 +77,14 @@
 	           TB_BOARD B
 	     WHERE 
 	     	   B.BOARD_STATUS = 'Y'
+	     <include refid="boardReportFilter"/>
 	</select>
     
 
     <!-- 단일 게시글 조회 -->
-    <select id="findByBoardNo" resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO" parameterType="long">
+    <select id="findByBoardNo" 
+    		resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO" 
+    		parameterType="long">
 		<include refid="boardColumn" />
         FROM 
         	 TB_BOARD B
@@ -78,6 +94,7 @@
        		 B.BOARD_NO = #{boardNo}
          AND 
          	 B.BOARD_STATUS = 'Y'
+       <include refid="boardReportFilter"/>
     </select>
 
 	<update id="increaseView">
@@ -116,64 +133,62 @@
     
     
     <!--  검색용 총 개수 -->
-    <select id="countSearchBoards" parameterType="map" resultType="int">
-        SELECT COUNT(*)
-        FROM TB_BOARD
-        WHERE BOARD_STATUS = 'Y'
-        <choose>
-            <when test="type == 'title'">
-                AND BOARD_TITLE LIKE #{keyword}
-            </when>
-            <when test="type == 'writer'">
-                AND BOARD_WRITER LIKE #{keyword}
-            </when>
-            <when test="type == 'content'">
-                AND BOARD_CONTENT LIKE #{keyword}
-            </when>
-            <otherwise>
-                AND (
-                    BOARD_TITLE   LIKE #{keyword}
-                    OR BOARD_WRITER  LIKE #{keyword}
-                    OR BOARD_CONTENT LIKE #{keyword}
-                )
-            </otherwise>
-        </choose>
-    </select>
+	<select id="countSearchBoards" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM TB_BOARD B
+	    JOIN TB_MEMBER M ON B.BOARD_WRITER = M.USER_NO
+	    WHERE B.BOARD_STATUS = 'Y'
+	    <include refid="boardReportFilter"/>
+	    <choose>
+	        <when test="type == 'title'">
+	            AND B.BOARD_TITLE LIKE #{keyword}
+	        </when>
+	        <when test="type == 'writer'">
+	            AND M.USER_ID LIKE #{keyword}
+	        </when>
+	        <when test="type == 'content'">
+	            AND B.BOARD_CONTENT LIKE #{keyword}
+	        </when>
+	        <otherwise>
+	            AND (
+	                B.BOARD_TITLE   LIKE #{keyword}
+	                OR M.USER_ID    LIKE #{keyword}
+	                OR B.BOARD_CONTENT LIKE #{keyword}
+	            )
+	        </otherwise>
+	    </choose>
+	</select>
+	
+	<!--  검색 결과 목록 (페이징) -->
+	<select id="searchBoards" parameterType="map"
+	        resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
+	    <include refid="boardColumn" />
+	    FROM TB_BOARD B
+	    JOIN TB_MEMBER M ON B.BOARD_WRITER = M.USER_NO
+	    WHERE B.BOARD_STATUS = 'Y'
+	    <include refid="boardReportFilter"/>
+	    <choose>
+	        <when test="type == 'title'">
+	            AND B.BOARD_TITLE LIKE #{keyword}
+	        </when>
+	        <when test="type == 'writer'">
+	            AND M.USER_ID LIKE #{keyword}
+	        </when>
+	        <when test="type == 'content'">
+	            AND B.BOARD_CONTENT LIKE #{keyword}
+	        </when>
+	        <otherwise>
+	            AND (
+	                B.BOARD_TITLE   LIKE #{keyword}
+	                OR M.USER_ID    LIKE #{keyword}
+	                OR B.BOARD_CONTENT LIKE #{keyword}
+	            )
+	        </otherwise>
+	    </choose>
+	    ORDER BY B.BOARD_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
 
-    <!--  검색 결과 목록 (페이징) -->
-    <select id="searchBoards" parameterType="map"
-            resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
-        SELECT
-               BOARD_NO boardNo
-             , BOARD_TITLE boardTitle
-             , BOARD_WRITER boardWriter
-             , BOARD_CONTENT boardContent
-             , BOARD_DATE boardDate
-             , COUNT count
-          FROM 
-               TB_BOARD
-        WHERE BOARD_STATUS = 'Y'
-        <choose>
-            <when test="type == 'title'">
-                AND BOARD_TITLE LIKE #{keyword}
-            </when>
-            <when test="type == 'writer'">
-                AND BOARD_WRITER LIKE #{keyword}
-            </when>
-            <when test="type == 'content'">
-                AND BOARD_CONTENT LIKE #{keyword}
-            </when>
-            <otherwise>
-                AND (
-                    BOARD_TITLE   LIKE #{keyword}
-                    OR BOARD_WRITER  LIKE #{keyword}
-                    OR BOARD_CONTENT LIKE #{keyword}
-                )
-            </otherwise>
-        </choose>
-        ORDER BY BOARD_NO DESC
-        OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
-    </select>
     
     
     

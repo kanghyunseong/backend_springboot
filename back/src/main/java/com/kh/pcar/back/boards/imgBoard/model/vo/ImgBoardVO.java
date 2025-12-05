@@ -11,6 +11,7 @@ public class ImgBoardVO {
    private Long imgBoardNo;
    private String imgBoardTitle;
    private String imgBoardWriter;
+   private Long imgWriterNo;
    private String imgBoardContent;
    private int imgCount;
    private String fileUrl;

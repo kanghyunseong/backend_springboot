@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface MainService {
 
-	Map<String,Object> findMainResponse();
+	Map<String, Object> findMainResponse();
 }

@@ -12,8 +12,8 @@ public class KakaoMemberVO {
 	private String memberName;
 	private String birthDay;
 	private String email;
-    private String phone;
-    private String licenseUrl;
+	private String phone;
+	private String licenseUrl;
 	private String role;
 	private String provider;
 }

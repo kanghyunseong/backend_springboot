@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.boards.comment.model.dto.CommentDTO;
-import com.kh.pcar.back.boards.comment.model.vo.CommentVO;
 
 public interface CommentService {
 	
@@ -15,11 +14,11 @@ public interface CommentService {
     List<CommentDTO> findAll(Long boardNo);
 
     // 댓글 수정
-    void update(Long commentNo, String commentContent, String loginId);
+    void update(Long commentNo, String commentContent, Long loginUserNo);
 
     // 댓글 삭제(STATUS 변경)
-    void delete(Long commentNo, String loginId);
+    void delete(Long commentNo, Long loginUserNo);
 
     // 댓글 신고
-    void report(Long commentNo, String loginId, String reason);
+    void report(Long commentNo, Long reporterNo, String reason);
 }
