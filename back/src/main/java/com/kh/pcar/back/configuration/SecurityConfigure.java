@@ -63,7 +63,7 @@ public class SecurityConfigure {
 		            requests.requestMatchers(HttpMethod.POST,
 		                    "/members/login",
 		                    "/members",
-		                    "members/**",
+		                    "/members/**",
 		                    "/auth/refresh",
 		                    "/cars/**",
 		                    "/station/**",
