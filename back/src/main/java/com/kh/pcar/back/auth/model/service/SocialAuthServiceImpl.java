@@ -35,7 +35,7 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 	private final RestTemplate restTemplate = new RestTemplate();
 	private final MemberService memberService;
 	private final MemberMapper memberMapper;
-	private final TokenService tokenService; // ✅ 추가
+	private final TokenService tokenService; 
 
 	@Value("${naver.client.id}")
 	private String naverClientId;
