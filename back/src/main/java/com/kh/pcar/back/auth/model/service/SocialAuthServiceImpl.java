@@ -129,7 +129,7 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		loginResponse.put("phone", user.getMobile());
 		loginResponse.put("role", user.getRole());
 		loginResponse.put("provider", user.getProvider());
-		// ⭐ accessToken, refreshToken은 이미 tokenService.generateToken()에서 추가됨
+		// accessToken, refreshToken은 이미 tokenService.generateToken()에서 추가됨
 
 		return loginResponse;
 	}
@@ -220,7 +220,7 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		loginResponse.put("role", member.getRole());
 		loginResponse.put("licenseImg", member.getLicenseUrl());
 		loginResponse.put("provider", member.getProvider());
-		// ⭐ accessToken, refreshToken은 이미 tokenService.generateToken()에서 추가됨
+		// accessToken, refreshToken은 이미 tokenService.generateToken()에서 추가됨
 
 		return loginResponse;
 	}
