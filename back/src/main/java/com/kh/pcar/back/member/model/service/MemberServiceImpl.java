@@ -3,12 +3,18 @@ package com.kh.pcar.back.member.model.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.pcar.back.auth.model.dto.MemberLoginDTO;
 import com.kh.pcar.back.auth.model.dto.NaverProfileDTO;
+import com.kh.pcar.back.auth.model.service.AuthServiceImpl;
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.exception.CustomAuthenticationException;
 import com.kh.pcar.back.exception.FileUploadException;
@@ -22,6 +28,7 @@ import com.kh.pcar.back.member.model.dto.MemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberUpdateDTO;
 import com.kh.pcar.back.member.model.vo.MemberVO;
 import com.kh.pcar.back.token.model.dao.TokenMapper;
+import com.kh.pcar.back.token.model.service.TokenService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -102,13 +109,13 @@ public class MemberServiceImpl implements MemberService {
 
 			return naverMember;
 		} else {
-			
+
 			mapper.socialJoin(naverMember);
 			mapper.joinSocial(naverMember);
 			Long userNo = mapper.findUserNoById(naverMember.getId());
-			
+
 			if (userNo == null) {
-			    throw new MemberJoinException("사용자 정보를 찾을 수 없습니다.");
+				throw new MemberJoinException("사용자 정보를 찾을 수 없습니다.");
 			}
 			naverMember.setUserNo(userNo);
 
@@ -119,7 +126,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	@Transactional
-	public Map<String, String> kakaoJoin(KakaoMemberDTO member, MultipartFile licenseImg) {
+	public void kakaoJoin(KakaoMemberDTO member, MultipartFile licenseImg) {
 
 		// log.info("222222222222222{}" , member);
 
@@ -129,10 +136,7 @@ public class MemberServiceImpl implements MemberService {
 		mapper.kakaoJoin(member);
 		mapper.kakaoProviderJoin(member);
 
-		KakaoMemberDTO kakaoMember = mapper.findByUserId(member.getMemberId());
-
-		// log.info("4444444{}",kakaoMember);
-		return null;
+		// KakaoMemberDTO kakaoMember = mapper.findByUserId(member.getMemberId());
 
 	}
 
@@ -222,14 +226,14 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	private String handleFileUpload(MultipartFile licenseImg) {
-	    if (licenseImg != null && !licenseImg.isEmpty()) {
-	        try {
-	            return fileService.store(licenseImg);
-	        } catch (Exception e) {
-	            throw new FileUploadException("파일 업로드에 실패했습니다.");
-	        }
-	    }
-	    return null;
+		if (licenseImg != null && !licenseImg.isEmpty()) {
+			try {
+				return fileService.store(licenseImg);
+			} catch (Exception e) {
+				throw new FileUploadException("파일 업로드에 실패했습니다.");
+			}
+		}
+		return null;
 	}
 	// 원래 사용했으나 현재 로그인한 유저로 인증하고싶어서 삭제
 	/*

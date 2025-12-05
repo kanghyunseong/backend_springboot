@@ -28,30 +28,29 @@ public interface MemberMapper {
 	int join(MemberVO member);
 
 	int kakaoJoin(KakaoMemberDTO member);
-	
+
 	@Insert("INSERT INTO TB_SOCIAL (USER_NO,PROVIDER) VALUES (SEQ_MEMBER.CURRVAL, #{provider})")
-	int kakaoProviderJoin(KakaoMemberDTO member );
-	
+	int kakaoProviderJoin(KakaoMemberDTO member);
+
 	@Insert("INSERT INTO TB_LOCAL (USER_NO,PASSWORD) VALUES (SEQ_MEMBER.CURRVAL, #{memberPwd})")
 	int joinLocal(MemberVO member);
 
 	@Select("Select USER_NO FROM TB_MEMBER WHERE USER_ID = #{memberId}")
 	Long findUserNoById(String memberId);
-	
+
 	MemberDTO loadUser(String userId);
 
 	void socialJoin(NaverProfileDTO naverMember);
 
 	void joinSocial(NaverProfileDTO naverMember);
-	
+
 	KakaoMemberDTO findByUserId(String id);
-	
 
 	@Update("UPDATE TB_LOCAL SET PASSWORD = #{newPassword} WHERE USER_NO = #{userNo}")
 	void changePassword(Map<String, Object> changeRequest);
-	
+
 	@Update("UPDATE TB_MEMBER SET STATUS = 'N' WHERE USER_NO = #{userNo} ")
 	void deleteUserNo(String userNo);
-	
-	void updateUser(Map<String,Object> updateParam);
+
+	void updateUser(Map<String, Object> updateParam);
 }

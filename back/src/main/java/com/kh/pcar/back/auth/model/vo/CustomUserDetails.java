@@ -10,8 +10,8 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CustomUserDetails implements UserDetails{
-	
+public class CustomUserDetails implements UserDetails {
+
 	private Long userNo;
 	private String username; // ID
 	private String password;
@@ -21,7 +21,5 @@ public class CustomUserDetails implements UserDetails{
 	private String phone;
 	private String licenseUrl;
 	private Collection<? extends GrantedAuthority> authorities;
-	
-	
-	
+
 }
