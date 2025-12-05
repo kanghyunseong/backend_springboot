@@ -63,7 +63,7 @@ public class SecurityConfigure {
 		            requests.requestMatchers(HttpMethod.POST,
 		                    "/members/login",
 		                    "/members",
-		                    "members/**",
+		                    "/members/**",
 		                    "/auth/refresh",
 		                    "/cars/**",
 		                    "/station/**",
@@ -77,12 +77,12 @@ public class SecurityConfigure {
 		                    "/cars/**",
 		                    "/station/**",
 		                    "/station/search",
-		                    "/boards/boards",
-		                    "/boards/boards/search",
-		                    "/boards/imgBoards",
-		                    "/boards/imgBoards/search",
-		                    "/boards/notices",
-		                    "/boards/notices/search",
+		                    "/boards",
+		                    "/boards/search",
+		                    "/imgBoards",
+		                    "/imgBoards/search",
+		                    "/notices",
+		                    "/notices/search",
 		                    "/comments/**",
 		                    "/imgComments/**",
 		                    "/reserve/**",
@@ -92,16 +92,16 @@ public class SecurityConfigure {
 
 		            // 3. GET - 로그인 필요 (상세 페이지들)
 		            requests.requestMatchers(HttpMethod.GET,
-		                    "/boards/boards/*",
-		                    "/boards/imgBoards/*",
-		                    "/boards/notices/*"
+		                    "/boards/*",
+		                    "/imgBoards/*",
+		                    "/notices/*"
 		            ).authenticated();
 
 		            // 4. PUT - 로그인 필요
 		            requests.requestMatchers(HttpMethod.PUT,
-		                    "/members", "/members/**",
-		                    "/boards/**", "/boards/boards/**",
-		                    "/boards/imgBoards", "/boards/imgBoards/**",
+		                    "/members", "/members/**", 
+		                    "/boards/**", 
+		                    "/imgBoards/**", 
 		                    "/comments/**", "/imgComments/**",
 		                    "/reserve/**", "/reviews/**"
 		            ).authenticated();
@@ -109,7 +109,7 @@ public class SecurityConfigure {
 		            // 5. DELETE - 로그인 필요
 		            requests.requestMatchers(HttpMethod.DELETE,
 		                    "/members",
-		                    "/boards/**", "/boards/boards/**",
+		                    "/boards/**", "/imgBoards/**", 
 		                    "/comments/**", "/imgComments/**",
 		                    "/reserve/**", "/reviews/**","/station/**"
 		            ).authenticated();
@@ -118,10 +118,10 @@ public class SecurityConfigure {
 		            // 6. POST - 게시글/댓글/공지 작성 (로그인 필요)
 		            requests.requestMatchers(HttpMethod.POST,
 		                    "/boards/**",
-		                    "/boards/imgBoards/**",
+		                    "/imgBoards/**",
 		                    "/comments/**",
 		                    "/imgComments/**",
-		                    "/boards/notices/**",
+		                    "/notices/**",
 		                    "/reviews/**"
 		            ).authenticated();
 

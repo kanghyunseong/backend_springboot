@@ -13,13 +13,12 @@ public interface ImgCommentService {
 	// 특정 게시글의 댓글 전체 조회
     List<ImgCommentDTO> findAll(Long imgBoardNo);
 
-    // 댓글 수정
-    void update(Long imgCommentNo, String imgCommentContent, String loginId);
+    // 댓글 수정 
+    void update(Long imgCommentNo, String imgCommentContent, Long loginUserNo);
 
-    // 댓글 삭제(STATUS 변경)
-    void delete(Long imgCommentNo, String loginId);
+    // 댓글 삭제(STATUS 변경) 
+    void delete(Long imgCommentNo, Long loginUserNo);
 
     // 댓글 신고
-    void report(Long imgCommentNo, String loginId, String reason);
-
+    void report(Long imgCommentNo, Long reporterNo, String reason);
 }

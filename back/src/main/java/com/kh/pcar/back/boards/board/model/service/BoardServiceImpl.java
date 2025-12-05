@@ -9,11 +9,11 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.PageResponseDTO;
 import com.kh.pcar.back.boards.board.model.dao.BoardMapper;
 import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
-import com.kh.pcar.back.boards.board.model.dto.PageResponseDTO;
 import com.kh.pcar.back.boards.board.model.vo.BoardVO;
-import com.kh.pcar.back.exception.CustomAuthenticationException;
+import com.kh.pcar.back.exception.CustomAuthorizationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public PageResponseDTO<BoardDTO> findAll(int pageNo) {
 
-	    int size = 10;
+	    int size = pageSize;
 	    int offset = pageNo * size;
 
 
@@ -57,16 +57,7 @@ public class BoardServiceImpl implements BoardService {
 	    // 전체 개수
 	    long total = boardMapper.countBoards();
 
-	    // 총 페이지 수
-	    int totalPages = (int) Math.ceil(total / (double) size);
-
-	    return new PageResponseDTO<>(
-	            list,
-	            totalPages,
-	            total,
-	            pageNo,
-	            size
-	    );
+	    return new PageResponseDTO<>(list, total, pageNo, size);
 	}
 	
 	
@@ -90,9 +81,7 @@ public class BoardServiceImpl implements BoardService {
         // 전체 개수 조회
         int totalCount = boardMapper.countSearchBoards(params);
 
-        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-
-        return new PageResponseDTO<>(list, pageNo, pageSize, totalPages, totalCount);
+        return new PageResponseDTO<>(list, totalCount, pageNo, pageSize);
     }
 
 	
@@ -117,33 +106,31 @@ public class BoardServiceImpl implements BoardService {
 	private void validateBoard(Long boardNo, CustomUserDetails userDetails) {
 		BoardDTO board = getBoardOrThrow(boardNo);
 		if(!board.getBoardWriter().equals(userDetails.getUsername())) {
-			throw new CustomAuthenticationException("게시글이 존재하지 않습니다.");
+			throw new CustomAuthorizationException("작성자만 수정/삭제할 수 있습니다.");
 		}
 	}
 	
 	@Override
-	public BoardDTO update(BoardDTO board, Long boardNo, 
-									CustomUserDetails userDetails) {
-		// 1. 원본 게시글 조회
-	    BoardDTO origin = boardMapper.findByBoardNo(boardNo);
-	    if (origin == null) {
-	        throw new RuntimeException("게시글이 존재하지 않습니다.");
-	    }
+	public BoardDTO update(BoardDTO board, Long boardNo, CustomUserDetails userDetails) {
+		
+	    // 1. 존재 여부 체크 (없으면 InvalidParameterException -> 400)
+	    BoardDTO origin = getBoardOrThrow(boardNo);
 
-	    // 2. 작성자 체크
+	    // 2. 권한 체크 (작성자만 수정 가능 – 403)
 	    if (!origin.getBoardWriter().equals(userDetails.getUsername())) {
-	        throw new RuntimeException("작성자만 수정 가능합니다.");
+	        throw new CustomAuthorizationException("작성자만 수정 가능합니다.");
 	    }
 
 	    // 3. 수정 적용
-	    board.setBoardNo(boardNo);
-	    board.setBoardWriter(origin.getBoardWriter());
+	    origin.setBoardTitle(board.getBoardTitle());
+	    origin.setBoardContent(board.getBoardContent());
 
-	    boardMapper.update(board);
+	    boardMapper.update(origin);
 
 	    // 4. 최신 데이터 다시 조회해서 반환
 	    return boardMapper.findByBoardNo(boardNo);
 	}
+
 	
 	@Override
 	public void deleteByBoardNo(Long boardNo, CustomUserDetails userDetails) {
