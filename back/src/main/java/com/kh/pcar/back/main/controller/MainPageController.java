@@ -17,16 +17,14 @@ import lombok.RequiredArgsConstructor;
 public class MainPageController {
 
 	private final MainService ms;
-	
+
 	@GetMapping
-	public ResponseEntity<Map<String,Object>> findMainResponse(){
-		
-		Map<String,Object> response = ms.findMainResponse();
-		
+	public ResponseEntity<Map<String, Object>> findMainResponse() {
+
+		Map<String, Object> response = ms.findMainResponse();
+
 		return ResponseEntity.ok(response);
-		
+
 	}
-	
-	
-	
+
 }

@@ -14,12 +14,12 @@ import lombok.ToString;
 public class KakaoProfileDTO {
 
 	private Long UserNo;
-	private String id;          
-    private String name;    
-    private String email;       
-    private String birthday;      
-    private String mobile;      
-    private String role;
+	private String id;
+	private String name;
+	private String email;
+	private String birthday;
+	private String mobile;
+	private String role;
 	private String provider;
-	
+
 }
