@@ -65,7 +65,7 @@ public class ImgCommentController {
             @RequestBody ImgCommentDTO imgComment,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        // ★ 로그인 체크
+        // 로그인 체크
         if (userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
