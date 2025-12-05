@@ -58,14 +58,14 @@ public class MemberController {
 	}
 
 	@PostMapping("/kakao")
-	public ResponseEntity<Map<String, String>> kakaoJoin(@Valid @ModelAttribute KakaoMemberDTO member,
+	public ResponseEntity<String> kakaoJoin(@Valid @ModelAttribute KakaoMemberDTO member,
 			@RequestParam(name = "licenseImg", required = false) MultipartFile licenseImg) {
 
 		log.info("Member에 들어온 값 {} , Multipart : {} ", member, licenseImg);
 
-		Map<String, String> loginResponse = memberService.kakaoJoin(member, licenseImg);
+		memberService.kakaoJoin(member, licenseImg);
 
-		return ResponseEntity.ok(loginResponse);
+		return ResponseEntity.ok("카카오로그인완료");
 	}
 
 	@PutMapping

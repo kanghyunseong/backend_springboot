@@ -18,39 +18,28 @@ import lombok.extern.slf4j.Slf4j;
 public class MainServiceImpl implements MainService {
 
 	private final MainMapper mapper;
-	
-	
+
 	@Override
 	@Transactional
 	public Map<String, Object> findMainResponse() {
-		
-		
+
 		String countCars = mapper.countCar();
-		
+
 		String countReservations = mapper.countReservation();
-		
+
 		String countMembers = mapper.countMember();
-		
-		
-		
+
 		List<PopularCarDTO> popularCars = mapper.findPopularCar();
-		
-		log.info("car : {} , Reservation , {} , countMembers : {}  , popularcars : {} " , countCars , countReservations , countMembers , popularCars);
-	
-		
-		Map<String,Object> response = Map.of(
-										"countCars",countCars
-									,   "countReservation" , countReservations
-									,   "countMembers" , countMembers
-									,   "popularCars" , popularCars
-				);
-		
-		log.info("response : {} " , response);
-		
+
+		log.info("car : {} , Reservation , {} , countMembers : {}  , popularcars : {} ", countCars, countReservations,
+				countMembers, popularCars);
+
+		Map<String, Object> response = Map.of("countCars", countCars, "countReservation", countReservations,
+				"countMembers", countMembers, "popularCars", popularCars);
+
+		log.info("response : {} ", response);
+
 		return response;
 	}
 
-	
-	
-	
 }
