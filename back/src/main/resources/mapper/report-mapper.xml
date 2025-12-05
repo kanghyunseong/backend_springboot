@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.pcar.back.boards.Report.dao.ReportMapper">
+	
+    <insert id="report"
+        parameterType="com.kh.pcar.back.boards.Report.vo.ReportVO">
+	    INSERT
+	      INTO 
+	           TB_REPORT
+	    	   (
+	    	   REPORT_NO
+	    	 , TARGET_TYPE
+	    	 , TARGET_NO
+	    	 , REPORTED_USER
+	    	 , REPORTER
+	    	 , REASON
+	    	 , STATUS
+	    	 , REPORT_DATE
+	    	   )
+	    VALUES 
+	      	   (
+	      	   SEQ_RNO.NEXTVAL
+	      	 , #{targetType}
+	      	 , #{targetNo}
+	      	 , #{reportedUser}
+	      	 , #{reporter}
+	      	 , #{reason}
+	      	 , #{status}
+	      	 , SYSDATE
+	      	   )
+	</insert>
+
+    <select id="findByReporterAndTarget" 
+    		resultType="com.kh.pcar.back.boards.Report.vo.ReportVO">
+        SELECT
+               REPORT_NO reportNo
+             , TARGET_TYPE targetType
+             , TARGET_NO targetNo
+             , REPORTED_USER reportedUser
+             , REPORTER reporter
+             , REASON reason
+             , STATUS status
+             , REJECTED rejected
+             , REPORT_DATE reportDate
+          FROM 
+          	   TB_REPORT
+         WHERE 
+         	   REPORTER = #{reporter}
+           AND 
+           	   TARGET_TYPE = #{targetType}
+           AND 
+           	   TARGET_NO = #{targetNo}
+    </select>
+    
+    
+</mapper>

@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.kh.pcar.back.boards.comment.model.dto.CommentDTO;
-import com.kh.pcar.back.boards.comment.model.vo.CommentVO;
 
 @Mapper
 public interface CommentMapper {
@@ -23,8 +22,6 @@ public interface CommentMapper {
     // 댓글 삭제(STATUS 변경)
     int delete(@Param("commentNo") Long commentNo);
 
-    // 댓글 신고 등록
-    int reportRequest(@Param("commentNo") Long commentNo,
-                      @Param("reporterId") String reporterId,
-                      @Param("reason") String reason);
+    // 댓글 신고용: 댓글 작성자 USER_NO 조회
+    Long findWriterUserNo(@Param("commentNo") Long commentNo);
 }
