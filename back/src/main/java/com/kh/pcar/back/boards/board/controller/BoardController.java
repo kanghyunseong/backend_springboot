@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("boards/boards")
+@RequestMapping("boards")
 @RequiredArgsConstructor
 public class BoardController {
 

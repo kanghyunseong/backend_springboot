@@ -13,7 +13,7 @@ import com.kh.pcar.back.boards.notice.model.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/boards/notices")
+@RequestMapping("/notices")
 @RequiredArgsConstructor
 public class NoticeController {
 

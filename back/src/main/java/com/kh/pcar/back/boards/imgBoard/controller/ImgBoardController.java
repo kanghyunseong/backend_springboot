@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("boards/imgBoards")
+@RequestMapping("imgBoards")
 @RequiredArgsConstructor
 public class ImgBoardController {
 
