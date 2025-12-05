@@ -1,9 +1,8 @@
 package com.kh.pcar.back.boards.board.model.service;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
-
+import com.kh.pcar.back.boards.PageResponseDTO;
 import com.kh.pcar.back.boards.board.model.dto.BoardDTO;
-import com.kh.pcar.back.boards.board.model.dto.PageResponseDTO;
 
 public interface BoardService {
 	

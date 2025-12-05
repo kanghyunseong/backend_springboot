@@ -11,14 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.boards.PageResponseDTO;
 import com.kh.pcar.back.boards.imgBoard.model.dao.AttachmentMapper;
 import com.kh.pcar.back.boards.imgBoard.model.dao.ImgBoardMapper;
 import com.kh.pcar.back.boards.imgBoard.model.dto.AttachmentDTO;
 import com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO;
-import com.kh.pcar.back.boards.imgBoard.model.dto.ImgPageResponseDTO;
 import com.kh.pcar.back.boards.imgBoard.model.vo.AttachmentVO;
 import com.kh.pcar.back.boards.imgBoard.model.vo.ImgBoardVO;
-import com.kh.pcar.back.exception.CustomAuthenticationException;
+import com.kh.pcar.back.exception.CustomAuthorizationException;
 import com.kh.pcar.back.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
         // 2) 게시글 INSERT -> selectKey로 imgBoardNo 채워짐
         imgBoardMapper.imgSave(ib);
 
-        Long imgBoardNo = ib.getImgBoardNo();  // ✅ 이제 이 값으로 첨부파일 REF_INO 설정
+        Long imgBoardNo = ib.getImgBoardNo();  // 이제 이 값으로 첨부파일 REF_INO 설정
         log.info("새로 저장된 IMG_BOARD_NO = {}", imgBoardNo);
 
         // 3) 파일 없으면 그냥 끝
@@ -61,12 +61,8 @@ public class ImgBoardServiceImpl implements ImgBoardService {
             if (file == null || file.isEmpty()) continue;
 
             // 물리 파일 저장 (FileService는 기존에 쓰던 거 그대로 사용)
-            // 예: /uploads/2025/11/27/abcd-uuid.jpg 같은 경로 리턴된다고 가정
             String storedPath = fileService.store(file);
 
-            // storedPath를 "경로 + 변경파일명"으로 쓰는지,
-            // 경로/파일명 분리해서 저장하는지는 FileService 구현에 맞춰 조절
-            // 예시로 그냥 전체를 FILE_PATH에 저장하고 CHANGE_NAME에는 파일명만 분리했다고 치자.
             String originName = file.getOriginalFilename();
             String changeName = extractFileName(storedPath); // util 메서드 만들어서 사용
 
@@ -74,7 +70,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
                     .refIno(imgBoardNo)
                     .originName(originName)
                     .changeName(changeName)
-                    .filePath(storedPath)  // 혹은 디렉토리 경로만
+                    .filePath(storedPath)
                     .status("Y")
                     .build();
 
@@ -82,7 +78,6 @@ public class ImgBoardServiceImpl implements ImgBoardService {
         }
     }
 
-    // 예시용 유틸 (storedPath에서 파일명만 뽑는다고 가정)
     private String extractFileName(String path) {
         if (path == null) return null;
         int idx = path.lastIndexOf('/');
@@ -90,57 +85,39 @@ public class ImgBoardServiceImpl implements ImgBoardService {
         return path.substring(idx + 1);
     }		
 
-	@Override
-	public ImgPageResponseDTO<ImgBoardDTO> imgFindAll(int pageNo) {
-		 int size = 10;
-	    int offset = pageNo * size;
+    @Override
+    public PageResponseDTO<ImgBoardDTO> imgFindAll(int pageNo) {
+        int size = pageSize;
+        int offset = pageNo * size;
 
+        RowBounds rb = new RowBounds(offset, size);
 
-	    // RowBounds 정상 계산
-	    RowBounds rb = new RowBounds(offset, size);
+        List<ImgBoardDTO> list = imgBoardMapper.imgFindAll(rb);
+        long total = imgBoardMapper.countImgBoards();
 
-	    // 현재 페이지 목록
-	    List<ImgBoardDTO> list = imgBoardMapper.imgFindAll(rb);
-
-	    // 전체 개수
-	    long total = imgBoardMapper.countImgBoards();
-
-	    // 총 페이지 수
-	    int totalPages = (int) Math.ceil(total / (double) size);
-
-	    return new ImgPageResponseDTO<>(
-	            list,
-	            totalPages,
-	            total,
-	            pageNo,
-	            size
-	    );
-	}
+        // totalPages 계산은 PageResponseDTO 안에서 처리
+        return new PageResponseDTO<>(list, total, pageNo, size);
+    }
 	
-	@Override
-    public ImgPageResponseDTO<ImgBoardDTO> searchImgBoards(String type, String keyword, int pageNo) {
+    @Override
+    public PageResponseDTO<ImgBoardDTO> searchImgBoards(String type, String keyword, int pageNo) {
 
         log.info("검색 service - type: {}, keyword: {}, page: {}", type, keyword, pageNo);
 
         int offset = pageNo * pageSize;
 
-        // MyBatis에 넘길 파라미터
         Map<String, Object> params = new HashMap<>();
-        params.put("type", type);                         // title / writer / content
-        params.put("keyword", "%" + keyword + "%");       // LIKE 검색용
+        params.put("type", type);
+        params.put("keyword", "%" + keyword + "%");
         params.put("offset", offset);
         params.put("pageSize", pageSize);
 
-        // 목록 조회
         List<ImgBoardDTO> list = imgBoardMapper.searchImgBoards(params);
-
-        // 전체 개수 조회
         int totalCount = imgBoardMapper.countSearchImgBoards(params);
 
-        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-
-        return new ImgPageResponseDTO<>(list, pageNo, pageSize, totalPages, totalCount);
+        return new PageResponseDTO<>(list, totalCount, pageNo, pageSize);
     }
+
 	
 
 	@Override
@@ -177,36 +154,39 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 	}
 	
 	private ImgBoardDTO validateImgBoard(Long imgBoardNo, CustomUserDetails userDetails) {
-		ImgBoardDTO imgBoard = getImgBoardOrThrow(imgBoardNo);
-		if(!imgBoard.getImgBoardWriter().equals(userDetails.getUsername())) {
-			throw new CustomAuthenticationException("게시글이 존재하지 않습니다.");
-		}
-		
-		return imgBoard;
-	}	
+	    ImgBoardDTO imgBoard = getImgBoardOrThrow(imgBoardNo);
+	    if (!imgBoard.getImgBoardWriter().equals(userDetails.getUsername())) {
+	        throw new CustomAuthorizationException("작성자만 수정/삭제할 수 있습니다.");
+	    }
+	    return imgBoard;
+	}
 	
 	@Override
-	public ImgBoardDTO imgUpdate(ImgBoardDTO imgBoard, MultipartFile[] files
-						  ,Long imgBoardNo, CustomUserDetails userDetails) {
-		
-		// 1. 게시글 존재 + 작성자 검증 (공통 함수 사용)
+	public ImgBoardDTO imgUpdate(ImgBoardDTO imgBoard, MultipartFile[] files,
+	                             Long imgBoardNo, CustomUserDetails userDetails) {
+
+	    // 1. 게시글 존재 + 작성자 검증
 	    ImgBoardDTO imgOrigin = validateImgBoard(imgBoardNo, userDetails);
 
-	    // 2. 수정 적용
+	    // 2. 내용 수정
 	    imgBoard.setImgBoardNo(imgBoardNo);
 	    imgBoard.setImgBoardWriter(imgOrigin.getImgBoardWriter());
-	    
-	    // 여기서 userDetails 안에 userNo 있다고 가정
+
 	    Long loginUserNo = userDetails.getUserNo();
-
 	    imgBoardMapper.imgUpdate(imgBoard, loginUserNo);
-	    
-		// 기존 첨부파일은 무조건 전부 비활성화 (이미지 전부 삭제 효과)
-	    attachmentMapper.disableByRefIno(imgBoardNo);
 
-	    // 3. 최신 데이터 다시 조회해서 반환
-	    if (files != null && files.length > 0) {
-	    	// 새 첨부파일들 저장
+	    // ====== 파일 처리 시작 ======
+
+	    // 새 파일이 있는지 여부 체크
+	    boolean hasNewFiles = files != null
+	            && java.util.Arrays.stream(files)
+	                               .anyMatch(f -> f != null && !f.isEmpty());
+
+	    if (hasNewFiles) {
+	        // 1) 기존 첨부파일 모두 비활성화
+	        attachmentMapper.disableByRefIno(imgBoardNo);
+
+	        // 2) 새 첨부파일 저장
 	        for (MultipartFile file : files) {
 	            if (file == null || file.isEmpty()) continue;
 
@@ -226,9 +206,12 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 	            attachmentMapper.insertAttachment(avo);
 	        }
 	    }
-	    // 4. 최신 데이터 다시 조회해서 반환 
+	    // 새 파일이 하나도 없으면 → 기존 이미지 그대로 유지 (아무것도 안 함)
+
+	    // 3. 최신 데이터 다시 조회해서 반환
 	    return findByImgBoardNo(imgBoardNo);
 	}
+
 
 	@Override
 	@Transactional
@@ -242,10 +225,11 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 
 	    int result = imgBoardMapper.deleteByImgBoardNo(imgBoardNo, loginUserNo);
 	    if (result == 0) {
-	        throw new RuntimeException("삭제할 수 없습니다.");
+	        throw new InvalidParameterException("삭제할 게시글이 존재하지 않습니다.");
 	    }
 
 	    // 3. 첨부파일도 같이 논리 삭제 (이미 이렇게 쓰고 있으면 유지)
 	    attachmentMapper.disableByRefIno(imgBoardNo);
 	}
+
 }
