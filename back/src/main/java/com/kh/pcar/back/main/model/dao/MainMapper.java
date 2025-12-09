@@ -32,7 +32,7 @@ public interface MainMapper {
 			    ON
 			       c.CAR_ID = r.CAR_ID
 			 WHERE
-			       r.RESERVATION_STATUS = 'Y'
+			       r.RESERVATION_STATUS = 'N'
 			 GROUP BY
 			       c.CAR_ID, c.CAR_NAME, c.CAR_CONTENT, c.CAR_IMAGE
 			 ORDER BY
