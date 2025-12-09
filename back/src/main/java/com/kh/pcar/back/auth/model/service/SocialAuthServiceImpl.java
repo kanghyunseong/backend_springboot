@@ -22,6 +22,7 @@ import com.kh.pcar.back.exception.NaverAuthException;
 import com.kh.pcar.back.member.model.dao.MemberMapper;
 import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.service.MemberService;
+import com.kh.pcar.back.token.model.service.TokenService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 	private final RestTemplate restTemplate = new RestTemplate();
 	private final MemberService memberService;
 	private final MemberMapper memberMapper;
+	private final TokenService tokenService; 
 
 	@Value("${naver.client.id}")
 	private String naverClientId;
@@ -76,12 +78,12 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 	@Override
 	public Map<String, String> socialLogin(String code, String state, String provider) {
 		Map<String, Object> tokens = getNaverTokens(code, state);
-		String accessToken = (String) tokens.get("access_token");
-		String refreshToken = (String) tokens.get("refresh_token");
+		String naverAccessToken = (String) tokens.get("access_token");
+		String naverRefreshToken = (String) tokens.get("refresh_token");
 
 		String profileUri = "https://openapi.naver.com/v1/nid/me";
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + accessToken);
+		headers.set("Authorization", "Bearer " + naverAccessToken);
 		HttpEntity<Void> entity = new HttpEntity<>(headers);
 
 		Map<String, Object> response;
@@ -100,19 +102,25 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		NaverProfileDTO profileDTO = new NaverProfileDTO(null, (String) response.get("id"),
 				(String) response.get("name"), (String) response.get("email"),
 				(String) response.get("birthyear") + "-" + (String) response.get("birthday"),
-				(String) response.get("mobile"), accessToken, refreshToken, provider, "ROLE_USER");
+				(String) response.get("mobile"), naverAccessToken, naverRefreshToken, provider, "ROLE_USER");
 
 		NaverProfileDTO npd = memberService.socialJoin(profileDTO);
 
 		NaverProfileVO vo = NaverProfileVO.builder().userNo(npd.getUserNo()).name(npd.getName()).id(npd.getId())
-				.email(npd.getEmail()).mobile(npd.getMobile()).role(npd.getRole()).accessToken(npd.getAccessToken())
-				.refreshtoken(npd.getRefreshtoken()).birthday(npd.getBirthday()).provider(npd.getProvider()).build();
+				.email(npd.getEmail()).mobile(npd.getMobile()).role(npd.getRole()).accessToken(naverAccessToken)
+				.refreshtoken(naverRefreshToken).birthday(npd.getBirthday()).provider(npd.getProvider()).build();
 
 		return getLoginResponse(vo);
 	}
 
 	private Map<String, String> getLoginResponse(NaverProfileVO user) {
-		Map<String, String> loginResponse = new HashMap<>();
+		// TokenService로 우리 JWT 발급
+		Map<String, String> loginResponse = tokenService.generateToken(user.getId(), // username (네이버 ID)
+				user.getUserNo(), // userNo
+				user.getRole() // role
+		);
+
+		// 사용자 정보 추가
 		loginResponse.put("userId", user.getId());
 		loginResponse.put("userNo", String.valueOf(user.getUserNo()));
 		loginResponse.put("birthDay", user.getBirthday());
@@ -120,9 +128,9 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		loginResponse.put("email", user.getEmail());
 		loginResponse.put("phone", user.getMobile());
 		loginResponse.put("role", user.getRole());
-		loginResponse.put("accessToken", user.getAccessToken());
-		loginResponse.put("refreshToken", user.getRefreshtoken());
 		loginResponse.put("provider", user.getProvider());
+		// accessToken, refreshToken은 이미 tokenService.generateToken()에서 추가됨
+
 		return loginResponse;
 	}
 
@@ -152,12 +160,12 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 			throw new KakaoAuthException("카카오 로그인 처리 중 문제가 발생했습니다.");
 		}
 
-		String accessToken = (String) response.get("access_token");
-		String refreshToken = (String) response.get("refresh_token");
+		String kakaoAccessToken = (String) response.get("access_token");
+		String kakaoRefreshToken = (String) response.get("refresh_token");
 
 		// 유저 정보 조회
 		HttpHeaders userHeaders = new HttpHeaders();
-		userHeaders.setBearerAuth(accessToken);
+		userHeaders.setBearerAuth(kakaoAccessToken);
 		HttpEntity<Void> userRequest = new HttpEntity<>(userHeaders);
 
 		Map<String, Object> userInfo;
@@ -174,8 +182,8 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 
 		log.info("kakao userInfo : {}", userInfo);
 
-		return Map.of("id", String.valueOf(userInfo.get("id")), "accessToken", accessToken, "refreshToken",
-				refreshToken);
+		return Map.of("id", String.valueOf(userInfo.get("id")), "kakaoAccessToken", kakaoAccessToken,
+				"kakaoRefreshToken", kakaoRefreshToken);
 	}
 
 	public int checkUserById(Map<String, String> userInfo) {
@@ -188,14 +196,21 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		if (member == null)
 			throw new KakaoAuthException("등록되지 않은 카카오 사용자입니다.");
 
-		member.setAccessToken(userInfo.get("accessToken"));
-		member.setRefreshToken(userInfo.get("refreshToken"));
+		// 카카오 토큰은 참고용 (선택사항)
+		member.setAccessToken(userInfo.get("kakaoAccessToken"));
+		member.setRefreshToken(userInfo.get("kakaoRefreshToken"));
 
 		return getLoginResponse(member);
 	}
 
 	private Map<String, String> getLoginResponse(KakaoMemberDTO member) {
-		Map<String, String> loginResponse = new HashMap<>();
+		// TokenService로 우리 JWT 발급
+		Map<String, String> loginResponse = tokenService.generateToken(member.getMemberId(), // username (카카오 ID)
+				member.getUserNo(), // userNo
+				member.getRole() // role
+		);
+
+		// 사용자 정보 추가
 		loginResponse.put("userId", member.getMemberId());
 		loginResponse.put("userNo", String.valueOf(member.getUserNo()));
 		loginResponse.put("birthDay", member.getBirthDay());
@@ -203,10 +218,10 @@ public class SocialAuthServiceImpl implements SocialAuthService {
 		loginResponse.put("email", member.getEmail());
 		loginResponse.put("phone", member.getPhone());
 		loginResponse.put("role", member.getRole());
-		loginResponse.put("refreshToken", member.getRefreshToken());
-		loginResponse.put("accessToken", member.getAccessToken());
 		loginResponse.put("licenseImg", member.getLicenseUrl());
 		loginResponse.put("provider", member.getProvider());
+		// accessToken, refreshToken은 이미 tokenService.generateToken()에서 추가됨
+
 		return loginResponse;
 	}
 }
