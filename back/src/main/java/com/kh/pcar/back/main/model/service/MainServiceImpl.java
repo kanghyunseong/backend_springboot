@@ -28,6 +28,8 @@ public class MainServiceImpl implements MainService {
 		String countReservations = mapper.countReservation();
 
 		String countMembers = mapper.countMember();
+		
+		String countRentalCars = mapper.countRentalCars();
 
 		List<PopularCarDTO> popularCars = mapper.findPopularCar();
 
@@ -35,7 +37,7 @@ public class MainServiceImpl implements MainService {
 		//countMembers, popularCars);
 
 		Map<String, Object> response = Map.of("countCars", countCars, "countReservation", countReservations,
-				"countMembers", countMembers, "popularCars", popularCars);
+				"countMembers", countMembers, "countRentalCars", countRentalCars, "popularCars", popularCars);
 
 		// log.info("response : {} ", response);
 

@@ -10,7 +10,7 @@ import com.kh.pcar.back.main.model.dto.PopularCarDTO;
 @Mapper
 public interface MainMapper {
 
-	@Select("SELECT COUNT(*) FROM TB_CAR")
+	@Select("SELECT COUNT(*) FROM TB_CAR WHERE CAR_STATUS = 'Y'")
 	String countCar();
 
 	@Select("SELECT COUNT(*) FROM TB_RESERVATION")
@@ -19,6 +19,9 @@ public interface MainMapper {
 	@Select("SELECT COUNT(*) FROM TB_MEMBER")
 	String countMember();
 
+	@Select("SELECT COUNT(*) FROM TB_CAR C LEFT JOIN TB_RESERVATION R ON C.CAR_ID = R.CAR_ID WHERE R.RESERVATION_STATUS = 'Y'")
+	String countRentalCars();
+	
 	@Select("""
 			SELECT
 				   c.CAR_ID carId,
