@@ -45,11 +45,6 @@ public class ImgBoardController {
             @RequestParam(name = "files", required = false) MultipartFile[] files,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        if (userDetails == null) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("로그인이 필요합니다."));
-        }
 
         log.info("게시글 정보 : {}, 업로드 파일 개수 : {}", imgBoard, (files != null ? files.length : 0));
         imgBoardService.imgSave(imgBoard, files, userDetails.getUsername());
