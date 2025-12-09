@@ -263,4 +263,11 @@ public class GlobalExceptionHandler {
         error.put("error-message", "서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+    
+    // 이후에 추가 된것 
+    
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<Map<String,String>> handleFileStoageExceptionHandler(FileStorageException e){
+    	return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+    }
 }

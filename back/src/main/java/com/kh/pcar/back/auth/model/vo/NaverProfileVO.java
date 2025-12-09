@@ -12,6 +12,7 @@ public class NaverProfileVO {
 	private String email;
 	private String birthday;
 	private String mobile;
+	private String licenseUrl;
 	private String role;
 	private String accessToken;
 	private String refreshtoken;
