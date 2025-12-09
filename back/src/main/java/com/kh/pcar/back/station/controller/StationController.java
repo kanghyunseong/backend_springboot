@@ -28,71 +28,69 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/station")
 @RequiredArgsConstructor
-public class StationController {
+public class StationController {	
 	private final ServiceStation service;
-
-	// 서비스로 사용자의 위치 정보 전송 그 후 걸러낸걸 MyStationDTO에 담음
+	//서비스로 사용자의 위치 정보 전송 그 후 걸러낸걸 MyStationDTO에 담음 
 	@GetMapping
-	public List<StationDTO> stations(@RequestParam(name = "lat") String lat, @RequestParam(name = "lng") String lng,
-			@RequestParam(name = "stationId", required = false) String stationId) {
+	public List<StationDTO> stations(@RequestParam(name= "lat")String lat,@RequestParam(name="lng")String lng,@RequestParam(name="stationId",required=false) String stationId) {
 //		log.info("{}",page);
 //		log.info("{}",serviceKey);
 //		log.info("{}",perPage);
 //		log.info("{}",stationId);
 //		//현재 위치
 //		log.info("{},{}",lat,lng);
-		List<StationDTO> stations = service.stations(lat, lng, stationId);
+		List<StationDTO> stations = service.stations(lat,lng,stationId);
 //		log.info("{}",stations);
 		return stations;
 	}
-
 	@GetMapping("/search")
-	public List<StationDTO> searchStation(@RequestParam(name = "keyword") String keyword) {
-		List<StationDTO> result = service.searchByName(keyword);
+	public List<StationDTO> searchStation(@RequestParam(name="keyword") String keyword) {		
+		List<StationDTO> result =service.searchByName(keyword);		
 //		log.info("{}",result);		
 		return result;
 	}
-
 	@GetMapping("/searchDetail/{stationId}")
-	public List<StationDTO> searchDetail(@PathVariable(name = "stationId") Long stationId) {
-
-		List<StationDTO> result = service.searchDetail(stationId);
-		log.info("{}", result);
+	public List<StationDTO> searchDetail(@PathVariable(name="stationId") Long stationId){
+		
+		List<StationDTO> result =service.searchDetail(stationId);
+		log.info("{}",result);
 		return result;
-
+		
 	}
-
+	
+	
 	@PostMapping("/insert")
-	public ResponseEntity<String> insertReview(@RequestBody ReviewDTO reviewDto,
-			@AuthenticationPrincipal CustomUserDetails userDetails) {
-
-		int result = service.insertReview(reviewDto, userDetails);
-		if (result > 0) {
-
-			return ResponseEntity.ok().body("리뷰등록성공");
-		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+	public ResponseEntity<String> insertReview(@RequestBody ReviewDTO reviewDto ,@AuthenticationPrincipal CustomUserDetails userDetails) {
+//		log.info("34213213{}",reviewDto);
+		
+		 int result = service.insertReview(reviewDto,userDetails);
+		 if(result>0) {
+	
+			 return ResponseEntity.ok().body("리뷰등록성공");
+		 }else {
+			 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		 }
 	}
 
-	@DeleteMapping
-	public ResponseEntity<String> deleteReview(@RequestBody ReviewDTO reviewDto,
-			@AuthenticationPrincipal CustomUserDetails userDetails) {
-		log.error("{}", userDetails);
-		service.deleteReview(reviewDto, userDetails);
-
-		return ResponseEntity.ok().body("리뷰 삭제 성공");
-
+	
+	 @DeleteMapping
+	public ResponseEntity<?> deleteReview(@RequestBody ReviewDTO reviewDto,@AuthenticationPrincipal CustomUserDetails userDetails  ) {
+		 log.error("Principal 111111111111{}",userDetails);
+		service.deleteReview(reviewDto,userDetails);		
+	
+			return ResponseEntity.ok().body("리뷰 삭제 성공");
+		
 	}
-
+	
 	@GetMapping("/findAll")
-	public ResponseEntity<List<ReviewDTO>> findAll(@RequestParam(name = "stationId") String stationId
-
-	) {
-		log.info("{}", stationId);
+	public ResponseEntity<List<ReviewDTO>> findAll(
+												   @RequestParam(name="stationId") String stationId
+			
+												   ) {
+		log.info("{}",stationId);
 		List<ReviewDTO> review = service.findAll(stationId);
 //		
 		return ResponseEntity.ok(review);
-
+	
 	}
 }
