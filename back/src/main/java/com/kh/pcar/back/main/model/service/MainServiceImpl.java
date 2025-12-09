@@ -31,13 +31,13 @@ public class MainServiceImpl implements MainService {
 
 		List<PopularCarDTO> popularCars = mapper.findPopularCar();
 
-		log.info("car : {} , Reservation , {} , countMembers : {}  , popularcars : {} ", countCars, countReservations,
-				countMembers, popularCars);
+		//log.info("car : {} , Reservation , {} , countMembers : {}  , popularcars : {} ", countCars, countReservations,
+		//countMembers, popularCars);
 
 		Map<String, Object> response = Map.of("countCars", countCars, "countReservation", countReservations,
 				"countMembers", countMembers, "popularCars", popularCars);
 
-		log.info("response : {} ", response);
+		// log.info("response : {} ", response);
 
 		return response;
 	}

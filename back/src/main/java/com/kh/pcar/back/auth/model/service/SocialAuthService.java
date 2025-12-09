@@ -14,4 +14,6 @@ public interface SocialAuthService {
 
 	public int checkUserById(Map<String, String> userInfo);
 
+	
+	public Map<String, String> processCallback(String provider, String code, String state);
 }
