@@ -43,12 +43,6 @@ public class BoardController {
             @Valid BoardDTO board,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        if (userDetails == null) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("로그인이 필요합니다."));
-        }
-
         log.info("게시글 정보 : {}", board);
         boardService.save(board, userDetails.getUsername());
 

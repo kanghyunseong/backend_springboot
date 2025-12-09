@@ -37,7 +37,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
     @Override
     @Transactional
     public void imgSave(ImgBoardDTO imgBoard, MultipartFile[] files, String userId) {
-
+    	
         // 1) 게시글 VO 생성
         ImgBoardVO ib = ImgBoardVO.builder()
                 .imgBoardTitle(imgBoard.getImgBoardTitle())

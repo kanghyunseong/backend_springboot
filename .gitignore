@@ -7,7 +7,7 @@
 #Mac용 운영체제파일
 Thumbs.db
 #Window용 운영체제파일
-
+.README.md
 
 .settings/
 *.classpath
