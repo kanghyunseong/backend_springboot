@@ -128,7 +128,7 @@ public class ServiceStationImpl implements ServiceStation {
 			throw new InvalidParameterException("stationId가 필요합니다.");
 		}
 		
-		List<Map<String, Object>> dataList = StationData();
+		List<Map<String, Object>> dataList =  stationData();
 		
 		List<StationDTO> result = dataList.stream()
 				.filter(item -> String.valueOf(item.get("충전소아이디")).equals(String.valueOf(stationId)))
@@ -143,7 +143,7 @@ public class ServiceStationImpl implements ServiceStation {
 
 	@Override
 	public List<StationDTO> searchStation(String keyword) {
-		List<Map<String, Object>> data = StationData();
+		List<Map<String, Object>> data = stationData();
 		String kw = (keyword == null) ? "" : keyword.trim();
 
 		return data.stream().filter(item -> {
