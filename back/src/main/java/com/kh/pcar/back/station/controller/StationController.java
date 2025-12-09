@@ -33,22 +33,17 @@ public class StationController {
 
 	// 서비스로 사용자의 위치 정보 전송 그 후 걸러낸걸 MyStationDTO에 담음
 	@GetMapping
-	public List<StationDTO> stations(@RequestParam(name = "lat") String lat, @RequestParam(name = "lng") String lng,
-			@RequestParam(name = "stationId", required = false) String stationId) {
-//		log.info("{}",page);
-//		log.info("{}",serviceKey);
-//		log.info("{}",perPage);
-//		log.info("{}",stationId);
-//		//현재 위치
-//		log.info("{},{}",lat,lng);
-		List<StationDTO> stations = service.stations(lat, lng, stationId);
-//		log.info("{}",stations);
+	public List<StationDTO> stations(@RequestParam(name = "lat") String lat, @RequestParam(name = "lng") String lng
+			) {
+
+		List<StationDTO> stations = service.stations(lat, lng);
+
 		return stations;
 	}
 
 	@GetMapping("/search")
 	public List<StationDTO> searchStation(@RequestParam(name = "keyword") String keyword) {
-		List<StationDTO> result = service.searchByName(keyword);
+		List<StationDTO> result = service.searchStation(keyword);
 //		log.info("{}",result);		
 		return result;
 	}
@@ -66,7 +61,7 @@ public class StationController {
 	public ResponseEntity<String> insertReview(@RequestBody ReviewDTO reviewDto,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-		int result = service.insertReview(reviewDto, userDetails);
+		service.insertReview(reviewDto, userDetails);
 
 		return ResponseEntity.ok().body("리뷰등록성공");
 

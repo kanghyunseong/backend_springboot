@@ -40,56 +40,67 @@ public class ServiceStationImpl implements ServiceStation {
 	@Value("${charge.redirect.url}")
 	private String chargeRedirectUrl;
 
+	//Json<->Java객체 변환해줌
 	private final ObjectMapper mapper = new ObjectMapper();
-
-	/**
-	 * API 응답에서 "data" 필드(배열)를 Map 리스트로 안전하게 반환
-	 */
-	private List<Map<String, Object>> StationData() {
+	
+	//API에서 층전소 데이터 가져오기
+	@Override
+	public List<StationDTO> stations(String lat, String lng) {
+		List<Map<String, Object>> data = stationData();
+		
+		double userLat = Double.parseDouble(lat);
+		double userLng = Double.parseDouble(lng);
+		
+		return data.stream().filter(item -> {
+			double stLat = Double.parseDouble(String.valueOf(item.get("위도")));
+			double stLng = Double.parseDouble(String.valueOf(item.get("경도")));
+			double dist = distance(userLat, userLng, stLat, stLng);
+			return dist <= 5; // 단위 km
+		}).map(this::stationDTO).toList();
+	}
+	
+	private List<Map<String, Object>> stationData() {
+		//api 호출 url
 		String url = chargeRedirectUrl + "&perPage=300&" + chargeClientId;
+		//url은 생성시 내부적으로 네트워크에 접근해서 위험성이 있다 
+		//uri는 단순 파싱하고 restTemplate를 사용하려고 사용한다.
 		URI uri = URI.create(url);
-
-		// RestTemplate에서 발생하는 예외는 전역 핸들러에서 처리됨
-		String response = restTemplate.getForObject(uri, String.class);
-
-		// JSON 파싱 실패 시 HttpClientErrorException 발생
-		Map<String, Object> root;
+				
 		try {
-			root = mapper.readValue(response, new TypeReference<Map<String, Object>>() {
+			//get방식으로 uri요청을 보내면 String 형태로 응답이 와서 response에 담는다.
+			//restTemplate 외부 API를 호출할 때 사용하는 클래스
+			String response = restTemplate.getForObject(uri, String.class);
+			//readValue는 Json을 java객체로 파싱하는것 
+			Map<String,Object> root = mapper.readValue(response, new TypeReference<Map<String, Object>>() {
 			});
-		} catch (JsonProcessingException e) {
+			
+			Object dataObj = root.get("data");
+			if (dataObj == null)
+				return Collections.emptyList();
+			
+			return (List<Map<String,Object>>) dataObj;
+		}
+		catch (JsonProcessingException e) {
 			throw new HttpClientErrorException("충전소 API 응답 파싱 실패");
 		}
 
-		Object dataObj = root.get("data");
-		if (dataObj == null)
-			return Collections.emptyList();
-
-		return mapper.convertValue(dataObj, new TypeReference<List<Map<String, Object>>>() {
-		});
 	}
+
 
 	/**
-	 * stationId로 특정 충전소 조회
+	 * 두 좌표 사이 거리 계산 (km)
 	 */
-	private List<StationDTO> getStationById(Long stationId) {
-		if (stationId == null) {
-			throw new InvalidParameterException("stationId가 필요합니다.");
-		}
-
-		List<Map<String, Object>> dataList = StationData();
-
-		List<StationDTO> result = dataList.stream()
-				.filter(item -> String.valueOf(item.get("충전소아이디")).equals(String.valueOf(stationId)))
-				.map(this::stationDTO).toList();
-
-		if (result.isEmpty()) {
-			throw new ReservationNotFoundException("해당 충전소를 찾을 수 없습니다. stationId=" + stationId);
-		}
-
-		return result;
+	private double distance(double lat1, double lon1, double lat2, double lon2) {
+		double r = 6371;
+		double dLat = Math.toRadians(lat2 - lat1);
+		double dLon = Math.toRadians(lon2 - lon1);
+		
+		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(lat1))
+		* Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+		
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return r * c;
 	}
-
 	/**
 	 * Map → StationDTO 변환
 	 */
@@ -108,38 +119,30 @@ public class ServiceStationImpl implements ServiceStation {
 				regDate);
 	}
 
+
 	/**
-	 * 두 좌표 사이 거리 계산 (km)
+	 * stationId로 특정 충전소 조회
 	 */
-	private double distance(double lat1, double lon1, double lat2, double lon2) {
-		double R = 6371;
-		double dLat = Math.toRadians(lat2 - lat1);
-		double dLon = Math.toRadians(lon2 - lon1);
-
-		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(lat1))
-				* Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		return R * c;
+	private List<StationDTO> getStationById(Long stationId) {
+		if (stationId == null) {
+			throw new InvalidParameterException("stationId가 필요합니다.");
+		}
+		
+		List<Map<String, Object>> dataList = StationData();
+		
+		List<StationDTO> result = dataList.stream()
+				.filter(item -> String.valueOf(item.get("충전소아이디")).equals(String.valueOf(stationId)))
+				.map(this::stationDTO).toList();
+		
+		if (result.isEmpty()) {
+			throw new ReservationNotFoundException("해당 충전소를 찾을 수 없습니다. stationId=" + stationId);
+		}
+		
+		return result;
 	}
 
 	@Override
-	public List<StationDTO> stations(String lat, String lng, String stationId) {
-		List<Map<String, Object>> data = StationData();
-
-		double userLat = Double.parseDouble(lat);
-		double userLng = Double.parseDouble(lng);
-
-		return data.stream().filter(item -> {
-			double stLat = Double.parseDouble(String.valueOf(item.get("위도")));
-			double stLng = Double.parseDouble(String.valueOf(item.get("경도")));
-			double dist = distance(userLat, userLng, stLat, stLng);
-			return dist <= 3; // 단위 km
-		}).map(this::stationDTO).toList();
-	}
-
-	@Override
-	public List<StationDTO> searchByName(String keyword) {
+	public List<StationDTO> searchStation(String keyword) {
 		List<Map<String, Object>> data = StationData();
 		String kw = (keyword == null) ? "" : keyword.trim();
 
@@ -160,15 +163,22 @@ public class ServiceStationImpl implements ServiceStation {
 	@Override
 	@Valid
 	// 사용자가 이 작업을 할 권한이 있는지 검증
-	public Long insertReview(ReviewDTO reviewDto, CustomUserDetails userDetails) {
+	public int insertReview(ReviewDTO reviewDto, CustomUserDetails userDetails) {
 
 		if (reviewDto == null) {
 			throw new InvalidParameterException("필수 파라미터가 누락되었습니다.");
 		}
 
-		int result = reviewDto.setUserNo(userDetails.getUserNo());
+		reviewDto.setUserNo(userDetails.getUserNo());
 
-		return result;
+		int result = stationDao.insertReview(reviewDto);
+
+		if (result < 0) {
+			throw new RuntimeException("리뷰 등록을 하지 못했습니다.");
+		} else {
+
+			return result;
+		}
 	}
 
 	@Override
@@ -179,7 +189,7 @@ public class ServiceStationImpl implements ServiceStation {
 		reviewDto.setUserNo(stationDao.searchDetail(reviewDto.getReviewId()));
 
 		log.info(" {} ", reviewDto);
-		// Long타입은 비교 연산자를 사용해서 비교할 수 없음 따라서 Objects.equals를 사용해야 함
+		// Long타입은 비교 연산자를 사용해서 비교 할 수 없음 따라서 Objects.equals를 사용해야 함
 		if (!Objects.equals(reviewDto.getUserNo(), userDetails.getUserNo())) {
 			throw new CustomAuthenticationException("로그인한 유저와  게시글 글 작성자와 다릅니다.");
 		}
