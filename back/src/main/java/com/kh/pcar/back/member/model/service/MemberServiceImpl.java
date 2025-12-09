@@ -101,25 +101,24 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional
 	public NaverProfileDTO socialJoin(NaverProfileDTO naverMember) {
 
-		int count = mapper.countByMemberId(naverMember.getId());
+		int count = mapper.countByMemberId(naverMember.getMemberId());
 
 		if (count > 0) {
-			Long userNo = mapper.findUserNoById(naverMember.getId());
-			naverMember.setUserNo(userNo);
+			NaverProfileDTO member = mapper.findByNaverId(naverMember.getMemberId());
 
-			return naverMember;
+			if (member == null) {
+				throw new MemberJoinException("사용자 정보를 찾을 수 없습니다.");
+			}
+
+			return member;
+
 		} else {
 
 			mapper.socialJoin(naverMember);
 			mapper.joinSocial(naverMember);
-			Long userNo = mapper.findUserNoById(naverMember.getId());
+			NaverProfileDTO member = mapper.findByNaverId(naverMember.getMemberId());
 
-			if (userNo == null) {
-				throw new MemberJoinException("사용자 정보를 찾을 수 없습니다.");
-			}
-			naverMember.setUserNo(userNo);
-
-			return naverMember;
+			return member;
 		}
 
 	}
@@ -132,31 +131,11 @@ public class MemberServiceImpl implements MemberService {
 
 		member.setRole("ROLE_USER");
 		generateFileName(member, licenseImg);
-		// log.info("33333333333{}" , member);
+
 		mapper.kakaoJoin(member);
 		mapper.kakaoProviderJoin(member);
 
-		// KakaoMemberDTO kakaoMember = mapper.findByUserId(member.getMemberId());
-
 	}
-
-//private Map<String,String> getKakaoLoginResponse(KakaoMemberVO user){
-//		
-//		Map<String, String> loginResponse = new HashMap<>();
-//		
-//		loginResponse.put("userId",user.getMemberId());
-//		loginResponse.put("userNo", String.valueOf(user.getUserNo()));
-//		loginResponse.put("birthDay", user.getBirthDay());
-//		loginResponse.put("userName", user.getMemberName());
-//		loginResponse.put("email", user.getEmail());
-//		loginResponse.put("phone", user.getPhone());
-//		loginResponse.put("provider", user.getProvider());
-//		loginResponse.put("role", user.getRole().toString());
-//		
-//		
-//		return loginResponse;
-//		
-//	}
 
 	private KakaoMemberDTO generateFileName(KakaoMemberDTO member, MultipartFile licenseImg) {
 
