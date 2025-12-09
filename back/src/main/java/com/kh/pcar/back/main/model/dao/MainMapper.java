@@ -10,7 +10,7 @@ import com.kh.pcar.back.main.model.dto.PopularCarDTO;
 @Mapper
 public interface MainMapper {
 
-	@Select("SELECT COUNT(*) FROM TB_CAR")
+	@Select("SELECT COUNT(*) FROM TB_CAR WHERE CAR_STATUS = 'Y'")
 	String countCar();
 
 	@Select("SELECT COUNT(*) FROM TB_RESERVATION")
