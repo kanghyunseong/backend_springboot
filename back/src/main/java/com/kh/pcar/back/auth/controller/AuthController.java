@@ -51,7 +51,7 @@ public class AuthController {
 		// log.info("response : {} " , response );
 		return ResponseEntity.ok(response);
 
-	} // 홈으로 이동
+	}
 
 	@PostMapping("/refresh")
 	public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> token) {

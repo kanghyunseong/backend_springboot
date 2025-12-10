@@ -65,7 +65,7 @@ public class MemberController {
 
 		memberService.kakaoJoin(member, licenseImg);
 
-		return ResponseEntity.ok("카카오로그인완료");
+		return ResponseEntity.ok("카카오 회원가입 완료");
 	}
 
 	@PutMapping

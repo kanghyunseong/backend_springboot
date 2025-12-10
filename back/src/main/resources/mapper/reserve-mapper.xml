@@ -35,7 +35,7 @@
 </resultMap>
   
 	<insert id="saveReservation"
-			parameterType="com.kh.pcar.back.cars.model.dto.ReservationDTO">
+			parameterType="com.kh.pcar.back.cars.model.dto.ReservationDTO" >
 			
 	<selectKey keyProperty="reservationNo" resultType="long" order="BEFORE">
     	SELECT SEQ_RESERVATION_NO.NEXTVAL FROM DUAL

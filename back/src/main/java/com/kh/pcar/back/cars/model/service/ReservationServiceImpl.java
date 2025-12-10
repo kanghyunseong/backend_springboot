@@ -30,7 +30,9 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new RuntimeException("이미 예약된 차량이거나 / 예약중이신게 있습니다.");
 		}
 		
-		return reservationMapper.saveReservation(reservationDTO);
+		reservationMapper.saveReservation(reservationDTO);
+		
+		return reservationDTO.getReservationNo();
 	}
 
 	@Override // 확인창
