@@ -1,54 +1,153 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
 <mapper namespace="com.kh.pcar.back.member.model.dao.MemberMapper">
-	<insert id="join" parameterType="MemberVO" >
-		INSERT 
-		  INTO
-			   TB_MEMBER 
-			   (
-			   USER_NO
-    		 , USER_ID
-             , USER_NAME
-             , BIRTHDAY
-             , EMAIL
-             , PHONE
-             , USER_ROLL
-             , LICENSE_IMG
-			   ) 
-	    VALUES
-			   (
-			   SEQ_MEMBER.NEXTVAL
-             , #{memberId}
-             , #{memberName}
-             , #{birthDay}
-             , #{email}
-             , #{phone}
-             , #{role}
-             , #{licenseUrl} 
-               )
+
+	<sql id="joinSql">
+		INSERT
+		INTO
+		TB_MEMBER
+		(
+		USER_NO
+		, USER_ID
+		, USER_NAME
+		, BIRTHDAY
+		, EMAIL
+		, PHONE
+		, USER_ROLL
+		, LICENSE_IMG
+		)
+		VALUES
+		(
+		SEQ_MEMBER.NEXTVAL
+		, #{memberId}
+		, #{memberName}
+		, #{birthDay}
+		, #{email}
+		, #{phone}
+		, #{role}
+		, #{licenseUrl}
+		)
+
+	</sql>
+	<insert id="join" parameterType="MemberVO">
+		<include refid="joinSql"></include>
 	</insert>
-	
-<select id="loadUser" parameterType="String" resultType="MemberDTO">
-    SELECT
-           M.USER_NO       userNo
-         , M.USER_ID       memberId
-         , M.USER_NAME     memberName
-         , M.BIRTHDAY      birthDay
-         , M.EMAIL         email
-         , M.PHONE         phone
-         , M.USER_ROLL     role
-         , M.LICENSE_IMG   licenseUrl
-         , M.STATUS        status
-         , M.ENROLL_DATE   enrollDate
-         , L.PASSWORD      memberPwd
-    FROM TB_MEMBER M
-    LEFT JOIN TB_LOCAL L ON M.USER_NO = L.USER_NO
-    WHERE M.USER_ID = #{memberId}
-      AND M.STATUS = 'Y'
-</select>
 
 
+	<insert id="kakaoJoin" parameterType="KakaoMemberDTO">
+		<include refid="joinSql"></include>
+	</insert>
+
+	<insert id="socialJoin" parameterType="NaverProfileVO">
+		INSERT
+		INTO
+		TB_MEMBER
+		(
+		USER_NO
+		, USER_ID
+		, USER_NAME
+		, BIRTHDAY
+		, EMAIL
+		, PHONE
+		, USER_ROLL
+		)
+		VALUES
+		(
+		SEQ_MEMBER.NEXTVAL
+		, #{id}
+		, #{name}
+		, #{birthday}
+		, #{email}
+		, #{mobile}
+		, #{role}
+		)
+	</insert>
+
+
+	<select id="loadUser" parameterType="String" resultType="MemberDTO">
+		SELECT
+		M.USER_NO userNo
+		, M.USER_ID memberId
+		, M.USER_NAME memberName
+		, M.BIRTHDAY birthDay
+		, M.EMAIL email
+		, M.PHONE phone
+		, M.USER_ROLL role
+		, M.LICENSE_IMG licenseUrl
+		, M.STATUS status
+		, M.ENROLL_DATE enrollDate
+		, L.PASSWORD memberPwd
+		FROM
+		TB_MEMBER M
+		LEFT
+		JOIN TB_LOCAL L ON M.USER_NO = L.USER_NO
+		WHERE
+		M.USER_ID = #{memberId}
+		AND
+		M.STATUS = 'Y'
+	</select>
+
+	<!-- 공통 ResultMap 정의 -->
+	<resultMap id="memberResultMap" type="hashmap">
+		<result column="userNo" property="userNo" />
+		<result column="memberId" property="memberId" />
+		<result column="memberName" property="memberName" />
+		<result column="email" property="email" />
+		<result column="birthday" property="birthday" />
+		<result column="phone" property="phone" />
+		<result column="role" property="role" />
+		<result column="licenseUrl" property="licenseUrl" />
+		<result column="provider" property="provider" />
+	</resultMap>
+
+	<!-- SQL 한 번만 정의 -->
+	<sql id="findMemberByIdSql">
+		SELECT
+		M.USER_NO userNo
+		, M.USER_ID memberId
+		, M.USER_NAME memberName
+		, M.EMAIL email
+		, M.BIRTHDAY birthday
+		, M.PHONE phone
+		, M.USER_ROLL role
+		, M.LICENSE_IMG licenseUrl
+		, S.PROVIDER provider
+		FROM
+		TB_MEMBER M
+		LEFT
+		JOIN TB_SOCIAL S ON M.USER_NO = S.USER_NO
+		WHERE
+		M.USER_ID = #{userId}
+	</sql>
+
+	<!-- KakaoMemberDTO용 -->
+	<select id="findByUserId" parameterType="String" resultType="KakaoMemberDTO">
+		<include refid="findMemberByIdSql" />
+	</select>
+
+	<!-- NaverProfileDTO용 -->
+	<select id="findByNaverId" parameterType="String"
+		resultType="NaverProfileDTO">
+		<include refid="findMemberByIdSql" />
+	</select>
+
+
+	<update id="updateUser" parameterType="map"> UPDATE TB_MEMBER <set>
+			<if test="memberName != null">
+				USER_NAME = #{memberName},
+			</if>
+			<if test="email != null">
+				EMAIL = #{email},
+			</if>
+			<if test="phone != null">
+				PHONE = #{phone},
+			</if>
+			<if test="licenseUrl != null">
+				LICENSE_IMG = #{licenseUrl},
+				LICENSE_STATUS = 'N',
+			</if>
+		</set>
+		WHERE USER_NO = #{userNo} </update>
 </mapper>

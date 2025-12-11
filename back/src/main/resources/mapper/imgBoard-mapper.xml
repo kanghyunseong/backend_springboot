@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.pcar.back.boards.imgBoard.model.dao.ImgBoardMapper" >
+	<sql id="imgBoardColumn">
+	SELECT
+           I.IMG_BOARD_NO imgBoardNo
+         , I.IMG_BOARD_TITLE imgBoardTitle
+         , M.USER_ID imgBoardWriter
+         , M.USER_NO imgWriterNo
+         , I.IMG_BOARD_CONTENT imgBoardContent
+         , I.IMG_COUNT imgCount
+         , I.IMG_BOARD_STATUS imgBoardStatus
+         , I.IMG_BOARD_DATE imgBoardDate
+	</sql>
+	
+	<!-- 신고 후 관리자가 승인해서 안보여줄 조건 -->
+	<sql id="imgBoardReportFilter">
+	    AND NOT EXISTS (
+	        SELECT 1
+	          FROM TB_REPORT R
+	         WHERE R.TARGET_TYPE = 'IMGBOARD'
+	           AND R.TARGET_NO   = I.IMG_BOARD_NO
+	           AND R.REJECTED    = 'N'   <!-- 관리자 승인되어 숨겨야 하는 것만 -->
+	    )
+	</sql>
+
+    <!-- 게시글 INSERT (boardWriter = USER_ID 문자열 → USER_NO로 변환) -->
+    <insert id="imgSave" 
+    parameterType="com.kh.pcar.back.boards.imgBoard.model.vo.ImgBoardVO">
+     <!-- 먼저 시퀀스 값 뽑아서 VO.imgBoardNo에 넣기 -->
+    <selectKey keyProperty="imgBoardNo" resultType="long" order="BEFORE">
+        SELECT SEQ_INO.NEXTVAL FROM DUAL
+    </selectKey>
+        INSERT 
+          INTO 
+        	   TB_IMG_BOARD I
+        	   (
+        	   I.IMG_BOARD_NO
+        	 , I.IMG_BOARD_TITLE
+        	 , I.IMG_BOARD_WRITER
+       		 , I.IMG_BOARD_CONTENT
+        	 , I.IMG_COUNT
+        	 , I.IMG_BOARD_DATE
+        	 , I.IMG_BOARD_STATUS
+        	   )
+        VALUES 
+        	   (
+               #{imgBoardNo}
+           	 , #{imgBoardTitle}
+             , (SELECT M.USER_NO FROM TB_MEMBER M WHERE M.USER_ID = #{imgBoardWriter})
+             , #{imgBoardContent}
+             , DEFAULT     
+             , DEFAULT     
+             , DEFAULT       
+        )
+    </insert>
+
+    <!-- 게시글 목록 조회 (writer는 USER_ID로 가져오기) -->
+    <select id="imgFindAll" 
+    resultType="com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO">
+      <include refid="imgBoardColumn" />
+        FROM 
+        	 TB_IMG_BOARD I
+        JOIN 
+        	 TB_MEMBER M ON I.IMG_BOARD_WRITER = M.USER_NO
+       WHERE 
+       		 I.IMG_BOARD_STATUS = 'Y'
+       <include refid="imgBoardReportFilter"/>
+       ORDER 
+       	  BY 
+       	  	 I.IMG_BOARD_NO DESC
+    </select>
+    
+    <select id="countImgBoards" resultType="int">
+	    SELECT 
+	    	   COUNT(*)
+	      FROM 
+	           TB_IMG_BOARD I
+	     WHERE 
+	     	   I.IMG_BOARD_STATUS = 'Y'
+	     <include refid="imgBoardReportFilter"/>
+	</select>
+
+    <!-- 단일 게시글 조회 -->
+    <select id="findByImgBoardNo" 
+    resultType="com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO" 
+    parameterType="long">
+    <include refid="imgBoardColumn" />
+        FROM 
+        	 TB_IMG_BOARD I
+        JOIN 
+        	 TB_MEMBER M ON I.IMG_BOARD_WRITER = M.USER_NO
+       WHERE 
+       		 I.IMG_BOARD_NO = #{imgBoardNo}
+         AND 
+         	 I.IMG_BOARD_STATUS = 'Y'
+       <include refid="imgBoardReportFilter"/>
+    </select>
+    
+   	<update id="increaseImgView">
+	    UPDATE
+	    	   TB_IMG_BOARD I
+	       SET 
+	       	   I.IMG_COUNT = I.IMG_COUNT + 1
+	     WHERE 
+	     	   I.IMG_BOARD_NO = #{imgBoardNo}
+	</update>
+    
+    <!-- 게시글 수정 -->
+    <update id="imgUpdate" 
+    parameterType="com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO">
+        UPDATE 
+        	   TB_IMG_BOARD I
+           SET 
+           	   I.IMG_BOARD_TITLE   = #{imgBoard.imgBoardTitle}
+             , I.IMG_BOARD_CONTENT = #{imgBoard.imgBoardContent}
+         WHERE 
+         	   I.IMG_BOARD_NO = #{imgBoard.imgBoardNo}
+           AND 
+           	   I.IMG_BOARD_WRITER = #{loginUserNo}
+    </update>
+
+    <!-- 게시글 삭제 -->
+    <update id="deleteByImgBoardNo">
+        UPDATE 
+        	   TB_IMG_BOARD I
+           SET 
+           	   I.IMG_BOARD_STATUS = 'N'
+         WHERE 
+         	   I.IMG_BOARD_NO = #{imgBoardNo}
+           AND 
+           	   I.IMG_BOARD_WRITER = #{loginUserNo}
+    </update>
+    
+    <!-- 이미지 게시판 검색용 총 개수 -->
+	<select id="countSearchImgBoards" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM TB_IMG_BOARD I
+	    JOIN TB_MEMBER M ON I.IMG_BOARD_WRITER = M.USER_NO
+	    WHERE I.IMG_BOARD_STATUS = 'Y'
+	    <include refid="imgBoardReportFilter"/>
+	    <choose>
+	        <when test="type == 'title'">
+	            AND I.IMG_BOARD_TITLE LIKE #{keyword}
+	        </when>
+	        <when test="type == 'writer'">
+	            AND M.USER_ID LIKE #{keyword}
+	        </when>
+	        <when test="type == 'content'">
+	            AND I.IMG_BOARD_CONTENT LIKE #{keyword}
+	        </when>
+	        <otherwise>
+	            AND (
+	                I.IMG_BOARD_TITLE   LIKE #{keyword}
+	                OR M.USER_ID        LIKE #{keyword}
+	                OR I.IMG_BOARD_CONTENT LIKE #{keyword}
+	            )
+	        </otherwise>
+	    </choose>
+	</select>
+	
+	<!--  이미지 게시판 검색 결과 목록 (페이징) -->
+	<select id="searchImgBoards" parameterType="map"
+	        resultType="com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO">
+	    SELECT
+	           I.IMG_BOARD_NO imgBoardNo,
+	           I.IMG_BOARD_TITLE imgBoardTitle,
+	           M.USER_ID imgBoardWriter,
+	           I.IMG_BOARD_CONTENT imgBoardContent,
+	           I.IMG_COUNT imgCount,
+	           I.IMG_BOARD_DATE imgBoardDate,
+	           I.IMG_BOARD_STATUS imgBoardStatus
+	      FROM 
+	      	   TB_IMG_BOARD I
+	      JOIN 
+	           TB_MEMBER M ON I.IMG_BOARD_WRITER = M.USER_NO
+	     WHERE 
+	           I.IMG_BOARD_STATUS = 'Y'
+	     <include refid="imgBoardReportFilter"/>
+	    <choose>
+	        <when test="type == 'title'">
+	            AND I.IMG_BOARD_TITLE LIKE #{keyword}
+	        </when>
+	        <when test="type == 'writer'">
+	            AND M.USER_ID LIKE #{keyword}
+	        </when>
+	        <when test="type == 'content'">
+	            AND I.IMG_BOARD_CONTENT LIKE #{keyword}
+	        </when>
+	        <otherwise>
+	            AND (
+	                I.IMG_BOARD_TITLE   LIKE #{keyword}
+	                OR M.USER_ID        LIKE #{keyword}
+	                OR I.IMG_BOARD_CONTENT LIKE #{keyword}
+	            )
+	        </otherwise>
+	    </choose>
+	    ORDER BY I.IMG_BOARD_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+
+</mapper>
+      
+

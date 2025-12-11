@@ -28,53 +28,138 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfigure {
-	
+
 	private final JwtFilter jwtFilter;
 
 	// 우리의 문제점 : 시큐리티의 formLogin필터가 자꾸만 인증이 안됐다고 회원가입도 못하게함
 	// 해결방법 : form로그인 안쓸래 하고 fillterChain을 빈으로 등록
-	
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-		//return httpSecurity.formLogin().disable().build();
+		// return httpSecurity.formLogin().disable().build();
 		/*
-		return httpSecurity.formLogin(new Customizer<FormLoginConfigurer<HttpSecurity>>() {
-			@Override
-			public void customize(FormLoginConfigurer<HttpSecurity> t) {
-				t.disable();
-			}
-		}).build();
-		*/
-		
+		 * return httpSecurity.formLogin(new
+		 * Customizer<FormLoginConfigurer<HttpSecurity>>() {
+		 * 
+		 * @Override public void customize(FormLoginConfigurer<HttpSecurity> t) {
+		 * t.disable(); } }).build();
+		 */
+
 		// formLogin필터를 사용안함으로써 401은 지나갔는데 ==> 403이 뜸
 		// CSRF(Cross-Site Request Forgery)필터가 튀어나옴
 		// <img src="http://www.naver.com" />
-		
+
 		// Example ) 회원가입, 로그인 => 누구나 다 할 수 있어야함
-		//           회원정보수정, 회원탈퇴 => 로그인 된 사용자만 할 수 있어야 함
-		
-		return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
-						   .csrf(AbstractHttpConfigurer::disable)
-						   .cors(Customizer.withDefaults())
-						   .authorizeHttpRequests(requests -> {
-							   requests.requestMatchers(HttpMethod.POST, "/members/login", "/members", "/auth/refresh").permitAll();
-							   requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**").authenticated();
-							   requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**").authenticated();
-							   requests.requestMatchers(HttpMethod.POST, "/boards", "/comments").authenticated();
-							   requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**").permitAll();
-							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN");
-							   
-						   })
-						   /*
-						    * SessionManagement : 세션을 어떻게 관리할것인지 지정
-						    * sessionCreatePolicy : 세션 사용 정책을 설정
-						    */
-						   .sessionManagement(manager ->
-								   					manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-						   .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-						   .build();
-		
+
+		// 회원정보수정, 회원탈퇴 => 로그인 된 사용자만 할 수 있어야 함
+
+		return httpSecurity
+		        .formLogin(AbstractHttpConfigurer::disable)
+		        .csrf(AbstractHttpConfigurer::disable)
+		        .cors(Customizer.withDefaults())
+		        .authorizeHttpRequests(requests -> {
+
+		            // 1. POST - 비로그인 허용 (회원가입/로그인, 차량/예약 등)
+		            requests.requestMatchers(HttpMethod.POST,
+		                    "/members/login",
+		                    "/members",
+		                    "/members/**",
+		                    "/auth/refresh",
+		                    "/cars/**",
+		                    "/station/**",
+		                    "/reserve/**"
+		            ).permitAll();
+
+		            // 2. GET - 비로그인 허용 (목록/조회용)
+		            requests.requestMatchers(HttpMethod.GET,
+		                    "/uploads/**",
+		                    "/members/**",
+		                    "/cars/**",
+		                    "/station/**",
+		                    "/station/search",
+		                    "/boards",
+		                    "/boards/search",
+		                    "/imgBoards",
+		                    "/imgBoards/search",
+		                    "/notices",
+		                    "/notices/search",
+		                    "/comments/**",
+		                    "/imgComments/**",
+		                    "/reserve/**",
+		                    "/reviews/**",
+		                    "/main"
+		            ).permitAll();
+
+		            // 3. GET - 로그인 필요 (상세 페이지들)
+		            requests.requestMatchers(HttpMethod.GET,
+		                    "/boards/*",
+		                    "/imgBoards/*",
+		                    "/notices/*"
+		            ).authenticated();
+
+		            // 4. PUT - 로그인 필요
+		            requests.requestMatchers(HttpMethod.PUT,
+		                    "/members", "/members/**", 
+		                    "/boards/**", 
+		                    "/imgBoards/**", 
+		                    "/comments/**", "/imgComments/**",
+		                    "/reserve/**", "/reviews/**"
+		            ).authenticated();
+
+		            // 5. DELETE - 로그인 필요
+		            requests.requestMatchers(HttpMethod.DELETE,
+		                    "/members",
+		                    "/boards/**", "/imgBoards/**", 
+		                    "/comments/**", "/imgComments/**",
+		                    "/reserve/**", "/reviews/**","/station/**"
+		            ).authenticated();
+
+
+		            // 6. POST - 게시글/댓글/공지 작성 (로그인 필요)
+		            requests.requestMatchers(HttpMethod.POST,
+		                    "/boards/**",
+		                    "/imgBoards/**",
+		                    "/comments/**",
+		                    "/imgComments/**",
+		                    "/notices/**",
+		                    "/reviews/**"
+		            ).authenticated();
+
+		            // 7. 관리자 전용
+		            requests.requestMatchers(HttpMethod.GET,
+		                    "/admin/api/ranking/users",
+		                    "/admin/**",
+		                    "/admin/api/settings/**",
+		                    "/admin/api/notice/list",
+		                    "/admin/api/community/**"
+		            ).hasAuthority("ROLE_ADMIN");
+
+		            requests.requestMatchers(HttpMethod.POST,
+		                    "/admin/**",
+		                    "/admin/api/settings/**",
+		                    "/admin/api/notice/**"
+		            ).hasAuthority("ROLE_ADMIN");
+
+		            requests.requestMatchers(HttpMethod.PUT,
+		                    "/admin/**",
+		                    "/admin/api/notice/**"
+		            ).hasAuthority("ROLE_ADMIN");
+
+		            requests.requestMatchers(HttpMethod.DELETE,
+		                    "/admin/**",
+		                    "/api/admin/**",
+		                    "/admin/api/**",
+		                    "/admin/api/notice/**",
+		                    "/admin/api/community/**"
+		            ).hasAuthority("ROLE_ADMIN");
+		        })
+		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+		        .build();
+
+
 	}
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
@@ -86,15 +171,15 @@ public class SecurityConfigure {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
-	
-	@Bean 
+
+	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
-	@Bean 
+
+	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
 		return authConfig.getAuthenticationManager();
 	}
-	
+
 }

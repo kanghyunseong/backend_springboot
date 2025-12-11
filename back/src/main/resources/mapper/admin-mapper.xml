@@ -3,6 +3,150 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
-<mapper namespace="com.kh.pcar.back.admin.model.dao.AdminMapper">
+<mapper namespace="com.kh.pcar.back.admin.user.model.dao.UserMapper">
+
+	<select id="findAllMember" resultType="com.kh.pcar.back.admin.user.model.dto.UserDTO">
+		SELECT
+			    USER_NO AS userNo
+			  , USER_ID AS userId
+			  , USER_NAME AS userName
+			  , BIRTHDAY AS birthday
+			  , EMAIL AS email
+			  , PHONE AS phone 
+			  , USER_ROLL AS userRoll 
+			  , LICENSE_IMG AS licenseImg
+			  , STATUS AS status 
+			  , ENROLL_DATE AS enrollDate
+			  , LICENSE_STATUS AS licenseStatus
+		  FROM
+			   TB_MEMBER
+	     WHERE
+			   STATUS = 'Y' 
+	     ORDER 
+	        BY
+			   USER_NO DESC
+	</select>
+	
+	<select id="getTotalCount" resultType="_int">
+		SELECT
+			   COUNT(*)
+		 FROM
+			  TB_MEMBER 
+	    WHERE
+			   STATUS = 'Y' 
+	</select>
+	
+	<update id="deleteUserStatus">
+		UPDATE 
+		       TB_MEMBER
+		   SET
+		       STATUS = 'N'
+	     WHERE
+		       USER_NO = #{userNo}
+	</update>
+	
+	<update id="updateUser">
+		UPDATE 
+		       TB_MEMBER
+           SET 
+           	   USER_NAME = #{userName}
+             , EMAIL = #{email}
+             , PHONE = #{phone}
+             , LICENSE_STATUS = #{licenseStatus}
+         WHERE 
+         	   USER_NO = #{userNo}
+	</update>
+	<select id="findByUserNo" resultType="com.kh.pcar.back.admin.user.model.dto.UserDTO">
+    SELECT
+           USER_NO AS userNo 
+         , USER_ID AS userId 
+         , USER_NAME AS userName 
+         , BIRTHDAY AS birthday
+         , EMAIL AS email
+         , PHONE AS phone 
+         , USER_ROLL AS userRoll 
+         , LICENSE_IMG AS licenseImg
+         , STATUS AS status 
+         , ENROLL_DATE AS enrollDate
+         , LICENSE_STATUS AS licenseStatus
+      FROM
+           TB_MEMBER
+     WHERE
+           USER_NO = #{userNo}
+</select>
+<select id="getJoinTrend" parameterType="String" resultType="map">
+	SELECT 
+	       TO_CHAR
+	       (
+	       ENROLL_DATE
+	     , <choose>
+				<when test="unit == 'year'"> 'YYYY' </when>
+                <when test="unit == 'month'"> 'YYYY-MM' </when>
+                <when test="unit == 'day'"> 'YYYY-MM-DD' </when>
+                <otherwise> 'YYYY-MM-DD' </otherwise>
+		   </choose>
+	       ) AS dataLabel
+	     , COUNT(*) AS count
+	  FROM
+	       TB_MEMBER
+	 WHERE
+	       STATUS = 'Y'
+	 GROUP
+	    BY
+	       TO_CHAR
+	       (
+	       ENROLL_DATE
+	     , <choose>
+                <when test="unit == 'year'"> 'YYYY' </when>
+                <when test="unit == 'month'"> 'YYYY-MM' </when>
+                <when test="unit == 'day'"> 'YYYY-MM-DD' </when>
+                <otherwise> 'YYYY-MM-DD' </otherwise>
+            </choose> 	 
+	       ) 
+	 ORDER
+	 	BY
+	 	   dataLabel ASC
+	
+</select>
+	
+	<select id="getWaitingLicenseCount" resultType="_int">
+		SELECT 
+		       COUNT(*)
+		  FROM
+		       TB_MEMBER
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       LICENSE_STATUS = 'N'
+	</select>
+	
+	<select id="getLicenseStatusTrend" parameterType="String" resultType="map">
+    SELECT 
+        TO_CHAR(ENROLL_DATE, 
+            <choose>
+                <when test="unit == 'year'"> 'YYYY' </when>
+                <when test="unit == 'month'"> 'YYYY-MM' </when>
+                <otherwise> 'YYYY-MM-DD' </otherwise>
+            </choose>
+        ) AS dataLabel,
+        
+        SUM(CASE WHEN LICENSE_STATUS = 'Y' THEN 1 ELSE 0 END) AS approvedCount,
+        
+        SUM(CASE WHEN LICENSE_STATUS != 'Y' THEN 1 ELSE 0 END) AS pendingCount
+    FROM
+        TB_MEMBER
+    WHERE
+        STATUS = 'Y'
+    GROUP BY
+        TO_CHAR(ENROLL_DATE, 
+            <choose>
+                <when test="unit == 'year'"> 'YYYY' </when>
+                <when test="unit == 'month'"> 'YYYY-MM' </when>
+                <otherwise> 'YYYY-MM-DD' </otherwise>
+            </choose> 	 
+        ) 
+    ORDER BY
+          dataLabel ASC
+</select>
 	
 </mapper>

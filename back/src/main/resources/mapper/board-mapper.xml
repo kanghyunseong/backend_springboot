@@ -1,8 +1,199 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
-<mapper namespace="com.kh.pcar.back.board.model.dao.BoardMapper">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.pcar.back.boards.board.model.dao.BoardMapper">
+	<sql id="boardColumn">
+	SELECT
+           B.BOARD_NO boardNo
+         , B.BOARD_TITLE boardTitle
+         , M.USER_ID boardWriter
+         , M.USER_NO writerNo
+         , B.BOARD_CONTENT boardContent
+         , B.COUNT count
+         , B.BOARD_STATUS boardStatus
+         , B.BOARD_DATE boardDate
+	</sql>
 	
+	<!-- 신고 후 관리자가 승인해서 안보여줄 조건 -->
+	<sql id="boardReportFilter">
+	    AND NOT EXISTS (
+	        SELECT 1
+	          FROM TB_REPORT R
+	         WHERE R.TARGET_TYPE = 'BOARD'
+	           AND R.TARGET_NO   = B.BOARD_NO
+	           AND R.REJECTED    = 'N'   <!-- 관리자 승인되어 숨겨야 하는 것만 -->
+	    )
+	</sql>
+
+    <!-- 게시글 INSERT (boardWriter = USER_ID 문자열 → USER_NO로 변환) -->
+    <insert id="save" 
+    parameterType="com.kh.pcar.back.boards.board.model.vo.BoardVO">
+        INSERT 
+          INTO 
+        	   TB_BOARD B
+        	   (
+        	   B.BOARD_NO
+        	 , B.BOARD_TITLE
+        	 , B.BOARD_WRITER
+       		 , B.BOARD_CONTENT
+        	 , B.COUNT
+        	 , B.BOARD_DATE
+        	 , B.BOARD_STATUS
+        	   )
+        VALUES 
+        	   (
+               SEQ_BNO.NEXTVAL
+           	 , #{boardTitle}
+             , (SELECT M.USER_NO FROM TB_MEMBER M WHERE M.USER_ID = #{boardWriter})
+             , #{boardContent}
+             , DEFAULT     
+             , DEFAULT     
+             , DEFAULT       
+        )
+    </insert>
+
+    <!-- 게시글 목록 조회 (writer는 USER_ID로 가져오기) -->
+    <select id="findAll" 
+    resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
+      <include refid="boardColumn" />
+        FROM 
+        	 TB_BOARD B
+        JOIN 
+        	 TB_MEMBER M ON B.BOARD_WRITER = M.USER_NO
+       WHERE 
+       		 B.BOARD_STATUS = 'Y'
+       <include refid="boardReportFilter"/>
+       ORDER 
+       	  BY 
+       	  	 B.BOARD_NO DESC
+    </select>
+    
+    <select id="countBoards" resultType="int">
+	    SELECT 
+	    	   COUNT(*)
+	      FROM 
+	           TB_BOARD B
+	     WHERE 
+	     	   B.BOARD_STATUS = 'Y'
+	     <include refid="boardReportFilter"/>
+	</select>
+    
+
+    <!-- 단일 게시글 조회 -->
+    <select id="findByBoardNo" 
+    		resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO" 
+    		parameterType="long">
+		<include refid="boardColumn" />
+        FROM 
+        	 TB_BOARD B
+        JOIN 
+        	 TB_MEMBER M ON B.BOARD_WRITER = M.USER_NO
+       WHERE 
+       		 B.BOARD_NO = #{boardNo}
+         AND 
+         	 B.BOARD_STATUS = 'Y'
+       <include refid="boardReportFilter"/>
+    </select>
+
+	<update id="increaseView">
+	    UPDATE
+	    	   TB_BOARD
+	       SET 
+	       	   COUNT = COUNT + 1
+	     WHERE 
+	     	   BOARD_NO = #{boardNo}
+	</update>
+
+
+    <!-- 게시글 수정 -->
+    <update id="update" 
+    parameterType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
+        UPDATE 
+        	   TB_BOARD B
+           SET 
+           	   B.BOARD_TITLE   = #{boardTitle}
+             , B.BOARD_CONTENT = #{boardContent}
+         WHERE 
+         	   B.BOARD_NO = #{boardNo}
+
+    </update>
+
+    <!-- 게시글 삭제 -->
+    <update id="deleteByBoardNo">
+        UPDATE 
+        	   TB_BOARD B
+           SET 
+           	   B.BOARD_STATUS = 'N'
+         WHERE 
+         	   B.BOARD_NO = #{boardNo}
+
+    </update>
+    
+    
+    <!--  검색용 총 개수 -->
+	<select id="countSearchBoards" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM TB_BOARD B
+	    JOIN TB_MEMBER M ON B.BOARD_WRITER = M.USER_NO
+	    WHERE B.BOARD_STATUS = 'Y'
+	    <include refid="boardReportFilter"/>
+	    <choose>
+	        <when test="type == 'title'">
+	            AND B.BOARD_TITLE LIKE #{keyword}
+	        </when>
+	        <when test="type == 'writer'">
+	            AND M.USER_ID LIKE #{keyword}
+	        </when>
+	        <when test="type == 'content'">
+	            AND B.BOARD_CONTENT LIKE #{keyword}
+	        </when>
+	        <otherwise>
+	            AND (
+	                B.BOARD_TITLE   LIKE #{keyword}
+	                OR M.USER_ID    LIKE #{keyword}
+	                OR B.BOARD_CONTENT LIKE #{keyword}
+	            )
+	        </otherwise>
+	    </choose>
+	</select>
+	
+	<!--  검색 결과 목록 (페이징) -->
+	<select id="searchBoards" parameterType="map"
+	        resultType="com.kh.pcar.back.boards.board.model.dto.BoardDTO">
+	    <include refid="boardColumn" />
+	    FROM TB_BOARD B
+	    JOIN TB_MEMBER M ON B.BOARD_WRITER = M.USER_NO
+	    WHERE B.BOARD_STATUS = 'Y'
+	    <include refid="boardReportFilter"/>
+	    <choose>
+	        <when test="type == 'title'">
+	            AND B.BOARD_TITLE LIKE #{keyword}
+	        </when>
+	        <when test="type == 'writer'">
+	            AND M.USER_ID LIKE #{keyword}
+	        </when>
+	        <when test="type == 'content'">
+	            AND B.BOARD_CONTENT LIKE #{keyword}
+	        </when>
+	        <otherwise>
+	            AND (
+	                B.BOARD_TITLE   LIKE #{keyword}
+	                OR M.USER_ID    LIKE #{keyword}
+	                OR B.BOARD_CONTENT LIKE #{keyword}
+	            )
+	        </otherwise>
+	    </choose>
+	    ORDER BY B.BOARD_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+
+    
+    
+    
+    
 </mapper>
+
+      
+

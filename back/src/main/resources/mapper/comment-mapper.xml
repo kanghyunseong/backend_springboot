@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pcar.back.boards.comment.model.dao.CommentMapper">
+	<!-- 신고 후 관리자가 승인해서 안보여줄 조건 -->
+	<sql id="commentReportFilter">
+	    AND NOT EXISTS (
+	        SELECT 1
+	          FROM TB_REPORT R
+	         WHERE R.TARGET_TYPE = 'COMMENT'
+	           AND R.TARGET_NO   = C.COMMENT_NO
+	           AND R.REJECTED    = 'N'   <!-- 관리자 승인되어 숨겨야 하는 것만 -->
+	    )
+	</sql>
+	
+	<insert id="save" 
+	parameterType="com.kh.pcar.back.boards.comment.model.dto.CommentDTO">
+		INSERT 
+		  INTO 
+			   TB_COMMENT C
+			   (
+			   C.COMMENT_NO
+			 , C.COMMENT_WRITER
+			 , C.COMMENT_CONTENT
+			 , C.COMMENT_DATE
+			 , C.COMMENT_STATUS 
+			 , C.REF_BNO
+			   )
+		VALUES 
+			   (
+			   SEQ_CNO.NEXTVAL
+			 , (SELECT M.USER_NO FROM TB_MEMBER M WHERE M.USER_ID = #{commentWriter})
+			 , #{commentContent}
+			 , DEFAULT
+			 , DEFAULT
+			 , #{refBno} 
+			   )
+	</insert>
+	
+	<select id="findAll" parameterType="long"
+	resultType="com.kh.pcar.back.boards.comment.model.dto.CommentDTO">
+		SELECT 
+			   C.COMMENT_NO commentNo
+			 , M.USER_ID commentWriter
+			 , C.COMMENT_CONTENT commentContent
+			 , C.COMMENT_DATE commentDate
+			 , C.COMMENT_STATUS commentStatus
+			 , C.REF_BNO refBno
+		  FROM 
+			   TB_COMMENT C 
+		  JOIN 
+		  	   TB_MEMBER M ON C.COMMENT_WRITER = M.USER_NO 
+		 WHERE 
+		 	   C.COMMENT_STATUS = 'Y'
+		   AND 
+		       C.REF_BNO = #{boardNo} 
+		 <include refid="commentReportFilter"/> 
+		 ORDER 
+		    BY 
+		       C.COMMENT_NO DESC
+	</select>
+	
+	<!-- 댓글 내용 수정 -->
+    <update id="update"
+            parameterType="com.kh.pcar.back.boards.comment.model.dto.CommentDTO">
+        UPDATE TB_COMMENT
+        SET
+            COMMENT_CONTENT = #{commentContent}
+        WHERE
+            COMMENT_NO = #{commentNo}
+            AND COMMENT_STATUS = 'Y'
+    </update>
+
+    <!-- 댓글 삭제 : STATUS = 'N' 으로 소프트 삭제 -->
+    <update id="delete" parameterType="long">
+        UPDATE TB_COMMENT
+        SET COMMENT_STATUS = 'N'
+        WHERE COMMENT_NO = #{commentNo}
+    </update>
+    
+    <!-- 댓글 신고용: 댓글 작성자 USER_NO 조회록 -->
+    <select id="findWriterUserNo" parameterType="long" resultType="long">
+	    SELECT COMMENT_WRITER
+	    FROM TB_COMMENT
+	    WHERE COMMENT_NO = #{commentNo}
+	</select>
+
+</mapper>
+  

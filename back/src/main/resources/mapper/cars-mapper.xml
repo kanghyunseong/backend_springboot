@@ -5,4 +5,62 @@
   
 <mapper namespace="com.kh.pcar.back.cars.model.dao.CarsMapper">
 	
+	<select id="selectTotalCount"
+			resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   TB_CAR
+		 WHERE
+		 	   CAR_STATUS = 'Y'
+	</select>
+	  
+	<select id="findAll"
+			resultType="CarsDTO">
+	SELECT 
+		   CAR_ID carId
+		 , CAR_NAME carName
+		 , CAR_CONTENT carContent
+		 , CAR_SEET carSeet
+		 , CAR_SIZE carSize
+		 , BATTERY battery
+		 , CAR_IMAGE carImage
+		 , CAR_STATUS carStatus
+		 , CAR_DRIVING carDriving
+		 , CAR_EFFICIENCY carEfficiency
+	  FROM
+	  	   TB_CAR C
+	 WHERE 
+	 	   C.CAR_STATUS = 'Y'
+	 AND NOT EXISTS (
+        	 SELECT 1
+        	 FROM TB_RESERVATION R
+       		 WHERE R.CAR_ID = C.CAR_ID
+          	   AND R.RESERVATION_STATUS = 'Y'
+     )
+   ORDER
+	  BY 
+	     CAR_ID ASC
+   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<select id="findByCarId"
+			resultType="CarsDTO">
+		SELECT 
+			   CAR_ID carId
+			 , CAR_NAME carName
+			 , CAR_CONTENT carContent
+			 , CAR_SEET carSeet
+			 , CAR_SIZE carSize
+			 , BATTERY battery
+			 , CAR_IMAGE carImage
+			 , CAR_STATUS carStatus
+			 , CAR_DRIVING carDriving
+			 , CAR_EFFICIENCY carEfficiency
+		  FROM
+		  	   TB_CAR
+		 WHERE
+		 	   CAR_ID = #{carId}
+	</select>
+	
 </mapper>

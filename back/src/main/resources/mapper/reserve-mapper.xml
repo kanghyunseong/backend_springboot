@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.pcar.back.cars.model.dao.ReservationMapper">
+	
+	<resultMap id="CarReservationDTO" type="com.kh.pcar.back.cars.model.dto.CarReservationDTO">
+
+    <association property="reservation" javaType="com.kh.pcar.back.cars.model.dto.ReservationDTO">
+        <id     property="reservationNo"       column="reservationNo"/>
+        <result property="userNo"              column="userNo"/>
+        <result property="carId"               column="carId"/>
+        <result property="reservationDate"     column="reservationDate"/>
+        <result property="startTime"           column="startTime"/>
+        <result property="endTime"             column="endTime"/>
+        <result property="destination"         column="destination"/>
+        <result property="reservationStatus"   column="reservationStatus"/>
+        <result property="returnStatus"        column="returnStatus"/>
+    </association>
+
+    <association property="car" javaType="com.kh.pcar.back.cars.model.dto.CarsDTO">
+        <id     property="carId"          column="carId"/>
+        <result property="carName"        column="carName"/>
+        <result property="carContent"     column="carContent"/>
+        <result property="carSeet"        column="carSeet"/>
+        <result property="carSize"        column="carSize"/>
+        <result property="battery"        column="battery"/>
+        <result property="carImage"       column="carImage"/>
+        <result property="carStatus"      column="carStatus"/>
+        <result property="carDriving"     column="carDriving"/>
+        <result property="carEfficiency"  column="carEfficiency"/>
+    </association>
+
+</resultMap>
+  
+	<insert id="saveReservation"
+			parameterType="com.kh.pcar.back.cars.model.dto.ReservationDTO">
+			
+	<selectKey keyProperty="reservationNo" resultType="long" order="BEFORE">
+    	SELECT SEQ_RESERVATION_NO.NEXTVAL FROM DUAL
+	</selectKey>
+		INSERT 
+		  INTO 
+		       TB_RESERVATION
+		       (
+               RESERVATION_NO
+           	 , USER_NO
+             , CAR_ID
+             , RESERVATION_DATE
+             , START_TIME
+             , END_TIME
+             , DESTINATION
+             ) 
+        VALUES
+             (
+               #{reservationNo}
+             , #{userNo}
+             , #{carId}
+             , SYSDATE
+			 , #{startTime}
+			 , #{endTime}
+             , #{destination}
+        	 )
+	</insert>
+	
+	<select id="confirmReservation"
+		resultType="ReservationDTO">
+			SELECT 
+				   RESERVATION_NO reservationNo
+			     , USER_NO userNo
+			     , CAR_ID carId
+			     , RESERVATION_DATE reservationDate
+			     , START_TIME startTime
+			     , END_TIME endTime
+			     , DESTINATION destination
+			     , RESERVATION_STATUS reservationStatus
+			     , RETURN_STATUS returnStatus
+			  FROM
+			  	   TB_RESERVATION
+			 WHERE
+			       RESERVATION_NO = #{reservationNo}
+			   AND
+				   RESERVATION_STATUS = 'Y'
+			   AND
+			       RETURN_STATUS = 'N'
+	</select >
+	
+	<select id="findReservation"
+		resultMap="CarReservationDTO">
+			SELECT 
+				   R.RESERVATION_NO reservationNo
+			     , R.USER_NO userNo
+			     , R.CAR_ID carId
+			     , R.RESERVATION_DATE reservationDate
+			     , R.START_TIME startTime
+			     , R.END_TIME endTime
+			     , R.DESTINATION destination
+			     , R.RESERVATION_STATUS reservationStatus
+			     , R.RETURN_STATUS returnStatus
+			     , C.CAR_ID carId
+			     , C.CAR_NAME carName
+			     , C.CAR_CONTENT carContent
+			     , C.CAR_SEET carSeet
+			     , C.CAR_SIZE carSize
+			     , C.BATTERY battery
+			     , C.CAR_IMAGE carImage
+			     , C.CAR_STATUS carStatus
+			     , C.CAR_DRIVING carDriving
+			     , C.CAR_EFFICIENCY carEfficiency
+			  FROM
+			  	   TB_RESERVATION R
+			  	   INNER JOIN TB_CAR C ON R.CAR_ID = C.CAR_ID
+			 WHERE
+			   	   USER_NO = #{userNo}
+			   AND
+				   RESERVATION_STATUS = 'Y'
+			   AND 
+			       RETURN_STATUS = 'N'
+	</select>
+	
+	<select id="getHistoryReservation"
+		resultMap="CarReservationDTO">
+			SELECT 
+				   R.RESERVATION_NO reservationNo
+			     , R.USER_NO userNo
+			     , R.CAR_ID carId
+			     , R.RESERVATION_DATE reservationDate
+			     , R.START_TIME startTime
+			     , R.END_TIME endTime
+			     , R.DESTINATION destination
+			     , R.RESERVATION_STATUS reservationStatus
+			     , R.RETURN_STATUS returnStatus
+			     , C.CAR_ID carId
+			     , C.CAR_NAME carName
+			     , C.CAR_CONTENT carContent
+			     , C.CAR_SEET carSeet
+			     , C.CAR_SIZE carSize
+			     , C.BATTERY battery
+			     , C.CAR_IMAGE carImage
+			     , C.CAR_STATUS carStatus
+			     , C.CAR_DRIVING carDriving
+			     , C.CAR_EFFICIENCY carEfficiency
+			  FROM
+			  	   TB_RESERVATION R
+			  	   INNER JOIN TB_CAR C ON R.CAR_ID = C.CAR_ID
+			 WHERE
+			   	   USER_NO = #{userNo}
+			 ORDER
+			    BY
+			       R.RESERVATION_NO DESC
+	</select>
+	
+	<update id="returnReservation"
+		parameterType="long">
+			UPDATE 
+				   TB_RESERVATION 
+			   SET 
+				   RETURN_STATUS = 'Y' 
+				 , RESERVATION_STATUS = 'N'
+			 WHERE 
+			       RESERVATION_NO = #{reservationNo}
+	</update>
+	
+	<update id="changeReservation"
+		parameterType="ReservationDTO">
+		    UPDATE 
+		    	   TB_RESERVATION
+		       SET 
+		       	   START_TIME = #{startTime}
+		         , END_TIME = #{endTime}
+		         , DESTINATION = #{destination}
+		     WHERE 
+		     	   RESERVATION_NO = #{reservationNo}
+	</update>
+	
+	<update id="cancelReservation">
+		UPDATE
+			   TB_RESERVATION
+		   SET
+		   	   RESERVATION_STATUS = 'N'
+	     WHERE 
+ 	   		   RESERVATION_NO = #{reservationNo}
+	</update>
+	
+</mapper>

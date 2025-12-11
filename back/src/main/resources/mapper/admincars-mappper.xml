@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.pcar.back.admin.cars.model.dao.AdminCarMapper">
+    <select id="findAllCars" resultType="com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO">
+        SELECT
+               CAR_ID AS carId
+             , CAR_NAME AS carName
+             , CAR_DRIVING AS carDriving
+             , BATTERY AS battery
+             , CAR_EFFICIENCY AS carEfficiency
+             , CAR_STATUS AS carStatus
+             , CAR_SIZE AS carSize
+             , CAR_IMAGE AS carImage
+          FROM 
+               TB_CAR
+         WHERE
+ 			   CAR_STATUS = 'Y'         
+         ORDER 
+            BY 
+              CAR_ID DESC
+    </select>
+
+    <select id="getTotalCount" resultType="_int">
+        SELECT 
+        	   COUNT(*) 
+          FROM 
+               TB_CAR
+    </select>
+    
+   <insert id="insertCar">
+        INSERT 
+          INTO 
+               TB_CAR 
+               (
+               CAR_ID
+             , CAR_NAME
+             , CAR_DRIVING
+             , BATTERY
+             , CAR_EFFICIENCY
+             , CAR_SIZE
+             , CAR_IMAGE
+             , CAR_STATUS
+             , CAR_CONTENT
+             , CAR_SEET
+       		   ) 
+        VALUES 
+               (
+               SEQ_CAR_ID.NEXTVAL
+             , #{carName}
+             , #{carDriving}
+             , #{battery}
+             , #{carEfficiency}
+             , #{carSize}
+             , #{carImage}
+             , 'Y'
+             , #{carContent}
+             , '5인승'
+        )
+    </insert>
+    <update id="updateCar">
+        UPDATE 
+               TB_CAR
+           SET 
+               CAR_NAME = #{carName}
+             , CAR_DRIVING = #{carDriving}
+             , BATTERY = #{battery}
+             , CAR_EFFICIENCY = #{carEfficiency}
+             , CAR_SIZE = #{carSize}
+               <if test="carImage != null">
+             , CAR_IMAGE = #{carImage}
+               </if>
+             , CAR_CONTENT = #{carContent}
+         WHERE 
+               CAR_ID = #{carId}
+    </update>
+    <select id="findCarById" resultType="com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO">
+       SELECT
+           CAR_ID AS carId
+         , CAR_NAME AS carName
+         , COALESCE(CAR_DRIVING, 0) AS carDriving
+         , COALESCE(BATTERY, 0) AS battery
+         , COALESCE(CAR_EFFICIENCY, 0) AS carEfficiency
+         , CAR_STATUS AS carStatus
+         , CAR_SIZE AS carSize
+         , CAR_IMAGE AS carImage
+      FROM 
+           TB_CAR
+     WHERE
+           CAR_ID = #{carId}
+       AND
+           CAR_STATUS = 'Y'
+    </select>
+    
+    <update id="updateCarStatus" parameterType="Long">
+    UPDATE 
+          TB_CAR
+      SET
+          CAR_STATUS = 'N'  
+    WHERE
+          CAR_ID = #{carId}
+</update>
+<select id="findAllReservations" resultType="com.kh.pcar.back.admin.cars.model.dto.AdminCarsReservationDTO">
+    SELECT 
+          M.USER_NAME  AS "customer"
+        , R.RESERVATION_NO AS "reservationNo"
+        , 'khacademy'  AS "affiliation"
+        , C.CAR_NAME   AS "car"
+        , M.USER_ID    AS "userId"
+        , M.PHONE      AS "phone"
+        , TO_CHAR(R.START_TIME, 'YYYY-MM-DD HH24:MI') AS "start"
+        , TO_CHAR(R.END_TIME,   'YYYY-MM-DD HH24:MI') AS "end"
+
+        , CASE 
+            WHEN R.RESERVATION_STATUS = 'N' AND R.RETURN_STATUS = 'N'THEN '취소됨'
+            WHEN R.RETURN_STATUS = 'Y' AND R.RESERVATION_STATUS = 'N' THEN '반납완료'
+            WHEN R.RETURN_STATUS = 'N' AND SYSDATE > R.END_TIME THEN '연체중'
+            WHEN R.RETURN_STATUS = 'N' AND SYSDATE BETWEEN R.START_TIME AND R.END_TIME THEN '이용중'
+            ELSE '예약완료'
+          END AS "status"
+
+    FROM TB_RESERVATION R
+    JOIN TB_MEMBER M ON R.USER_NO = M.USER_NO
+    JOIN TB_CAR    C ON R.CAR_ID  = C.CAR_ID
+    
+    ORDER BY R.START_TIME DESC
+</select>
+
+<select id="getWeeklyCarbonSavings" resultType="map">
+    SELECT 
+           TO_CHAR(START_TIME, 'MM-DD') AS "date"
+         , ROUND( SUM( (END_TIME - START_TIME) * 24 * 5.6 ), 1 ) AS "savings"
+      FROM 
+           TB_RESERVATION
+     WHERE 
+           RETURN_STATUS = 'Y'       
+      AND START_TIME >= SYSDATE - 7
+    GROUP 
+       BY TO_CHAR(START_TIME, 'MM-DD')
+    ORDER
+       BY "date" ASC
+</select>   
+
+<select id="getDailyReservationStats" resultType="map">
+	SELECT
+	       TO_CHAR(START_TIME, 'MM-DD') AS "date"
+	     , COUNT(*) AS "count"
+	  FROM
+	       TB_RESERVATION
+	 WHERE
+	       START_TIME >= SYSDATE - 7
+	 GROUP
+	    BY 
+	       TO_CHAR(START_TIME, 'MM-DD')
+	 ORDER
+	    BY 
+	       "date" ASC 
+</select>
+
+<update id="updateReservationStatus">
+    UPDATE 
+           TB_RESERVATION
+       SET 
+           RESERVATION_STATUS = 'N'
+         , RETURN_STATUS = 'N'   
+     WHERE 
+           RESERVATION_NO = #{reservationNo}
+       AND 
+           RESERVATION_STATUS = 'Y' 
+       AND
+           RETURN_STATUS = 'N'       
+ </update>
+ 
+</mapper>

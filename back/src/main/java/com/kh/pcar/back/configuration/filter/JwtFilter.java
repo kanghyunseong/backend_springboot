@@ -34,6 +34,20 @@ public class JwtFilter extends OncePerRequestFilter{
 			throws ServletException, IOException {
 		
 		String uri = request.getRequestURI();
+		
+		
+		   if (uri.startsWith("/members/naver")) {
+		        filterChain.doFilter(request, response);
+		        return;
+		    }
+		   
+		   if (uri.startsWith("/members/kakao")) {
+		        filterChain.doFilter(request, response);
+		        return;
+		    }
+		
+		
+		
 		String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 		if(authorization == null || uri.equals("/auth/login")) {
 			filterChain.doFilter(request, response);
@@ -48,7 +62,7 @@ public class JwtFilter extends OncePerRequestFilter{
 		try {
 			Claims claims = jwtUtil.parseJwt(token);
 			String username = claims.getSubject();
-			
+				
 			
 			CustomUserDetails user =
 					(CustomUserDetails)userDetailsService.loadUserByUsername(username);

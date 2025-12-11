@@ -1,4 +1,5 @@
 package com.kh.pcar.back.auth.model.service;
+
 import java.util.Collections;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,40 +20,24 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 	// AuthenticationManger가 실질적으로 사용자의 정보를 조회할 때 메소드를 호출하는 클래스
-	
+
 	private final MemberMapper mapper;
-	
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-		
-		log.info("userId :  {}" , userId);
-		
+
+		// log.info("userId : {}" , userId);
+
 		MemberDTO user = mapper.loadUser(userId);
-		
+
 		if (user == null) {
-		    log.info("쿼리 결과가 없습니다.");
-		} else {
-		    log.info("이거 오나요 : {}", user);
+			throw new UsernameNotFoundException("유저 결과가 없습니다.");
 		}
-		
-		if(user == null) {
-			throw new UsernameNotFoundException("그럼 죽어!!");
-		}
-		
-		
-		
-		return CustomUserDetails.builder().userNo(user.getUserNo())
-				      					  .username(user.getMemberId())
-				      					  .password(user.getMemberPwd())
-				      					  .realName(user.getMemberName())
-				      					  .birthDay(user.getBirthDay())
-				      					  .email(user.getEmail())
-				      					  .phone(user.getPhone())
-				      					  .licenseUrl(user.getLicenseUrl())
-				      					  .authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
-				      					  .build();
-										  
+		return CustomUserDetails.builder().userNo(user.getUserNo()).username(user.getMemberId())
+				.password(user.getMemberPwd()).realName(user.getMemberName()).birthDay(user.getBirthDay())
+				.email(user.getEmail()).phone(user.getPhone()).licenseUrl(user.getLicenseUrl())
+				.authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole()))).build();
+
 	}
-	
+
 }

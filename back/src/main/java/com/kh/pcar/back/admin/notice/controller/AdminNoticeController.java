@@ -1,0 +1,71 @@
+package com.kh.pcar.back.admin.notice.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kh.pcar.back.admin.notice.model.dto.AdminNoticeDTO;
+import com.kh.pcar.back.admin.notice.model.service.AdminNoticeService;
+import com.kh.pcar.back.exception.NoticeNotFoundException;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/admin/api/notice")
+public class AdminNoticeController {
+
+	private final AdminNoticeService adminNoticeService;
+
+	@GetMapping("/list")
+	public ResponseEntity<List<AdminNoticeDTO>> findAllNotice() {
+		List<AdminNoticeDTO> noticeList = adminNoticeService.findAllNotice();
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(noticeList);
+	}
+
+	@GetMapping("/{noticeNo}")
+	public ResponseEntity<Object> getNoticeNo(@PathVariable(name = "noticeNo") Long noticeNo) {
+		AdminNoticeDTO notice = adminNoticeService.findNoticeByNo(noticeNo);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(notice);
+	}
+	
+
+	@DeleteMapping("/delete/{noticeNo}")
+	public ResponseEntity<String> deleteNotice(@PathVariable(name = "noticeNo") Long noticeNo) {
+			adminNoticeService.deleteNotice(noticeNo);
+			return ResponseEntity
+					.status(HttpStatus.OK)
+					.body("공지사항 삭제에 성공하셨습니다.");
+	}
+
+	@PostMapping("/insert")
+	public ResponseEntity<String> registerNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
+
+			adminNoticeService.registerNotice(adminNoticeDTO);
+			return ResponseEntity
+					.status(HttpStatus.CREATED)
+					.body("공지사항 등록 성공");
+	}
+	
+	@PutMapping("/modify")
+	public ResponseEntity<String> modifyNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
+			adminNoticeService.modifyNotice(adminNoticeDTO);
+			return ResponseEntity
+					.status(HttpStatus.OK)
+					.body("공지사항 수정 성공");
+	}
+}

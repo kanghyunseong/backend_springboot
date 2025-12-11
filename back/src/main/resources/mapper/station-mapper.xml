@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.pcar.back.station.model.dao.StationDAO">
+
+	<insert id="insertReview"
+		parameterType="com.kh.pcar.back.station.model.dto.ReviewDTO">
+		INSERT
+		INTO
+		TB_STATION_REVIEW
+		(
+		REVIEW_ID,
+		COMMENT_CONTENT,
+		RECOMMEND,
+		STATION_ID,
+		REF_USER_NO,
+		CREATED_AT)
+		VALUES
+		(
+		SEQ_REVIEW.NEXTVAL,
+		#{commentContent}
+		,#{recommend}
+		,#{stationId}
+		,#{userNo}
+		,DEFAULT
+		)
+	</insert>
+
+
+	<delete id="deleteReview"
+		parameterType="com.kh.pcar.back.station.model.dto.ReviewDTO">
+		DELETE
+		FROM
+		TB_STATION_REVIEW
+		WHERE
+		REVIEW_ID=#{reviewId}
+
+	</delete>
+	<select id="findAll" parameterType="string" resultType="ReviewDTO">
+		SELECT
+		REVIEW_ID reviewId,
+		COMMENT_CONTENT commentContent,
+		DECODE(RECOMMEND ,'Y','추천','비추천') recommend,
+		STATION_ID stationId,
+		REF_USER_NO userNo,
+		CREATED_AT createdAt
+		FROM
+		TB_STATION_REVIEW
+		WHERE
+		STATION_ID = #{stationId}
+	</select>
+
+	<select id="searchDetail" parameterType="long" resultType="long">
+		SELECT
+		REF_USER_NO
+		FROM
+		TB_STATION_REVIEW
+		WHERE
+		REVIEW_ID = #{reviewId}
+
+	</select>
+
+
+</mapper>
