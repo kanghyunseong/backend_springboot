@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.pcar.back.auth.model.dto.MemberLoginDTO;
 import com.kh.pcar.back.auth.model.service.AuthService;
 import com.kh.pcar.back.auth.model.service.SocialAuthService;
+import com.kh.pcar.back.common.ResponseData;
 import com.kh.pcar.back.token.model.service.TokenService;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +34,9 @@ public class AuthController {
 	private final SocialAuthService socialAuthService;
 
 	@PostMapping("/login")
-	public ResponseEntity<Map<String, String>> login(@Valid @RequestBody MemberLoginDTO member) {
+	public ResponseEntity<ResponseData<Object>> login(@Valid @RequestBody MemberLoginDTO member) {
 		Map<String, String> loginResponse = authService.login(member);
-		return ResponseEntity.ok(loginResponse);
+		return ResponseData.ok(loginResponse,"로그인 성공");
 	}
 
 	@GetMapping("/{provider}/callback")
