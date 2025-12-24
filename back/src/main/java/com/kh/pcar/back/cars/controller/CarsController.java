@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.cars.model.dto.CarsDTO;
-import com.kh.pcar.back.cars.model.dto.CarsReviewDTO;
-import com.kh.pcar.back.cars.model.service.CarsReviewService;
 import com.kh.pcar.back.cars.model.service.CarsService;
+import com.kh.pcar.back.common.ResponseData;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,21 +26,15 @@ public class CarsController {
 
 	// 차량 전체 조회
 	@GetMapping
-	public ResponseEntity<List<CarsDTO>> findAll(@RequestParam(value = "page", defaultValue = "0") int pageNo) {
-
-		List<CarsDTO> cars = carsService.findAll(pageNo);
-
-		return ResponseEntity.ok(cars);
+	public ResponseEntity<ResponseData<List<CarsDTO>>> findAll(@RequestParam(value = "page", defaultValue = "0") int pageNo) {
+		return ResponseData.ok(carsService.findAll(pageNo));
 	}
 
 	// 차량 상세 조회
 	// GET /
 	@GetMapping("/{carId}")
-	public ResponseEntity<List<CarsDTO>> findByCarId(@PathVariable(name = "carId") Long carId) {
-
-		List<CarsDTO> car = carsService.findByCarId(carId);
-
-		return ResponseEntity.ok(car);
+	public ResponseEntity<ResponseData<List<CarsDTO>>> findByCarId(@PathVariable(name = "carId") Long carId) {
+		return ResponseData.ok(carsService.findByCarId(carId));
 	}
 
 }
