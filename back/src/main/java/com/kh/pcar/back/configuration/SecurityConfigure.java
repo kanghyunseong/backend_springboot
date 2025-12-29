@@ -68,16 +68,14 @@ public class SecurityConfigure {
 		                    "/members",
 		                    "/members/**",
 		                    "/auth/refresh",
-		                    "/cars/**",
-		                    "/station/**",
-		                    "/reserve/**"
+		                    "/station/**"
 		            ).permitAll();
 
 		            // 2. GET - 비로그인 허용 (목록/조회용)
 		            requests.requestMatchers(HttpMethod.GET,
 		                    "/uploads/**",
 		                    "/members/**",
-		                    "/cars/**",
+		                    "/api/cars/**",
 		                    "/station/**",
 		                    "/station/search",
 		                    "/boards",
@@ -88,8 +86,8 @@ public class SecurityConfigure {
 		                    "/notices/search",
 		                    "/comments/**",
 		                    "/imgComments/**",
-		                    "/reserve/**",
-		                    "/reviews/**",
+		                    "/api/reserve/**",
+		                    "/api/reviews/**",
 		                    "/main"
 		            ).permitAll();
 
@@ -97,7 +95,8 @@ public class SecurityConfigure {
 		            requests.requestMatchers(HttpMethod.GET,
 		                    "/boards/*",
 		                    "/imgBoards/*",
-		                    "/notices/*"
+		                    "/notices/*",
+		                    "/api/reserve/**"
 		            ).authenticated();
 
 		            // 4. PUT - 로그인 필요
@@ -106,7 +105,7 @@ public class SecurityConfigure {
 		                    "/boards/**", 
 		                    "/imgBoards/**", 
 		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**", "/reviews/**"
+		                    "/api/reserve/**", "/api/reviews/**"
 		            ).authenticated();
 
 		            // 5. DELETE - 로그인 필요
@@ -114,7 +113,7 @@ public class SecurityConfigure {
 		                    "/members",
 		                    "/boards/**", "/imgBoards/**", 
 		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**", "/reviews/**","/station/**"
+		                    "/api/reserve/**", "/api/reviews/**","/station/**"
 		            ).authenticated();
 
 
@@ -125,7 +124,8 @@ public class SecurityConfigure {
 		                    "/comments/**",
 		                    "/imgComments/**",
 		                    "/notices/**",
-		                    "/reviews/**"
+		                    "/api/reviews/**",
+		                    "/api/reserve/**"
 		            ).authenticated();
 
 		            // 7. 관리자 전용

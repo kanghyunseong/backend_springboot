@@ -16,7 +16,8 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-application-priavte.yml
+application-private.yml
+*.yml
 
 ### IntelliJ IDEA ###
 .idea

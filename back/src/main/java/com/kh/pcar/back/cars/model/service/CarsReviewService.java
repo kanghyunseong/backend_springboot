@@ -11,7 +11,7 @@ public interface CarsReviewService {
 
 	int insertReview(CarsReviewDTO dto, CustomUserDetails userDetails);
 
-	int updateReview(CarsReviewDTO dto);
+	int updateReview(CarsReviewDTO dto, CustomUserDetails userDetails);
 
-	void deleteReview(Long reviewId);
+	void deleteReview(Long reviewId, CustomUserDetails userDetails);
 }
