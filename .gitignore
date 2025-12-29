@@ -23,5 +23,5 @@ build/
 logs/
 *.log
 tmp/
-
+*.yml
 
