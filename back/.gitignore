@@ -17,6 +17,11 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+application-private.yml
+application.yml
+
+*.yml
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -35,3 +40,7 @@ out/
 
 ### VS Code ###
 .vscode/
+application-private.yml
+application.yml
+
+*.yml

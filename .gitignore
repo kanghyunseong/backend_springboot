@@ -24,4 +24,7 @@ logs/
 *.log
 tmp/
 
+*.yml
+
+
 

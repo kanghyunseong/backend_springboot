@@ -18,6 +18,7 @@ public class AdminBoardsDeclarationServiceimpl implements AdminBoardsDeclaration
 	private final AdminBoardsDeclarationMapper adminBoardsDeclarationMapper;
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<AdminBoardsDeclarationDTO> findAllDeclaration() {
 		List<AdminBoardsDeclarationDTO> list = adminBoardsDeclarationMapper.findAllDeclaration();
 		return list;

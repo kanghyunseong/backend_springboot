@@ -2,6 +2,7 @@ package com.kh.pcar.back.configuration;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,6 +31,9 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfigure {
 
 	private final JwtFilter jwtFilter;
+	
+	@Value("${instance.url}")
+	private String instance;
 
 	// 우리의 문제점 : 시큐리티의 formLogin필터가 자꾸만 인증이 안됐다고 회원가입도 못하게함
 	// 해결방법 : form로그인 안쓸래 하고 fillterChain을 빈으로 등록
@@ -127,30 +131,36 @@ public class SecurityConfigure {
 
 		            // 7. 관리자 전용
 		            requests.requestMatchers(HttpMethod.GET,
-		                    "/admin/api/ranking/users",
-		                    "/admin/**",
-		                    "/admin/api/settings/**",
-		                    "/admin/api/notice/list",
-		                    "/admin/api/community/**"
+		                    "/api/admin/ranking/users",
+		                    "/api/admin/**",
+		                    "/api/admin/settings/**",
+		                    "/api/admin/notice/list",
+		                    "/api//admin/community/**",
+		                    "/uploads/**",
+		                    "/api/admin/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.POST,
-		                    "/admin/**",
-		                    "/admin/api/settings/**",
-		                    "/admin/api/notice/**"
+		                    "/api/admin/**",
+		                    "/api/admin/settings/**",
+		                    "/api/admin/notice/**",
+		                    "/api/admin/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.PUT,
-		                    "/admin/**",
-		                    "/admin/api/notice/**"
+		                    "/api/admin/**",
+		                    "/api/admin/settings/**",
+		                    "/api/admin/notice/**",
+		                    "/api/admin/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.DELETE,
-		                    "/admin/**",
 		                    "/api/admin/**",
-		                    "/admin/api/**",
-		                    "/admin/api/notice/**",
-		                    "/admin/api/community/**"
+		                    "/api/api/admin/**",
+		                    "/api/admin/**",
+		                    "/api/admin/notice/**",
+		                    "/api/admin/community/**",
+		                    "/api/admin/**"
 		            ).hasAuthority("ROLE_ADMIN");
 		        })
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -163,7 +173,7 @@ public class SecurityConfigure {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		configuration.setAllowedOrigins(Arrays.asList(instance));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-type"));
 		configuration.setAllowCredentials(true);
@@ -171,6 +181,7 @@ public class SecurityConfigure {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
+	
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -182,4 +193,5 @@ public class SecurityConfigure {
 		return authConfig.getAuthenticationManager();
 	}
 
+	
 }
