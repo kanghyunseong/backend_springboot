@@ -61,96 +61,96 @@ public class SecurityConfigure {
 
 		            // 1. POST - 비로그인 허용 (회원가입/로그인, 차량/예약 등)
 		            requests.requestMatchers(HttpMethod.POST,
-		                    "/members/login",
-		                    "/members",
-		                    "/members/**",
-		                    "/auth/refresh",
-		                    "/cars/**",
-		                    "/station/**",
-		                    "/reserve/**"
+		                    "/api/members/login",
+		                    "/api/members",
+		                    "/api/members/**",
+		                    "/api/auth/refresh",
+		                    "/api/cars/**",
+		                    "/api/station/**",
+		                    "/api/reserve/**"
 		            ).permitAll();
 
 		            // 2. GET - 비로그인 허용 (목록/조회용)
 		            requests.requestMatchers(HttpMethod.GET,
-		                    "/uploads/**",
-		                    "/members/**",
-		                    "/cars/**",
-		                    "/station/**",
-		                    "/station/search",
-		                    "/boards",
-		                    "/boards/search",
-		                    "/imgBoards",
-		                    "/imgBoards/search",
-		                    "/notices",
-		                    "/notices/search",
-		                    "/comments/**",
-		                    "/imgComments/**",
-		                    "/reserve/**",
-		                    "/reviews/**",
-		                    "/main"
+		                    "/api/uploads/**",
+		                    "/api/members/**",
+		                    "/api/cars/**",
+		                    "/api/station/**",
+		                    "/api/station/search",
+		                    "/api/boards",
+		                    "/api/boards/search",
+		                    "/api/imgBoards",
+		                    "/api/imgBoards/search",
+		                    "/api/notices",
+		                    "/api/notices/search",
+		                    "/api/comments/**",
+		                    "/api/imgComments/**",
+		                    "/api/reserve/**",
+		                    "/api/reviews/**",
+		                    "/api/main"
 		            ).permitAll();
 
 		            // 3. GET - 로그인 필요 (상세 페이지들)
 		            requests.requestMatchers(HttpMethod.GET,
-		                    "/boards/*",
-		                    "/imgBoards/*",
-		                    "/notices/*"
+		                    "/api/boards/*",
+		                    "/api/imgBoards/*",
+		                    "/api/notices/*"
 		            ).authenticated();
 
 		            // 4. PUT - 로그인 필요
 		            requests.requestMatchers(HttpMethod.PUT,
-		                    "/members", "/members/**", 
-		                    "/boards/**", 
-		                    "/imgBoards/**", 
-		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**", "/reviews/**"
+		                    "/api/members", "/api/members/**", 
+		                    "/api/boards/**", 
+		                    "/api/imgBoards/**", 
+		                    "/api/comments/**", "/api/imgComments/**",
+		                    "/api/reserve/**", "/api/reviews/**"
 		            ).authenticated();
 
 		            // 5. DELETE - 로그인 필요
 		            requests.requestMatchers(HttpMethod.DELETE,
-		                    "/members",
-		                    "/boards/**", "/imgBoards/**", 
-		                    "/comments/**", "/imgComments/**",
-		                    "/reserve/**", "/reviews/**","/station/**"
+		                    "/api/members",
+		                    "/api/boards/**", "/api/imgBoards/**", 
+		                    "/api/comments/**", "/api/imgComments/**",
+		                    "/api/reserve/**", "/api/reviews/**","/api/station/**"
 		            ).authenticated();
 
 
 		            // 6. POST - 게시글/댓글/공지 작성 (로그인 필요)
 		            requests.requestMatchers(HttpMethod.POST,
-		                    "/boards/**",
-		                    "/imgBoards/**",
-		                    "/comments/**",
-		                    "/imgComments/**",
-		                    "/notices/**",
-		                    "/reviews/**"
+		                    "/api/boards/**",
+		                    "/api/imgBoards/**",
+		                    "/api/comments/**",
+		                    "/api/imgComments/**",
+		                    "/api/notices/**",
+		                    "/api/reviews/**"
 		            ).authenticated();
 
 		            // 7. 관리자 전용
 		            requests.requestMatchers(HttpMethod.GET,
-		                    "/admin/api/ranking/users",
-		                    "/admin/**",
-		                    "/admin/api/settings/**",
-		                    "/admin/api/notice/list",
-		                    "/admin/api/community/**"
+		                    "/api/admin/api/ranking/users",
+		                    "/api/admin/**",
+		                    "/api/admin/api/settings/**",
+		                    "/api/admin/api/notice/list",
+		                    "/api/admin/api/community/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.POST,
-		                    "/admin/**",
-		                    "/admin/api/settings/**",
-		                    "/admin/api/notice/**"
+		                    "/api/admin/**",
+		                    "/api/admin/api/settings/**",
+		                    "/api/admin/api/notice/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.PUT,
-		                    "/admin/**",
-		                    "/admin/api/notice/**"
+		                    "/api/admin/**",
+		                    "/api/admin/notice/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
 		            requests.requestMatchers(HttpMethod.DELETE,
-		                    "/admin/**",
 		                    "/api/admin/**",
-		                    "/admin/api/**",
-		                    "/admin/api/notice/**",
-		                    "/admin/api/community/**"
+		                    "/api/api/admin/**",
+		                    "/api/admin/**",
+		                    "/api/admin/notice/**",
+		                    "/api/admin/community/**"
 		            ).hasAuthority("ROLE_ADMIN");
 		        })
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

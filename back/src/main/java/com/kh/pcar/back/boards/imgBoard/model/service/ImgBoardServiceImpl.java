@@ -20,6 +20,7 @@ import com.kh.pcar.back.boards.imgBoard.model.vo.AttachmentVO;
 import com.kh.pcar.back.boards.imgBoard.model.vo.ImgBoardVO;
 import com.kh.pcar.back.exception.CustomAuthorizationException;
 import com.kh.pcar.back.file.service.FileService;
+import com.kh.pcar.back.file.service.S3Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,8 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 
 	private final ImgBoardMapper imgBoardMapper;
 	private final AttachmentMapper attachmentMapper;
-	private final FileService fileService;
+	//private final FileService fileService;
+	private final S3Service s3Service;
 	private final int pageSize = 10;
 	
     @Override
@@ -60,8 +62,8 @@ public class ImgBoardServiceImpl implements ImgBoardService {
         for (MultipartFile file : files) {
             if (file == null || file.isEmpty()) continue;
 
-            // 물리 파일 저장 (FileService는 기존에 쓰던 거 그대로 사용)
-            String storedPath = fileService.store(file);
+            // 물리 파일 저장 (s3Service는 기존에 쓰던 거 그대로 사용)
+            String storedPath = s3Service.uploadFile(file);
 
             String originName = file.getOriginalFilename();
             String changeName = extractFileName(storedPath); // util 메서드 만들어서 사용
@@ -190,7 +192,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 	        for (MultipartFile file : files) {
 	            if (file == null || file.isEmpty()) continue;
 
-	            String storedPath = fileService.store(file);
+	            String storedPath = s3Service.uploadFile(file);
 
 	            String originName = file.getOriginalFilename();
 	            String changeName = extractFileName(storedPath);
@@ -206,6 +208,7 @@ public class ImgBoardServiceImpl implements ImgBoardService {
 	            attachmentMapper.insertAttachment(avo);
 	        }
 	    }
+	    
 	    // 새 파일이 하나도 없으면 → 기존 이미지 그대로 유지 (아무것도 안 함)
 
 	    // 3. 최신 데이터 다시 조회해서 반환

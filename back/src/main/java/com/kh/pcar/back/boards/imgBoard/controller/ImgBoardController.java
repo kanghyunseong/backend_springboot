@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("imgBoards")
+@RequestMapping("api/imgBoards")
 @RequiredArgsConstructor
 public class ImgBoardController {
 
@@ -43,8 +43,7 @@ public class ImgBoardController {
     public ResponseEntity<ApiResponse<Void>> save(
             @Valid ImgBoardDTO imgBoard,
             @RequestParam(name = "files", required = false) MultipartFile[] files,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         log.info("게시글 정보 : {}, 업로드 파일 개수 : {}", imgBoard, (files != null ? files.length : 0));
         imgBoardService.imgSave(imgBoard, files, userDetails.getUsername());
