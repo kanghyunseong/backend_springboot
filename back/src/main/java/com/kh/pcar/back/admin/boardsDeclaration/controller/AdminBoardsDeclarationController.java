@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/api/community")
+@RequestMapping("/api/admin/community")
 public class AdminBoardsDeclarationController {
 
 	private final AdminBoardsDeclarationService adminBoardsDeclarationService;

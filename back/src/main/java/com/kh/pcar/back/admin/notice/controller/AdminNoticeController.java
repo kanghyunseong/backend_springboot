@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/api/notice")
+@RequestMapping("/api/admin/notice")
 public class AdminNoticeController {
 
 	private final AdminNoticeService adminNoticeService;
