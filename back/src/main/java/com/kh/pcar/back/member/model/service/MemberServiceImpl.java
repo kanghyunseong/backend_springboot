@@ -125,28 +125,29 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional
 	public void kakaoJoin(KakaoMemberDTO member, MultipartFile licenseImg) {
 
-		// log.info("222222222222222{}" , member);
-
 		member.setRole("ROLE_USER");
-		generateFileName(member, licenseImg);
+
+		if (licenseImg != null && !licenseImg.isEmpty()) {
+			String filePath = fileService.store(licenseImg);
+			member.setLicenseUrl(filePath);
+		}
 
 		mapper.kakaoJoin(member);
 		mapper.kakaoProviderJoin(member);
-
 	}
 
-	private KakaoMemberDTO generateFileName(KakaoMemberDTO member, MultipartFile licenseImg) {
-
-		if (licenseImg != null && !licenseImg.isEmpty()) {
-
-			String filePath = fileService.store(licenseImg);
-
-			member.setLicenseUrl(filePath);
-
-			return member;
-		}
-		return null;
-	}
+//	private KakaoMemberDTO generateFileName(KakaoMemberDTO member, MultipartFile licenseImg) {
+//
+//		if (licenseImg != null && !licenseImg.isEmpty()) {
+//
+//			String filePath = fileService.store(licenseImg);
+//
+//			member.setLicenseUrl(filePath);
+//
+//			return member;
+//		}
+//		return null;
+//	}
 
 	public void changePassword(ChangePasswordDTO password, CustomUserDetails user) {
 		// 로그인한 유저 비밀번호 검증
@@ -166,18 +167,24 @@ public class MemberServiceImpl implements MemberService {
 
 	@Transactional
 	public MemberDTO updateUser(MemberUpdateDTO member, MultipartFile licenseImg, CustomUserDetails userDetails) {
-		// 1. 파일 처리
-		String fileUrl = handleFileUpload(licenseImg);
+		String oldFileUrl = userDetails.getLicenseUrl();
 
-		// 2. 변경된 필드만 추출
-		Map<String, Object> changes = getChangedFields(member, userDetails, fileUrl);
+		String newFileUrl = null;
+		if (licenseImg != null && !licenseImg.isEmpty()) {
+			newFileUrl = fileService.store(licenseImg);
 
-		// 3. 업데이트 실행
-		if (changes.size() > 1) { // userNo 외 변경필드 존재 시
+			// 기존 파일 삭제
+			if (oldFileUrl != null) {
+				fileService.delete(oldFileUrl);
+			}
+		}
+
+		Map<String, Object> changes = getChangedFields(member, userDetails, newFileUrl);
+
+		if (changes.size() > 1) {
 			mapper.updateUser(changes);
 		}
 
-		// 4. 최신 회원 정보 반환
 		return mapper.loadUser(userDetails.getUsername());
 	}
 
@@ -202,16 +209,16 @@ public class MemberServiceImpl implements MemberService {
 		return changes;
 	}
 
-	private String handleFileUpload(MultipartFile licenseImg) {
-		if (licenseImg != null && !licenseImg.isEmpty()) {
-			try {
-				return fileService.store(licenseImg);
-			} catch (Exception e) {
-				throw new FileUploadException("파일 업로드에 실패했습니다.");
-			}
-		}
-		return null;
-	}
+//	private String handleFileUpload(MultipartFile licenseImg) {
+//		if (licenseImg != null && !licenseImg.isEmpty()) {
+//			try {
+//				return fileService.store(licenseImg);
+//			} catch (Exception e) {
+//				throw new FileUploadException("파일 업로드에 실패했습니다.");
+//			}
+//		}
+//		return null;
+//	}
 	// 원래 사용했으나 현재 로그인한 유저로 인증하고싶어서 삭제
 	/*
 	 * private CustomUserDetails validatePassword(String password) {
@@ -231,15 +238,17 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional
 	public void deleteByPassword(String inputPassword, CustomUserDetails user) {
 
-		// 로그인한 유저 비밀번호 검증
-		if (!passwordEncoder.matches(inputPassword, user.getPassword())) {
-			throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
-		}
-		// 토큰삭제
-		tokenMapper.deleteTokenByUserNo(user.getUserNo());
-		// 유저 삭제
-		mapper.deleteUserNo(String.valueOf(user.getUserNo()));
+	    if (!passwordEncoder.matches(inputPassword, user.getPassword())) {
+	        throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
+	    }
 
+	    // S3 파일 삭제
+	    if (user.getLicenseUrl() != null) {
+	        fileService.delete(user.getLicenseUrl());
+	    }
+
+	    tokenMapper.deleteTokenByUserNo(user.getUserNo());
+	    mapper.deleteUserNo(String.valueOf(user.getUserNo()));
 	}
 
 }
