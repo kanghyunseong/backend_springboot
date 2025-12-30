@@ -19,7 +19,6 @@ import com.kh.pcar.back.boards.imgBoard.model.dto.ImgBoardDTO;
 import com.kh.pcar.back.boards.imgBoard.model.vo.AttachmentVO;
 import com.kh.pcar.back.boards.imgBoard.model.vo.ImgBoardVO;
 import com.kh.pcar.back.exception.CustomAuthorizationException;
-import com.kh.pcar.back.file.service.FileService;
 import com.kh.pcar.back.file.service.S3Service;
 
 import lombok.RequiredArgsConstructor;
@@ -30,16 +29,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ImgBoardServiceImpl implements ImgBoardService {
 
-	private final ImgBoardMapper imgBoardMapper;
-	private final AttachmentMapper attachmentMapper;
-	//private final FileService fileService;
-	private final S3Service s3Service;
-	private final int pageSize = 10;
-	
+    private final ImgBoardMapper imgBoardMapper;
+    private final AttachmentMapper attachmentMapper;
+    private final S3Service s3Service; 
+    private final int pageSize = 10;
+
     @Override
     @Transactional
     public void imgSave(ImgBoardDTO imgBoard, MultipartFile[] files, String userId) {
-    	
+        
         // 1) 게시글 VO 생성
         ImgBoardVO ib = ImgBoardVO.builder()
                 .imgBoardTitle(imgBoard.getImgBoardTitle())
@@ -47,36 +45,29 @@ public class ImgBoardServiceImpl implements ImgBoardService {
                 .imgBoardWriter(userId)
                 .build();
 
-        // 2) 게시글 INSERT -> selectKey로 imgBoardNo 채워짐
+        // 2) 게시글 INSERT
         imgBoardMapper.imgSave(ib);
+        Long imgBoardNo = ib.getImgBoardNo(); 
 
-        Long imgBoardNo = ib.getImgBoardNo();  // 이제 이 값으로 첨부파일 REF_INO 설정
-        log.info("새로 저장된 IMG_BOARD_NO = {}", imgBoardNo);
+        // 3) 파일 처리
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                if (file == null || file.isEmpty()) continue;
 
-        // 3) 파일 없으면 그냥 끝
-        if (files == null || files.length == 0) {
-            return;
-        }
+                // [수정] S3Service의 메서드명은 fileSave입니다.
+                String storedPath = s3Service.fileSave(file);
+                System.out.println("🔥 S3 upload start: " + file.getOriginalFilename());
 
-        // 4) 파일 여러 개 저장
-        for (MultipartFile file : files) {
-            if (file == null || file.isEmpty()) continue;
+                AttachmentVO avo = AttachmentVO.builder()
+                        .refIno(imgBoardNo)
+                        .originName(file.getOriginalFilename())
+                        .changeName(extractFileName(storedPath))
+                        .filePath(storedPath)
+                        .status("Y")
+                        .build();
 
-            // 물리 파일 저장 (s3Service는 기존에 쓰던 거 그대로 사용)
-            String storedPath = s3Service.uploadFile(file);
-
-            String originName = file.getOriginalFilename();
-            String changeName = extractFileName(storedPath); // util 메서드 만들어서 사용
-
-            AttachmentVO avo = AttachmentVO.builder()
-                    .refIno(imgBoardNo)
-                    .originName(originName)
-                    .changeName(changeName)
-                    .filePath(storedPath)
-                    .status("Y")
-                    .build();
-
-            attachmentMapper.insertAttachment(avo);
+                attachmentMapper.insertAttachment(avo);
+            }
         }
     }
 
@@ -85,27 +76,22 @@ public class ImgBoardServiceImpl implements ImgBoardService {
         int idx = path.lastIndexOf('/');
         if (idx == -1) return path;
         return path.substring(idx + 1);
-    }		
+    }       
 
     @Override
     public PageResponseDTO<ImgBoardDTO> imgFindAll(int pageNo) {
         int size = pageSize;
         int offset = pageNo * size;
-
         RowBounds rb = new RowBounds(offset, size);
 
         List<ImgBoardDTO> list = imgBoardMapper.imgFindAll(rb);
         long total = imgBoardMapper.countImgBoards();
 
-        // totalPages 계산은 PageResponseDTO 안에서 처리
         return new PageResponseDTO<>(list, total, pageNo, size);
     }
-	
+    
     @Override
     public PageResponseDTO<ImgBoardDTO> searchImgBoards(String type, String keyword, int pageNo) {
-
-        log.info("검색 service - type: {}, keyword: {}, page: {}", type, keyword, pageNo);
-
         int offset = pageNo * pageSize;
 
         Map<String, Object> params = new HashMap<>();
@@ -120,119 +106,89 @@ public class ImgBoardServiceImpl implements ImgBoardService {
         return new PageResponseDTO<>(list, totalCount, pageNo, pageSize);
     }
 
-	
+    @Override
+    public ImgBoardDTO findByImgBoardNo(Long imgBoardNo) {
+        ImgBoardDTO idto = getImgBoardOrThrow(imgBoardNo);
+        List<AttachmentVO> adto = attachmentMapper.findByRefIno(imgBoardNo);
 
-	@Override
-	public ImgBoardDTO findByImgBoardNo(Long imgBoardNo) {
-	    ImgBoardDTO idto = getImgBoardOrThrow(imgBoardNo);
-	    List<AttachmentVO> adto = attachmentMapper.findByRefIno(imgBoardNo);
+        List<AttachmentDTO> attachments = adto.stream()
+                                             .map(a -> new AttachmentDTO(
+                                             a.getFileNo(),
+                                             a.getRefIno(),
+                                             a.getOriginName(),
+                                             a.getChangeName(),
+                                             a.getFilePath()
+                                            ))
+                                            .toList();
 
-	    // VO -> DTO 변환
-	    List<AttachmentDTO> attachments = adto.stream()
-								             .map(a -> new AttachmentDTO(
-						            		 a.getFileNo(),
-						            		 a.getRefIno(),
-						            		 a.getOriginName(),
-						            		 a.getChangeName(),
-						            		 a.getFilePath()
-								            ))
-								            .toList();
+        idto.setAttachments(attachments);
+        return idto;
+    }
+    
+    @Override
+    public void increaseImgView(Long imgBoardNo) {
+        imgBoardMapper.increaseImgView(imgBoardNo);
+    }
+    
+    private ImgBoardDTO getImgBoardOrThrow(Long imgBoardNo) {
+        ImgBoardDTO imgBoard = imgBoardMapper.findByImgBoardNo(imgBoardNo);
+        if(imgBoard == null) {
+            throw new InvalidParameterException("유효하지 않은 접근입니다.");
+        }
+        return imgBoard;
+    }
+    
+    private ImgBoardDTO validateImgBoard(Long imgBoardNo, CustomUserDetails userDetails) {
+        ImgBoardDTO imgBoard = getImgBoardOrThrow(imgBoardNo);
+        if (!imgBoard.getImgBoardWriter().equals(userDetails.getUsername())) {
+            throw new CustomAuthorizationException("작성자만 수정/삭제할 수 있습니다.");
+        }
+        return imgBoard;
+    }
+    
+    @Override
+    @Transactional 
+    public ImgBoardDTO imgUpdate(ImgBoardDTO imgBoard, MultipartFile[] files,
+                                 Long imgBoardNo, CustomUserDetails userDetails) {
 
-	    idto.setAttachments(attachments);
-	    return idto;
-	}
-	
-	@Override
-	public void increaseImgView(Long imgBoardNo) {
-		imgBoardMapper.increaseImgView(imgBoardNo);
-	}
-	
-	private ImgBoardDTO getImgBoardOrThrow(Long imgBoardNo) {
-		ImgBoardDTO imgBoard = imgBoardMapper.findByImgBoardNo(imgBoardNo);
-		if(imgBoard == null) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
-		return imgBoard;
-	}
-	
-	private ImgBoardDTO validateImgBoard(Long imgBoardNo, CustomUserDetails userDetails) {
-	    ImgBoardDTO imgBoard = getImgBoardOrThrow(imgBoardNo);
-	    if (!imgBoard.getImgBoardWriter().equals(userDetails.getUsername())) {
-	        throw new CustomAuthorizationException("작성자만 수정/삭제할 수 있습니다.");
-	    }
-	    return imgBoard;
-	}
-	
-	@Override
-	public ImgBoardDTO imgUpdate(ImgBoardDTO imgBoard, MultipartFile[] files,
-	                             Long imgBoardNo, CustomUserDetails userDetails) {
+        ImgBoardDTO imgOrigin = validateImgBoard(imgBoardNo, userDetails);
 
-	    // 1. 게시글 존재 + 작성자 검증
-	    ImgBoardDTO imgOrigin = validateImgBoard(imgBoardNo, userDetails);
+        imgBoard.setImgBoardNo(imgBoardNo);
+        imgBoard.setImgBoardWriter(imgOrigin.getImgBoardWriter());
+        imgBoardMapper.imgUpdate(imgBoard, userDetails.getUserNo());
 
-	    // 2. 내용 수정
-	    imgBoard.setImgBoardNo(imgBoardNo);
-	    imgBoard.setImgBoardWriter(imgOrigin.getImgBoardWriter());
+        boolean hasNewFiles = files != null
+                && java.util.Arrays.stream(files).anyMatch(f -> f != null && !f.isEmpty());
 
-	    Long loginUserNo = userDetails.getUserNo();
-	    imgBoardMapper.imgUpdate(imgBoard, loginUserNo);
+        if (hasNewFiles) {
+            attachmentMapper.disableByRefIno(imgBoardNo);
 
-	    // ====== 파일 처리 시작 ======
+            for (MultipartFile file : files) {
+                if (file == null || file.isEmpty()) continue;
 
-	    // 새 파일이 있는지 여부 체크
-	    boolean hasNewFiles = files != null
-	            && java.util.Arrays.stream(files)
-	                               .anyMatch(f -> f != null && !f.isEmpty());
+                // [수정] s3Service.fileSave(file)로 명칭 변경
+                String storedPath = s3Service.fileSave(file);
 
-	    if (hasNewFiles) {
-	        // 1) 기존 첨부파일 모두 비활성화
-	        attachmentMapper.disableByRefIno(imgBoardNo);
+                AttachmentVO avo = AttachmentVO.builder()
+                        .refIno(imgBoardNo)
+                        .originName(file.getOriginalFilename())
+                        .changeName(extractFileName(storedPath))
+                        .filePath(storedPath)
+                        .status("Y")
+                        .build();
 
-	        // 2) 새 첨부파일 저장
-	        for (MultipartFile file : files) {
-	            if (file == null || file.isEmpty()) continue;
+                attachmentMapper.insertAttachment(avo);
+            }
+        }
+        
+        return findByImgBoardNo(imgBoardNo);
+    }
 
-	            String storedPath = s3Service.uploadFile(file);
-
-	            String originName = file.getOriginalFilename();
-	            String changeName = extractFileName(storedPath);
-
-	            AttachmentVO avo = AttachmentVO.builder()
-	                    .refIno(imgBoardNo)
-	                    .originName(originName)
-	                    .changeName(changeName)
-	                    .filePath(storedPath)
-	                    .status("Y")
-	                    .build();
-
-	            attachmentMapper.insertAttachment(avo);
-	        }
-	    }
-	    
-	    // 새 파일이 하나도 없으면 → 기존 이미지 그대로 유지 (아무것도 안 함)
-
-	    // 3. 최신 데이터 다시 조회해서 반환
-	    return findByImgBoardNo(imgBoardNo);
-	}
-
-
-	@Override
-	@Transactional
-	public void deleteByImgBoardNo(Long imgBoardNo, CustomUserDetails userDetails) {
-		
-		// 1. 게시글 존재 + 작성자 검증 (공통 함수)
-	    validateImgBoard(imgBoardNo, userDetails);
-
-	    // 2. 실제 삭제는 userNo 기준으로
-	    Long loginUserNo = userDetails.getUserNo();
-
-	    int result = imgBoardMapper.deleteByImgBoardNo(imgBoardNo, loginUserNo);
-	    if (result == 0) {
-	        throw new InvalidParameterException("삭제할 게시글이 존재하지 않습니다.");
-	    }
-
-	    // 3. 첨부파일도 같이 논리 삭제 (이미 이렇게 쓰고 있으면 유지)
-	    attachmentMapper.disableByRefIno(imgBoardNo);
-	}
-
+    @Override
+    @Transactional
+    public void deleteByImgBoardNo(Long imgBoardNo, CustomUserDetails userDetails) {
+        validateImgBoard(imgBoardNo, userDetails);
+        imgBoardMapper.deleteByImgBoardNo(imgBoardNo, userDetails.getUserNo());
+        attachmentMapper.disableByRefIno(imgBoardNo);
+    }
 }
