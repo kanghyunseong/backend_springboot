@@ -44,9 +44,5 @@ public class ResponseData<T> {
       return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseData<>("생성되었습니다.", data, "요청 성공"));
    }
    
-   // 생성 성공 No data
-	public static <T> ResponseEntity<ResponseData<T>> created(String message) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseData<>(message, null, "요청 성공"));
-	}
-   
+
 }

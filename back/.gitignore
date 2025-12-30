@@ -17,8 +17,10 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 application-private.yml
-*.yml
+application.yml
+application-S3.yml
 
+*.yml
 
 ### IntelliJ IDEA ###
 .idea

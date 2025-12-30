@@ -34,7 +34,7 @@ public class ReservationController {
 	public ResponseEntity<ResponseData<Long>> saveReservation(@RequestBody ReservationDTO reservationDTO,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 		
-		return ResponseData.ok(reservationService.saveReservation(reservationDTO, userDetails)); // reservationNo를 url로 뽑아쓰기위해 반환
+		return ResponseData.ok(reservationService.saveReservation(reservationDTO, userDetails),"예약이 완료되었습니다."); // reservationNo를 url로 뽑아쓰기위해 반환
 	}
 
 	// 예약 확인창
@@ -42,7 +42,7 @@ public class ReservationController {
 	public ResponseEntity<ResponseData<List<ReservationDTO>>> confirmReservation(
 			@PathVariable(name = "reservationNo") Long reservationNo) {
 
-		return ResponseData.ok(reservationService.confirmReservation(reservationNo)); // 예약확인창에서 예약정보를 띄워주기
+		return ResponseData.ok(reservationService.confirmReservation(reservationNo), "조회성공"); // 예약확인창에서 예약정보를 띄워주기
 	}
 
 	// 예약 내역창
@@ -50,7 +50,7 @@ public class ReservationController {
 	public ResponseEntity<ResponseData<List<CarReservationDTO>>> findReservation(
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-		return ResponseData.ok(reservationService.findReservation(userDetails)); // 사용자가 예약한 예약정보
+		return ResponseData.ok(reservationService.findReservation(userDetails), "조회성공"); // 사용자가 예약한 예약정보
 	}
 
 	// 예약 히스토리창
@@ -58,7 +58,7 @@ public class ReservationController {
 	public ResponseEntity<ResponseData<List<CarReservationDTO>>> getHistoryReservation(
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-		return ResponseData.ok(reservationService.getHistoryReservation(userDetails)); // 사용자가 예약한 예약정보
+		return ResponseData.ok(reservationService.getHistoryReservation(userDetails), "조회성공"); // 사용자가 예약한 예약정보
 	}
 
 	// 예약 반납
@@ -68,7 +68,7 @@ public class ReservationController {
 
 		reservationService.returnReservation(reservationNo, userDetails);
 
-		return ResponseData.ok("반납 완료 하였습니다.");
+		return ResponseData.ok("반납 완료 하였습니다.", null);
 	}
 
 	// 예약 변경
@@ -78,7 +78,7 @@ public class ReservationController {
 
 		reservationService.changeReservation(reservation, userDetails);
 
-		return ResponseData.ok("예약 변경 완료");
+		return ResponseData.ok("예약 변경 완료", null);
 	}
 
 	// 예약 취소
@@ -88,7 +88,7 @@ public class ReservationController {
 
 		reservationService.cancelReservation(reservationNo, userDetails);
 
-		return ResponseData.ok("예약 취소 완료");
+		return ResponseData.ok("예약 취소 완료", null);
 	}
 
 }
