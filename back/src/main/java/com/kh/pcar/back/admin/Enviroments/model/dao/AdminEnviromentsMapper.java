@@ -11,25 +11,24 @@ import com.kh.pcar.back.admin.Enviroments.model.dto.AdminEnviromentsDTO;
 public interface AdminEnviromentsMapper {
 
 	@Select({
-        "SELECT",
-        "    u.USER_NAME AS name,",
-        "    COUNT(r.RESERVATION_NO) AS reservationCount,",
-        "    SUM((r.END_TIME - r.START_TIME) * 24) AS totalUsageHours, ", 
-        "    ROUND(",
-        "        SUM(CASE WHEN r.RETURN_STATUS = 'Y' AND R.END_TIME >= R.END_TIME THEN 1 ELSE 0 END) * 100 / ", 
-        "        COUNT(r.RESERVATION_NO)",
-        "    , 1) AS onTimeReturnRate", 
-        "FROM",
-        "    TB_RESERVATION r",
-        "JOIN",
-        "    TB_MEMBER u ON r.USER_NO = u.USER_NO",
-        "WHERE",
-        "    r.RESERVATION_STATUS = 'Y'", 
-        "GROUP BY",
-        "    u.USER_NAME",
-        "ORDER BY",
-        "    reservationCount DESC, u.USER_NAME ASC"
-    })
+	    "SELECT",
+	    "    u.USER_NAME AS \"name\",",
+	    "    u.USER_ID AS \"userId\",",
+	    "    COUNT(r.RESERVATION_NO) AS \"reservationCount\",",
+	    "    ROUND(NVL(SUM((r.END_TIME - r.START_TIME) * 24), 0), 1) AS \"totalUsageHours\",",
+	    "    ROUND(",
+	    "        CASE WHEN COUNT(r.RESERVATION_NO) > 0 ",
+	    "        THEN SUM(CASE WHEN r.RETURN_STATUS = 'Y' THEN 1 ELSE 0 END) * 100 / COUNT(r.RESERVATION_NO) ",
+	    "        ELSE 0 END, 1) AS \"onTimeReturnRate\"", 
+	    "FROM",
+	    "    TB_MEMBER u",
+	    "LEFT JOIN",
+	    "    TB_RESERVATION r ON u.USER_NO = r.USER_NO", 
+	    "GROUP BY",
+	    "    u.USER_NAME, u.USER_ID",
+	    "ORDER BY",
+	    "    \"reservationCount\" DESC, u.USER_NAME ASC"
+	})
 	
 	List<AdminEnviromentsDTO> findUserRankings();
 

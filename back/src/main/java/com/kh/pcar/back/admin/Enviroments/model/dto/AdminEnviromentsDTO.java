@@ -13,6 +13,7 @@ import lombok.ToString;
 @ToString
 public class AdminEnviromentsDTO {
 	private String name;
+	private String userId;
     private int reservationCount;
     private double totalUsageHours; 
     private double onTimeReturnRate;

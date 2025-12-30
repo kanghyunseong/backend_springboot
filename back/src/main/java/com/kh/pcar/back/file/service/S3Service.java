@@ -1,4 +1,4 @@
-package com.kh.pcar.back.admin.service;
+package com.kh.pcar.back.file.service;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
