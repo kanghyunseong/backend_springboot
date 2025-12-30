@@ -121,7 +121,7 @@ public class GlobalExceptionHandler {
                       .get(0)
                       .getDefaultMessage();
         log.warn("유효성 검증 실패: {}", msg);
-        return ResponseData.failure(e.getMessage(),HttpStatus.BAD_REQUEST);
+        return ResponseData.failure(msg ,HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ResponseData<Object>> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
@@ -201,5 +201,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<ResponseData<Object>> handleFileStoageExceptionHandler(FileStorageException e){
         return ResponseData.failure(e.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ResponseData<Object>> handleCommentNotFoundExceptionHandler(CommentNotFoundException e) {
+    	return ResponseData.failure(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

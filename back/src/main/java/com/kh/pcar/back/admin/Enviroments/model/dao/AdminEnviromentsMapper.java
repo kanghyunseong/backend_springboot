@@ -30,6 +30,7 @@ public interface AdminEnviromentsMapper {
         "ORDER BY",
         "    reservationCount DESC, u.USER_NAME ASC"
     })
+	
 	List<AdminEnviromentsDTO> findUserRankings();
 
 }

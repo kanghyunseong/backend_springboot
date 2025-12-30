@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.pcar.back.admin.boardsDeclaration.model.dao.AdminBoardsDeclarationMapper;
 import com.kh.pcar.back.admin.boardsDeclaration.model.dto.AdminBoardsDeclarationDTO;
 import com.kh.pcar.back.exception.BoardsNotFoundException;
+import com.kh.pcar.back.exception.CommentNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +22,9 @@ public class AdminBoardsDeclarationServiceimpl implements AdminBoardsDeclaration
 	@Transactional(readOnly = true)
 	public List<AdminBoardsDeclarationDTO> findAllDeclaration() {
 		List<AdminBoardsDeclarationDTO> list = adminBoardsDeclarationMapper.findAllDeclaration();
+		if(list.isEmpty()) {
+			throw new BoardsNotFoundException("게시글 목록을 찾을 수 없습니다.");
+		}
 		return list;
 	}
 
@@ -41,7 +45,6 @@ public class AdminBoardsDeclarationServiceimpl implements AdminBoardsDeclaration
 		if (result == 0) {
 			throw new BoardsNotFoundException("게시글 번호 " + reportNo + "를 찾을 수 없습니다.");
 		}
-
 	}
 
 	@Override
@@ -64,6 +67,5 @@ public class AdminBoardsDeclarationServiceimpl implements AdminBoardsDeclaration
 		if (result == 0) {
 			throw new BoardsNotFoundException("댓글 번호 " + reportNo + "를 찾을 수 없습니다.");
 		}
-
 	}
 }
