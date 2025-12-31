@@ -1,6 +1,8 @@
 package com.kh.pcar.back.admin.cars.model.service;
 
+
 import java.io.IOException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +21,10 @@ import com.kh.pcar.back.util.PageInfo;
 import com.kh.pcar.back.util.Pagenation;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AdminCarServiceImpl implements AdminCarService {
 
@@ -48,17 +52,23 @@ public class AdminCarServiceImpl implements AdminCarService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class) 
 	public void registerCar(AdminCarDTO carDTO, MultipartFile file) {
-		try {
-			if (file != null && !file.isEmpty()) {
-				String imgUrl = fileSaveService.saveFile(file);
-				carDTO.setCarImage(imgUrl);
-			}
-			adminCarMapper.insertCar(carDTO);
-		} catch (IOException e) {
-			throw new RuntimeException("차량 등록 중 파일 저장 실패", e);
-		}
+	    try {
+	        if (file != null && !file.isEmpty()) {
+	            String imgUrl = fileSaveService.saveFile(file);
+	            carDTO.setCarImage(imgUrl);
+	        }
+	        
+	        adminCarMapper.insertCar(carDTO);
+	        
+	    } catch (IOException e) {
+	        log.error("차량 등록 중 S3 업로드 실패 : {}", e.getMessage());
+	        throw new RuntimeException("이미지 서버 업로드에 실패하여 차량 등록이 취소되었습니다.", e);
+	    } catch (Exception e) {
+	        log.error("차량 등록 중 예상치 못한 오류 발생 : {}", e.getMessage());
+	        throw new RuntimeException("차량 등록 처리 중 시스템 오류가 발생했습니다.", e);
+	    }
 	}
 
 	@Override
