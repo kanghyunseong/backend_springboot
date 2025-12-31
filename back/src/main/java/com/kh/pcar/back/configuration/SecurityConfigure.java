@@ -29,18 +29,11 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfigure {
-<<<<<<< HEAD
-	
-	@Value("${instance.url}")
-	private String instance;
-	private final JwtFilter jwtFilter;
-=======
 
    private final JwtFilter jwtFilter;
    
    @Value("${instance.url}")
    private String instance;
->>>>>>> 5e0593f1ce72b8e5d239fee9861b8809384cacec
 
    // 우리의 문제점 : 시큐리티의 formLogin필터가 자꾸만 인증이 안됐다고 회원가입도 못하게함
    // 해결방법 : form로그인 안쓸래 하고 fillterChain을 빈으로 등록
@@ -70,73 +63,6 @@ public class SecurityConfigure {
               .cors(Customizer.withDefaults())
               .authorizeHttpRequests(requests -> {
 
-<<<<<<< HEAD
-		            // 1. POST - 비로그인 허용 (회원가입/로그인, 차량/예약 등)
-		            requests.requestMatchers(HttpMethod.POST,
-		                    "/members/login",
-		                    "/members",
-		                    "/members/**",
-		                    "/auth/refresh",
-		                    "/station/**"
-		            ).permitAll();
-
-		            // 2. GET - 비로그인 허용 (목록/조회용)
-		            requests.requestMatchers(HttpMethod.GET,
-		                    "/uploads/**",
-		                    "/members/**",
-		                    "/api/cars/**",
-		                    "/station/**",
-		                    "/station/search",
-		                    "/boards",
-		                    "/boards/search",
-		                    "/imgBoards",
-		                    "/imgBoards/search",
-		                    "/notices",
-		                    "/notices/search",
-		                    "/comments/**",
-		                    "/imgComments/**",
-		                    "/api/reserve/**",
-		                    "/api/reviews/**",
-		                    "/main"
-		            ).permitAll();
-
-		            // 3. GET - 로그인 필요 (상세 페이지들)
-		            requests.requestMatchers(HttpMethod.GET,
-		                    "/boards/*",
-		                    "/imgBoards/*",
-		                    "/notices/*",
-		                    "/api/reserve/**"
-		            ).authenticated();
-
-		            // 4. PUT - 로그인 필요
-		            requests.requestMatchers(HttpMethod.PUT,
-		                    "/members", "/members/**", 
-		                    "/boards/**", 
-		                    "/imgBoards/**", 
-		                    "/comments/**", "/imgComments/**",
-		                    "/api/reserve/**", "/api/reviews/**"
-		            ).authenticated();
-
-		            // 5. DELETE - 로그인 필요
-		            requests.requestMatchers(HttpMethod.DELETE,
-		                    "/members",
-		                    "/boards/**", "/imgBoards/**", 
-		                    "/comments/**", "/imgComments/**",
-		                    "/api/reserve/**", "/api/reviews/**","/station/**"
-		            ).authenticated();
-
-
-		            // 6. POST - 게시글/댓글/공지 작성 (로그인 필요)
-		            requests.requestMatchers(HttpMethod.POST,
-		                    "/boards/**",
-		                    "/imgBoards/**",
-		                    "/comments/**",
-		                    "/imgComments/**",
-		                    "/notices/**",
-		                    "/api/reviews/**",
-		                    "/api/reserve/**"
-		            ).authenticated();
-=======
                   // 1. POST - 비로그인 허용 (회원가입/로그인, 차량/예약 등)
                   requests.requestMatchers(HttpMethod.POST,
                           "/api/members/login",
@@ -209,7 +135,6 @@ public class SecurityConfigure {
                           "/api/notices/**",
                           "/api/reviews/**"
                   ).authenticated();
->>>>>>> 5e0593f1ce72b8e5d239fee9861b8809384cacec
 
                   // 7. 관리자 전용
                   requests.requestMatchers(HttpMethod.GET,
@@ -252,19 +177,6 @@ public class SecurityConfigure {
 
    }
 
-<<<<<<< HEAD
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList(instance));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-type"));
-		configuration.setAllowCredentials(true);
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
-=======
    @Bean
    public CorsConfigurationSource corsConfigurationSource() {
       CorsConfiguration configuration = new CorsConfiguration();
@@ -277,7 +189,6 @@ public class SecurityConfigure {
       return source;
    }
    
->>>>>>> 5e0593f1ce72b8e5d239fee9861b8809384cacec
 
    @Bean
    public PasswordEncoder passwordEncoder() {

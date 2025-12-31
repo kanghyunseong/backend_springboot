@@ -34,13 +34,8 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<ResponseData<Object>> login(@Valid @RequestBody MemberLoginDTO member) {
-<<<<<<< HEAD
 		Map<String, String> loginResponse = authService.login(member);
 		return ResponseData.ok(loginResponse,"로그인 성공");
-=======
-		
-		return ResponseData.ok(authService.login(member),"로그인 성공");
->>>>>>> 5e0593f1ce72b8e5d239fee9861b8809384cacec
 	}
 
 	@GetMapping("/{provider}/callback")

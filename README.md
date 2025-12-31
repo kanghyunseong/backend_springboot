@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 5e0593f1ce72b8e5d239fee9861b8809384cacec
 ![Version](https://img.shields.io/badge/version-0.0.1--SNAPSHOT-blue?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![Status](https://img.shields.io/badge/status-Development-yellow?style=flat-square)
