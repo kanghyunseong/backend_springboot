@@ -8,7 +8,7 @@ build/
 appilcation.yml
 application-private.yml
 *.yml
-=======
+
 >>>>>>> feature/members
 
 ### STS ###
