@@ -1,11 +1,7 @@
 package com.kh.pcar.back.configuration;
 
 import java.util.Arrays;
-
-<<<<<<< HEAD
-=======
 import org.springframework.beans.factory.annotation.Value;
->>>>>>> feature/members
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
