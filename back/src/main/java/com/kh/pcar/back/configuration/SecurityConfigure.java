@@ -65,13 +65,13 @@ public class SecurityConfigure {
 
 		            // 1. POST - 비로그인 허용 (회원가입/로그인, 차량/예약 등)
 		            requests.requestMatchers(HttpMethod.POST,
-		                    "/members/login",
-		                    "/members",
-		                    "/members/**",
-		                    "/auth/refresh",
-		                    "/cars/**",
-		                    "/station/**",
-		                    "/reserve/**"
+		                    "/api/members/login",
+		                    "/api/members",
+		                    "/api/members/**",
+		                    "/api/auth/refresh",
+		                    "/api/cars/**",
+		                    "/api/station/**",
+		                    "/api/reserve/**"
 		            ).permitAll();
 
 		            // 2. GET - 비로그인 허용 (목록/조회용)
@@ -103,19 +103,26 @@ public class SecurityConfigure {
 
 		            // 4. PUT - 로그인 필요
 		            requests.requestMatchers(HttpMethod.PUT,
-		                    "/members", "/members/**", 
+		                    "/api/members", 
+		                    "/api/members/**", 
 		                    "/api/boards/**", 
 		                    "/api/imgBoards/**", 
-		                    "/api/comments/**", "/api/imgComments/**",
-		                    "/reserve/**", "/reviews/**"
+		                    "/api/comments/**", 
+		                    "/api/imgComments/**",
+		                    "/api/reserve/**", 
+		                    "/api/reviews/**"
 		            ).authenticated();
 
 		            // 5. DELETE - 로그인 필요
 		            requests.requestMatchers(HttpMethod.DELETE,
-		                    "/members",
-		                    "/api/boards/**", "/api/imgBoards/**", 
-		                    "/api/comments/**", "/api/imgComments/**",
-		                    "/reserve/**", "/reviews/**","/station/**"
+		                    "/api/members",
+		                    "/api/boards/**",
+		                    "/api/imgBoards/**", 
+		                    "/api/comments/**",
+		                    "/api/imgComments/**",
+		                    "/api/reserve/**", 
+		                    "/api/reviews/**",
+		                    "/api/station/**"
 		            ).authenticated();
 
 
