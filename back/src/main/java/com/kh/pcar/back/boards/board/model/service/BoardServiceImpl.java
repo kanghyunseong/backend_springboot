@@ -29,11 +29,9 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public void save(BoardDTO board, String userId) {
-		board.setBoardWriter(userId);
 		// 유효성 검증 valid로 퉁
 		// 권한검증 -> ROLE로함
-		BoardVO b = null;
-		b = BoardVO.builder()
+		BoardVO b =BoardVO.builder()
 						   .boardTitle(board.getBoardTitle())
 						   .boardContent(board.getBoardContent())
 						   .boardWriter(userId)

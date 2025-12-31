@@ -81,14 +81,14 @@ public class SecurityConfigure {
 		                    "/cars/**",
 		                    "/station/**",
 		                    "/station/search",
-		                    "/boards",
-		                    "/boards/search",
-		                    "/imgBoards",
-		                    "/imgBoards/search",
-		                    "/notices",
-		                    "/notices/search",
-		                    "/comments/**",
-		                    "/imgComments/**",
+		                    "/api/boards",
+		                    "/api/boards/search",
+		                    "/api/imgBoards",
+		                    "/api/imgBoards/search",
+		                    "/api/notices",
+		                    "/api/notices/search",
+		                    "/api/comments/**",
+		                    "/api/imgComments/**",
 		                    "/reserve/**",
 		                    "/reviews/**",
 		                    "/main"
@@ -96,36 +96,36 @@ public class SecurityConfigure {
 
 		            // 3. GET - 로그인 필요 (상세 페이지들)
 		            requests.requestMatchers(HttpMethod.GET,
-		                    "/boards/*",
-		                    "/imgBoards/*",
-		                    "/notices/*"
+		                    "/api/boards/*",
+		                    "/api/imgBoards/*",
+		                    "/api/notices/*"
 		            ).authenticated();
 
 		            // 4. PUT - 로그인 필요
 		            requests.requestMatchers(HttpMethod.PUT,
 		                    "/members", "/members/**", 
-		                    "/boards/**", 
-		                    "/imgBoards/**", 
-		                    "/comments/**", "/imgComments/**",
+		                    "/api/boards/**", 
+		                    "/api/imgBoards/**", 
+		                    "/api/comments/**", "/api/imgComments/**",
 		                    "/reserve/**", "/reviews/**"
 		            ).authenticated();
 
 		            // 5. DELETE - 로그인 필요
 		            requests.requestMatchers(HttpMethod.DELETE,
 		                    "/members",
-		                    "/boards/**", "/imgBoards/**", 
-		                    "/comments/**", "/imgComments/**",
+		                    "/api/boards/**", "/api/imgBoards/**", 
+		                    "/api/comments/**", "/api/imgComments/**",
 		                    "/reserve/**", "/reviews/**","/station/**"
 		            ).authenticated();
 
 
 		            // 6. POST - 게시글/댓글/공지 작성 (로그인 필요)
 		            requests.requestMatchers(HttpMethod.POST,
-		                    "/boards/**",
-		                    "/imgBoards/**",
-		                    "/comments/**",
-		                    "/imgComments/**",
-		                    "/notices/**",
+		                    "/api/boards/**",
+		                    "/api/imgBoards/**",
+		                    "/api/comments/**",
+		                    "/api/imgComments/**",
+		                    "/api/notices/**",
 		                    "/reviews/**"
 		            ).authenticated();
 

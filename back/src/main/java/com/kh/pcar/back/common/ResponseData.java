@@ -36,7 +36,7 @@ public class ResponseData<T> {
 
    // 3. 데이터 없이 상태 코드만 보내는 경우 (204 No Content)
    public static <T> ResponseEntity<ResponseData<T>> noContent() {
-      return ResponseEntity.noContent().build();
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
    }
 
    // 4. 생성 성공 (201 Created)
