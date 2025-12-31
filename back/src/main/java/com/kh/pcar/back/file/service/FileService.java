@@ -1,14 +1,19 @@
 package com.kh.pcar.back.file.service;
 
+<<<<<<< HEAD
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+=======
+
+>>>>>>> feature/members
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+<<<<<<< HEAD
 import com.kh.pcar.back.exception.FileStorageException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -49,4 +54,26 @@ public class FileService {
 			throw new FileStorageException("이상한 파일입니다.");
 		}
 	}
+=======
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class FileService {
+
+    private final S3Service s3Service;
+
+    public String store(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+        return s3Service.fileSave(file);
+    }
+
+    public void delete(String fileUrl) {
+        if (fileUrl != null && !fileUrl.isEmpty()) {
+            s3Service.deleteFile(fileUrl);
+        }
+    }
+>>>>>>> feature/members
 }
