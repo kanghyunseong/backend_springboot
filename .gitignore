@@ -28,9 +28,4 @@ tmp/
 *.yml
 application.yml
 application-private.yml
-=======
-
 *.yml
-
->>>>>>> dc81b2cb399a6ca47890e265e99b78f782c9475b
-
