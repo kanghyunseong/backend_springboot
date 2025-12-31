@@ -1,14 +1,10 @@
 package com.kh.pcar.back.file.service;
 
-<<<<<<< HEAD
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-=======
-
->>>>>>> feature/members
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,7 +50,6 @@ public class FileService {
 			throw new FileStorageException("이상한 파일입니다.");
 		}
 	}
-=======
 import lombok.RequiredArgsConstructor;
 
 @Service
