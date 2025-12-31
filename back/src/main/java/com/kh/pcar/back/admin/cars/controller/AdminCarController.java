@@ -3,7 +3,6 @@ package com.kh.pcar.back.admin.cars.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,94 +19,75 @@ import com.kh.pcar.back.admin.cars.model.dto.AdminCarDTO;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarPageResponseDTO;
 import com.kh.pcar.back.admin.cars.model.dto.AdminCarsReservationDTO;
 import com.kh.pcar.back.admin.cars.model.service.AdminCarService;
-import com.kh.pcar.back.exception.CarNotFoundException;
-import com.kh.pcar.back.exception.ReservationNotFoundException;
+import com.kh.pcar.back.common.ResponseData;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/api/settings")
+@RequestMapping("/api/admin/settings")
 public class AdminCarController {
 
 	private final AdminCarService adminCarService;
+	
 
+	// 1. 목록 조회 (200 OK)
 	@GetMapping
-    public ResponseEntity<AdminCarPageResponseDTO> getAllCar(
-            @RequestParam(name = "page", defaultValue = "1") int page) {
+	public ResponseEntity<ResponseData<AdminCarPageResponseDTO>> getAllCar(
+			@RequestParam(name = "page", defaultValue = "1") int page) {
+		AdminCarPageResponseDTO list = adminCarService.findAllCars(page);
+		return ResponseData.ok(list);
+	}
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(adminCarService.findAllCars(page));
-    }
-
-
+	// 2. 차량 등록 (201 Created)
 	@PostMapping
-    public ResponseEntity<String> registerCar(
-            @ModelAttribute AdminCarDTO carDTO,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+	public ResponseEntity<ResponseData<String>> registerCar(@ModelAttribute AdminCarDTO carDTO,
+			@RequestParam(value = "file", required = false) MultipartFile file) {
+		adminCarService.registerCar(carDTO, file);
+		return ResponseData.created("차량 등록이 성공적으로 완료되었습니다.");
+	}
 
-        adminCarService.registerCar(carDTO, file);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("차량 등록이 완료되었습니다.");
-    }
-	
-	
-
+	// 3. 차량 수정 (200 OK + 메시지)
 	@PutMapping("/update")
-    public ResponseEntity<String> updateCar(
-            @ModelAttribute AdminCarDTO carDTO,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+	public ResponseEntity<ResponseData<String>> updateCar(@ModelAttribute AdminCarDTO carDTO,
+			@RequestParam(value = "file", required = false) MultipartFile file) {
+		adminCarService.updateCar(carDTO, file);
+		// 수정 완료 후 메시지를 보여줘야 하므로 ok 사용
+		return ResponseData.ok(null, "차량 정보가 수정되었습니다.");
+	}
 
-        adminCarService.updateCar(carDTO, file);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("차량 정보가 수정되었습니다.");
-    }
-
+	// 4. 단일 조회 (200 OK)
 	@GetMapping("/{carId}")
-    public ResponseEntity<AdminCarDTO> getCar(@PathVariable Long carId) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(adminCarService.findCarById(carId));
-    }
+	public ResponseEntity<ResponseData<AdminCarDTO>> getCar(@PathVariable("carId") Long carId) {
+		AdminCarDTO car = adminCarService.findCarById(carId);
+		return ResponseData.ok(car);
+	}
 
+	// 5. 차량 삭제 (204 No Content) - 중요: 바디를 보내지 않음
 	@DeleteMapping("/{carId}")
-    public ResponseEntity<String> deleteCar(@PathVariable Long carId) {
+	public ResponseEntity<ResponseData<Void>> deleteCar(@PathVariable("carId") Long carId) {
+		adminCarService.deleteCarById(carId);
+		return ResponseData.noContent();
+	}
 
-        adminCarService.deleteCarById(carId);
-
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body("차량 삭제가 완료되었습니다.");
-    }
-
+	// 6. 예약 목록 조회 (200 OK)
 	@GetMapping("/reservations")
-    public ResponseEntity<List<AdminCarsReservationDTO>> getAllReservation() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(adminCarService.findAllReservations());
-    }
+	public ResponseEntity<ResponseData<List<AdminCarsReservationDTO>>> getAllReservation() {
+		List<AdminCarsReservationDTO> list = adminCarService.findAllReservations();
+		return ResponseData.ok(list);
+	}
 
+	// 7. 통계 데이터 조회 (200 OK)
 	@GetMapping("/daily-stats")
-    public ResponseEntity<List<Map<String, Object>>> getDailyStats() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(adminCarService.getDailyReservationStats());
-    }
+	public ResponseEntity<ResponseData<List<Map<String, Object>>>> getDailyStats() {
+		List<Map<String, Object>> stats = adminCarService.getDailyReservationStats();
+		return ResponseData.ok(stats);
+	}
 
+	// 8. 예약 취소 (200 OK + 메시지)
 	@PutMapping("/reservations/{reservationNo}/cancel")
-    public ResponseEntity<String> cancelReservation(
-            @PathVariable Long reservationNo) {
-
-        adminCarService.cancelReservation(reservationNo);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("예약이 성공적으로 취소되었습니다.");
-    }
-
+	public ResponseEntity<ResponseData<String>> cancelReservation(@PathVariable("reservationNo") Long reservationNo) {
+		adminCarService.cancelReservation(reservationNo);
+		return ResponseData.ok(null, "예약이 성공적으로 취소되었습니다.");
+	}
 }

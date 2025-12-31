@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5e0593f1ce72b8e5d239fee9861b8809384cacec
 ![Version](https://img.shields.io/badge/version-0.0.1--SNAPSHOT-blue?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![Status](https://img.shields.io/badge/status-Development-yellow?style=flat-square)
@@ -68,6 +71,68 @@ PCAR는 전기차 공유 서비스를 제공하는 웹 애플리케이션입니�
 
 ## 기술 스택
 
+<<<<<<< HEAD
+=======
+### 언어 (Language)
+
+- **Java** 21
+
+### 프레임워크 (Framework)
+
+- **Spring Boot** 3.5.7
+  - Spring Boot Starter Web - RESTful API 개발
+  - Spring Boot Starter JDBC - 데이터베이스 연결
+  - Spring Boot Starter Security - 인증 및 권한 관리
+  - Spring Boot Starter Validation - 데이터 검증
+
+### 라이브러리 (Library)
+
+- **MyBatis** 3.0.5 - ORM 프레임워크
+- **JWT (jjwt)** 0.12.3
+  - jjwt-api - JWT API
+  - jjwt-jackson - JSON 처리
+  - jjwt-impl - JWT 구현체
+- **Lombok** - 보일러플레이트 코드 감소
+- **Oracle JDBC Driver** (ojdbc11) - Oracle 데이터베이스 연결
+
+### 데이터베이스 (Database)
+
+- **Oracle Database** - 관계형 데이터베이스
+
+### 빌드 도구 (Build Tool)
+
+- **Gradle** 7.x
+- **Spring Dependency Management** 1.1.7
+
+### WAS (Web Application Server)
+
+- **Spring Boot 내장 Tomcat** - 기본 내장 서버 (포트: 8081)
+
+### 테스트 (Testing)
+
+- **JUnit Platform** - 단위 테스트
+- **Spring Boot Test** - 통합 테스트
+- **Spring Security Test** - 보안 테스트
+- **MyBatis Test** - 데이터베이스 테스트
+
+### 외부 API 연동
+
+- **네이버 소셜 로그인 API** - 네이버 로그인 연동
+- **카카오 소셜 로그인 API** - 카카오 로그인 연동
+- **공공데이터포털 충전소 정보 API** - 전기차 충전소 정보 조회
+
+### 협업 도구 (Collaboration Tools)
+
+- **Git** - 버전 관리
+- **GitHub / GitLab** - 코드 저장소 및 협업
+- **Gradle** - 의존성 관리 및 빌드 자동화
+
+### 기타 도구 (Tools)
+
+- **Spring Validation** - 입력 데이터 검증
+- **MultipartFile** - 파일 업로드 처리
+- **Jackson** - JSON 직렬화/역직렬화 (Spring Boot 기본 포함)
+>>>>>>> 5e0593f1ce72b8e5d239fee9861b8809384cacec
 ### Backend
 
 - **Java** 21

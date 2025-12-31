@@ -13,7 +13,7 @@ import com.kh.pcar.back.main.model.service.MainService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("main")
+@RequestMapping("/api/main")
 @RequiredArgsConstructor
 public class MainPageController {
 

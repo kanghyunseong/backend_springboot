@@ -3,7 +3,6 @@ package com.kh.pcar.back.auth.controller;
 
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("members")
+@RequestMapping("/api/members")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
@@ -35,30 +34,35 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<ResponseData<Object>> login(@Valid @RequestBody MemberLoginDTO member) {
+<<<<<<< HEAD
 		Map<String, String> loginResponse = authService.login(member);
 		return ResponseData.ok(loginResponse,"로그인 성공");
+=======
+		
+		return ResponseData.ok(authService.login(member),"로그인 성공");
+>>>>>>> 5e0593f1ce72b8e5d239fee9861b8809384cacec
 	}
 
 	@GetMapping("/{provider}/callback")
-	public ResponseEntity<Map<String, String>> callBack(@PathVariable("provider") String provider,
+	public ResponseEntity<ResponseData<Object>> callBack(@PathVariable("provider") String provider,
 			@RequestParam("code") String code, @RequestParam(value = "state", required = false) String state) {
 
 		// log.info("콜백 code={}, state={}", code, state);
 
-		Map<String, String> response = socialAuthService.processCallback(provider, code, state);
+	
 
 		// log.info("response : {} " , response );
-		return ResponseEntity.ok(response);
+		return ResponseData.ok(socialAuthService.processCallback(provider, code, state));
 
 	} // 홈으로 이동
 
 	@PostMapping("/refresh")
-	public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> token) {
+	public ResponseEntity<ResponseData<Map<String, String>>> refresh(@RequestBody Map<String, String> token) {
 
 		String refreshToken = token.get("refreshToken");
-		Map<String, String> tokens = tokenService.validateToken(refreshToken);
+	
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(tokens);
+		return ResponseData.created(tokenService.validateToken(refreshToken));
 
 	}
 
