@@ -66,7 +66,7 @@ public class TokenService {
 		RefreshToken token = RefreshToken.builder()
 				.token(refreshToken)
 				.userNo(userNo) 
-				.expiration(System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000))
+				.expiration(System.currentTimeMillis() + 36000000L & 72) 
 				.build();
 		
 		// 기존 토큰 삭제 후 새 토큰 저장

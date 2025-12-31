@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin/users")
+@RequestMapping("/api/admin/users") // React 요청 주소와 일치
 public class UserController {
 
     private final UserService userService;

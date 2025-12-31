@@ -13,14 +13,15 @@ import lombok.ToString;
 @AllArgsConstructor
 public class NaverProfileDTO {
 
-	private Long UserNo;
-	private String id;
-	private String name;
-	private String email;
-	private String birthday;
-	private String mobile;
-	private String accessToken;
-	private String refreshtoken;
+	private Long userNo;
+	private String memberId;
 	private String provider;
+	private String memberName;
+	private String birthDay;
+	private String email;
+	private String phone;
+	private String accessToken;
+	private String refreshToken;
+	private String licenseUrl;
 	private String role;
 }

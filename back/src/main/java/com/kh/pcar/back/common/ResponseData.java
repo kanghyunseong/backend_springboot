@@ -2,6 +2,7 @@ package com.kh.pcar.back.common;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -43,6 +44,5 @@ public class ResponseData<T> {
    public static <T> ResponseEntity<ResponseData<T>> created(T data) {
       return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseData<>("생성되었습니다.", data, "요청 성공"));
    }
-   
 
 }

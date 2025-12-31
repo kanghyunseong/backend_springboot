@@ -28,8 +28,6 @@ import com.kh.pcar.back.member.model.dto.MemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberUpdateDTO;
 import com.kh.pcar.back.member.model.vo.MemberVO;
 import com.kh.pcar.back.token.model.dao.TokenMapper;
-import com.kh.pcar.back.token.model.service.TokenService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -101,25 +99,24 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional
 	public NaverProfileDTO socialJoin(NaverProfileDTO naverMember) {
 
-		int count = mapper.countByMemberId(naverMember.getId());
+		int count = mapper.countByMemberId(naverMember.getMemberId());
 
 		if (count > 0) {
-			Long userNo = mapper.findUserNoById(naverMember.getId());
-			naverMember.setUserNo(userNo);
+			NaverProfileDTO member = mapper.findByNaverId(naverMember.getMemberId());
 
-			return naverMember;
+			if (member == null) {
+				throw new MemberJoinException("사용자 정보를 찾을 수 없습니다.");
+			}
+
+			return member;
+
 		} else {
 
 			mapper.socialJoin(naverMember);
 			mapper.joinSocial(naverMember);
-			Long userNo = mapper.findUserNoById(naverMember.getId());
+			NaverProfileDTO member = mapper.findByNaverId(naverMember.getMemberId());
 
-			if (userNo == null) {
-				throw new MemberJoinException("사용자 정보를 찾을 수 없습니다.");
-			}
-			naverMember.setUserNo(userNo);
-
-			return naverMember;
+			return member;
 		}
 
 	}
@@ -128,48 +125,29 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional
 	public void kakaoJoin(KakaoMemberDTO member, MultipartFile licenseImg) {
 
-		// log.info("222222222222222{}" , member);
-
 		member.setRole("ROLE_USER");
-		generateFileName(member, licenseImg);
-		// log.info("33333333333{}" , member);
-		mapper.kakaoJoin(member);
-		mapper.kakaoProviderJoin(member);
-
-		// KakaoMemberDTO kakaoMember = mapper.findByUserId(member.getMemberId());
-
-	}
-
-//private Map<String,String> getKakaoLoginResponse(KakaoMemberVO user){
-//		
-//		Map<String, String> loginResponse = new HashMap<>();
-//		
-//		loginResponse.put("userId",user.getMemberId());
-//		loginResponse.put("userNo", String.valueOf(user.getUserNo()));
-//		loginResponse.put("birthDay", user.getBirthDay());
-//		loginResponse.put("userName", user.getMemberName());
-//		loginResponse.put("email", user.getEmail());
-//		loginResponse.put("phone", user.getPhone());
-//		loginResponse.put("provider", user.getProvider());
-//		loginResponse.put("role", user.getRole().toString());
-//		
-//		
-//		return loginResponse;
-//		
-//	}
-
-	private KakaoMemberDTO generateFileName(KakaoMemberDTO member, MultipartFile licenseImg) {
 
 		if (licenseImg != null && !licenseImg.isEmpty()) {
-
 			String filePath = fileService.store(licenseImg);
-
 			member.setLicenseUrl(filePath);
-
-			return member;
 		}
-		return null;
+
+		mapper.kakaoJoin(member);
+		mapper.kakaoProviderJoin(member);
 	}
+
+//	private KakaoMemberDTO generateFileName(KakaoMemberDTO member, MultipartFile licenseImg) {
+//
+//		if (licenseImg != null && !licenseImg.isEmpty()) {
+//
+//			String filePath = fileService.store(licenseImg);
+//
+//			member.setLicenseUrl(filePath);
+//
+//			return member;
+//		}
+//		return null;
+//	}
 
 	public void changePassword(ChangePasswordDTO password, CustomUserDetails user) {
 		// 로그인한 유저 비밀번호 검증
@@ -189,18 +167,24 @@ public class MemberServiceImpl implements MemberService {
 
 	@Transactional
 	public MemberDTO updateUser(MemberUpdateDTO member, MultipartFile licenseImg, CustomUserDetails userDetails) {
-		// 1. 파일 처리
-		String fileUrl = handleFileUpload(licenseImg);
+		String oldFileUrl = userDetails.getLicenseUrl();
 
-		// 2. 변경된 필드만 추출
-		Map<String, Object> changes = getChangedFields(member, userDetails, fileUrl);
+		String newFileUrl = null;
+		if (licenseImg != null && !licenseImg.isEmpty()) {
+			newFileUrl = fileService.store(licenseImg);
 
-		// 3. 업데이트 실행
-		if (changes.size() > 1) { // userNo 외 변경필드 존재 시
+			// 기존 파일 삭제
+			if (oldFileUrl != null) {
+				fileService.delete(oldFileUrl);
+			}
+		}
+
+		Map<String, Object> changes = getChangedFields(member, userDetails, newFileUrl);
+
+		if (changes.size() > 1) {
 			mapper.updateUser(changes);
 		}
 
-		// 4. 최신 회원 정보 반환
 		return mapper.loadUser(userDetails.getUsername());
 	}
 
@@ -225,16 +209,16 @@ public class MemberServiceImpl implements MemberService {
 		return changes;
 	}
 
-	private String handleFileUpload(MultipartFile licenseImg) {
-		if (licenseImg != null && !licenseImg.isEmpty()) {
-			try {
-				return fileService.store(licenseImg);
-			} catch (Exception e) {
-				throw new FileUploadException("파일 업로드에 실패했습니다.");
-			}
-		}
-		return null;
-	}
+//	private String handleFileUpload(MultipartFile licenseImg) {
+//		if (licenseImg != null && !licenseImg.isEmpty()) {
+//			try {
+//				return fileService.store(licenseImg);
+//			} catch (Exception e) {
+//				throw new FileUploadException("파일 업로드에 실패했습니다.");
+//			}
+//		}
+//		return null;
+//	}
 	// 원래 사용했으나 현재 로그인한 유저로 인증하고싶어서 삭제
 	/*
 	 * private CustomUserDetails validatePassword(String password) {
@@ -254,15 +238,17 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional
 	public void deleteByPassword(String inputPassword, CustomUserDetails user) {
 
-		// 로그인한 유저 비밀번호 검증
-		if (!passwordEncoder.matches(inputPassword, user.getPassword())) {
-			throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
-		}
-		// 토큰삭제
-		tokenMapper.deleteTokenByUserNo(user.getUserNo());
-		// 유저 삭제
-		mapper.deleteUserNo(String.valueOf(user.getUserNo()));
+	    if (!passwordEncoder.matches(inputPassword, user.getPassword())) {
+	        throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
+	    }
 
+	    // S3 파일 삭제
+	    if (user.getLicenseUrl() != null) {
+	        fileService.delete(user.getLicenseUrl());
+	    }
+
+	    tokenMapper.deleteTokenByUserNo(user.getUserNo());
+	    mapper.deleteUserNo(String.valueOf(user.getUserNo()));
 	}
 
 }

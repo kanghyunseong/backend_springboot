@@ -19,6 +19,7 @@ public class S3Config {
 	@Value("${cloud.aws.region.static}")
 	private String region;
 
+
 	@Bean
 	public S3Client s3Client() {
 		return S3Client.builder().region(Region.of(region))

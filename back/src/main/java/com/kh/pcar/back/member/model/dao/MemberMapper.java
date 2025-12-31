@@ -37,6 +37,8 @@ public interface MemberMapper {
 
 	@Select("Select USER_NO FROM TB_MEMBER WHERE USER_ID = #{memberId}")
 	Long findUserNoById(String memberId);
+	
+	NaverProfileDTO findByNaverId(String userId);
 
 	MemberDTO loadUser(String userId);
 

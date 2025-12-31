@@ -28,16 +28,18 @@ public class MainServiceImpl implements MainService {
 		String countReservations = mapper.countReservation();
 
 		String countMembers = mapper.countMember();
+		
+		String countRentalCars = mapper.countRentalCars();
 
 		List<PopularCarDTO> popularCars = mapper.findPopularCar();
 
-		log.info("car : {} , Reservation , {} , countMembers : {}  , popularcars : {} ", countCars, countReservations,
-				countMembers, popularCars);
+		//log.info("car : {} , Reservation , {} , countMembers : {}  , popularcars : {} ", countCars, countReservations,
+		//countMembers, popularCars);
 
 		Map<String, Object> response = Map.of("countCars", countCars, "countReservation", countReservations,
-				"countMembers", countMembers, "popularCars", popularCars);
+				"countMembers", countMembers, "countRentalCars", countRentalCars, "popularCars", popularCars);
 
-		log.info("response : {} ", response);
+		// log.info("response : {} ", response);
 
 		return response;
 	}

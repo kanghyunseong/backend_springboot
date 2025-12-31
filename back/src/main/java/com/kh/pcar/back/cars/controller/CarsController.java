@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/cars")
+@RequestMapping("/api/cars")
 public class CarsController {
 
 	private final CarsService carsService;

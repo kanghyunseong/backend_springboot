@@ -70,4 +70,6 @@ public class AdminBoardsDeclarationController {
         // 메시지가 굳이 필요 없다면 noContent()가 더 표준적입니다.
         return ResponseData.noContent();
     }
+
+	
 }

@@ -7,7 +7,7 @@
 #Mac용 운영체제파일
 Thumbs.db
 #Window용 운영체제파일
-
+.README.md
 
 .settings/
 *.classpath
@@ -23,8 +23,14 @@ build/
 logs/
 *.log
 tmp/
+<<<<<<< HEAD
 *.yml
 *.yml
 application.yml
 application-private.yml
+=======
+
+*.yml
+
+>>>>>>> dc81b2cb399a6ca47890e265e99b78f782c9475b
 
