@@ -9,8 +9,6 @@ appilcation.yml
 application-private.yml
 *.yml
 
->>>>>>> feature/members
-
 ### STS ###
 .apt_generated
 .classpath
