@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> dc81b2cb399a6ca47890e265e99b78f782c9475b
 ![Version](https://img.shields.io/badge/version-0.0.1--SNAPSHOT-blue?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![Status](https://img.shields.io/badge/status-Development-yellow?style=flat-square)
@@ -71,7 +67,6 @@ PCAR는 전기차 공유 서비스를 제공하는 웹 애플리케이션입니�
 
 ## 기술 스택
 
-<<<<<<< HEAD
 ### 언어 (Language)
 
 - **Java** 21
@@ -131,7 +126,6 @@ PCAR는 전기차 공유 서비스를 제공하는 웹 애플리케이션입니�
 - **Spring Validation** - 입력 데이터 검증
 - **MultipartFile** - 파일 업로드 처리
 - **Jackson** - JSON 직렬화/역직렬화 (Spring Boot 기본 포함)
-=======
 ### Backend
 
 - **Java** 21
@@ -153,7 +147,6 @@ PCAR는 전기차 공유 서비스를 제공하는 웹 애플리케이션입니�
 
 - **Spring Validation** - 데이터 검증
 - **MultipartFile** - 파일 업로드 처리
->>>>>>> dc81b2cb399a6ca47890e265e99b78f782c9475b
 
 ## 프로젝트 구조
 
