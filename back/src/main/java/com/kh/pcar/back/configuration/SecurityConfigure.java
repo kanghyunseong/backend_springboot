@@ -76,11 +76,11 @@ public class SecurityConfigure {
 
 		            // 2. GET - 비로그인 허용 (목록/조회용)
 		            requests.requestMatchers(HttpMethod.GET,
-		                    "/uploads/**",
-		                    "/members/**",
-		                    "/cars/**",
-		                    "/station/**",
-		                    "/station/search",
+		                    "/api/uploads/**",
+		                    "/api/members/**",
+		                    "/api/cars/**",
+		                    "/api/station/**",
+		                    "/api/station/search",
 		                    "/api/boards",
 		                    "/api/boards/search",
 		                    "/api/imgBoards",
@@ -89,9 +89,9 @@ public class SecurityConfigure {
 		                    "/api/notices/search",
 		                    "/api/comments/**",
 		                    "/api/imgComments/**",
-		                    "/reserve/**",
-		                    "/reviews/**",
-		                    "/main"
+		                    "/api/reserve/**",
+		                    "/api/reviews/**",
+		                    "/api/main"
 		            ).permitAll();
 
 		            // 3. GET - 로그인 필요 (상세 페이지들)
@@ -126,7 +126,7 @@ public class SecurityConfigure {
 		                    "/api/comments/**",
 		                    "/api/imgComments/**",
 		                    "/api/notices/**",
-		                    "/reviews/**"
+		                    "/api/reviews/**"
 		            ).authenticated();
 
 		            // 7. 관리자 전용
@@ -136,7 +136,7 @@ public class SecurityConfigure {
 		                    "/api/admin/settings/**",
 		                    "/api/admin/notice/list",
 		                    "/api//admin/community/**",
-		                    "/uploads/**",
+		                    "/api/uploads/**",
 		                    "/api/admin/**"
 		            ).hasAuthority("ROLE_ADMIN");
 
