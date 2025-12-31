@@ -35,31 +35,31 @@ public class AuthController {
 	private final SocialAuthService socialAuthService;
 
 	@PostMapping("/login")
-	public ResponseEntity<Map<String, String>> login(@Valid @RequestBody MemberLoginDTO member) {
-		Map<String, String> loginResponse = authService.login(member);
-		return ResponseEntity.ok(loginResponse);
+	public ResponseEntity<ResponseData<Object>> login(@Valid @RequestBody MemberLoginDTO member) {
+		
+		return ResponseData.ok(authService.login(member),"로그인 성공");
 	}
 
 	@GetMapping("/{provider}/callback")
-	public ResponseEntity<Map<String, String>> callBack(@PathVariable("provider") String provider,
+	public ResponseEntity<ResponseData<Object>> callBack(@PathVariable("provider") String provider,
 			@RequestParam("code") String code, @RequestParam(value = "state", required = false) String state) {
 
 		// log.info("콜백 code={}, state={}", code, state);
 
-		Map<String, String> response = socialAuthService.processCallback(provider, code, state);
+	
 
 		// log.info("response : {} " , response );
-		return ResponseEntity.ok(response);
+		return ResponseData.ok(socialAuthService.processCallback(provider, code, state));
 
 	} // 홈으로 이동
 
 	@PostMapping("/refresh")
-	public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> token) {
+	public ResponseEntity<ResponseData<Map<String, String>>> refresh(@RequestBody Map<String, String> token) {
 
 		String refreshToken = token.get("refreshToken");
-		Map<String, String> tokens = tokenService.validateToken(refreshToken);
+	
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(tokens);
+		return ResponseData.created(tokenService.validateToken(refreshToken));
 
 	}
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
+import com.kh.pcar.back.common.ResponseData;
 import com.kh.pcar.back.member.model.dto.ChangePasswordDTO;
 import com.kh.pcar.back.member.model.dto.KakaoMemberDTO;
 import com.kh.pcar.back.member.model.dto.MemberDTO;
@@ -46,63 +47,64 @@ public class MemberController {
 	// DELETE
 
 	@PostMapping
-	public ResponseEntity<?> join(@Valid @ModelAttribute MemberDTO member,
+	public ResponseEntity<ResponseData<String>> join(@Valid @ModelAttribute MemberDTO member,
 			@RequestParam(name = "licenseImg", required = false) MultipartFile licenseImg) {
 
-		// log.info("Member에 들어온 값 {} , Multipart : {}" , member,licenseImg);
+		 log.info("Member에 들어온 값 {} , Multipart : {}" , member,licenseImg);
 
 		memberService.join(member, licenseImg);
 
-		return ResponseEntity.status(201).build();
+		return ResponseData.created("회원가입에 성공했습니다.");
 
 	}
 
 	@PostMapping("/kakao")
-	public ResponseEntity<String> kakaoJoin(@Valid @ModelAttribute KakaoMemberDTO member,
+	public ResponseEntity<ResponseData<Object>> kakaoJoin(@Valid @ModelAttribute KakaoMemberDTO member,
 			@RequestParam(name = "licenseImg", required = false) MultipartFile licenseImg) {
 
 		log.info("Member에 들어온 값 {} , Multipart : {} ", member, licenseImg);
 
 		memberService.kakaoJoin(member, licenseImg);
 
-		return ResponseEntity.ok("카카오로그인완료");
+		return ResponseData.ok(null,"카카오로그인완료");
 	}
 
 	@PutMapping
-	public ResponseEntity<?> updatePassword(@Valid @RequestBody ChangePasswordDTO password,
+	public ResponseEntity<ResponseData<String>> updatePassword(@Valid @RequestBody ChangePasswordDTO password,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		// log.info(" password : {}" , password);
-
+		// commit용 주석
 		memberService.changePassword(password, userDetails);
 
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseData.created("비밀번호 변경에 성공했습니다");
 	}
 
 	@PutMapping("/updateUser")
-	public ResponseEntity<?> updateUser(@Valid @ModelAttribute MemberUpdateDTO member,
+	public ResponseEntity<ResponseData<Object>> updateUser(@Valid @ModelAttribute MemberUpdateDTO member,
 			@RequestParam(name = "licenseImg", required = false) MultipartFile licenseImg,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		// log.info("member : {} , file : {}" , member ,licenseImg);
 		// log.info("user : {} " , userDetails );
 
-		MemberDTO updatedMember = memberService.updateUser(member, licenseImg, userDetails);
+	
 
-		log.info(" update : {} ", updatedMember);
+		//log.info(" update : {} ", updatedMember);
 
-		return ResponseEntity.ok(updatedMember);
+		return ResponseData.ok(memberService.updateUser(member, licenseImg, userDetails),"회원 업데이트 완료");
+				
 	}
 
 	@DeleteMapping
-	public ResponseEntity<?> deleteByPassword(@RequestBody Map<String, String> request,
+	public ResponseEntity<ResponseData<String>> deleteByPassword(@RequestBody Map<String, String> request,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		// log.info("이게 오나? {} ", request);
 
 		memberService.deleteByPassword(request.get("userPwd"), userDetails);
 
-		return ResponseEntity.ok("회원 탈퇴 완료");
+		return ResponseData.ok(null,"회원 탈퇴 완료");
 	}
 
 }
