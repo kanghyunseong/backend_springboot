@@ -74,7 +74,7 @@ public class MemberController {
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		// log.info(" password : {}" , password);
-
+		// commit용 주석
 		memberService.changePassword(password, userDetails);
 
 		return ResponseData.created("비밀번호 변경에 성공했습니다");
