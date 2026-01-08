@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/station")
+@RequestMapping("/api/station")
 @RequiredArgsConstructor
 public class StationController {
 	private final ServiceStation service;

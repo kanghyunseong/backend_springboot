@@ -18,10 +18,19 @@ target/
 # Maven 빌드 아티팩트
 build/
 # Gradle 빌드 아티팩트
-
+*.yml
 # 로그 및 임시 파일
 logs/
 *.log
 tmp/
+<<<<<<< HEAD
 *.yml
 
+=======
+<<<<<<< HEAD
+*.yml
+*.yml
+application.yml
+application-private.yml
+*.yml
+>>>>>>> 99785ccc6c2b9136c5f5e33d97ee92063ceeb0e5

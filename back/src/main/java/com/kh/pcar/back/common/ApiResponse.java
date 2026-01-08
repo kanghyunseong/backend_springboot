@@ -1,5 +1,5 @@
 package com.kh.pcar.back.common;
-
+  
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -26,3 +26,4 @@ public class ApiResponse<T> {
         return new ApiResponse<>("error", message, null);
     }
 }
+

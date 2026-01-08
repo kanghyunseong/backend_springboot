@@ -15,57 +15,55 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.pcar.back.admin.notice.model.dto.AdminNoticeDTO;
 import com.kh.pcar.back.admin.notice.model.service.AdminNoticeService;
-import com.kh.pcar.back.exception.NoticeNotFoundException;
+import com.kh.pcar.back.common.ResponseData;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/api/notice")
+@RequestMapping("/api/admin/notice")
 public class AdminNoticeController {
 
 	private final AdminNoticeService adminNoticeService;
 
 	@GetMapping("/list")
-	public ResponseEntity<List<AdminNoticeDTO>> findAllNotice() {
+	public ResponseEntity<ResponseData<List<AdminNoticeDTO>>> findAllNotice() {
 		List<AdminNoticeDTO> noticeList = adminNoticeService.findAllNotice();
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(noticeList);
+		
+		return ResponseData.ok(noticeList, "목록 조회 성공");
 	}
 
 	@GetMapping("/{noticeNo}")
-	public ResponseEntity<Object> getNoticeNo(@PathVariable(name = "noticeNo") Long noticeNo) {
-		AdminNoticeDTO notice = adminNoticeService.findNoticeByNo(noticeNo);
-
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(notice);
+	public ResponseEntity<ResponseData<AdminNoticeDTO>> getNotice(@PathVariable(name = "noticeNo") Long noticeNo) {
+	    // DB에서 상세 정보를 조회
+	    AdminNoticeDTO notice = adminNoticeService.findNoticeByNo(noticeNo);
+	    
+	    // 조회된 notice 객체를 응답 데이터에 담아서 반환!
+	    return ResponseData.ok(notice, "공지사항 상세조회 성공");
 	}
 	
 
 	@DeleteMapping("/delete/{noticeNo}")
-	public ResponseEntity<String> deleteNotice(@PathVariable(name = "noticeNo") Long noticeNo) {
-			adminNoticeService.deleteNotice(noticeNo);
-			return ResponseEntity
-					.status(HttpStatus.OK)
-					.body("공지사항 삭제에 성공하셨습니다.");
+	public ResponseEntity<ResponseData<Object>> deleteNotice(@PathVariable(name = "noticeNo") Long noticeNo) {
+			
+		adminNoticeService.deleteNotice(noticeNo);
+			
+			return ResponseData.noContent();
 	}
 
 	@PostMapping("/insert")
-	public ResponseEntity<String> registerNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
+	public ResponseEntity<ResponseData<String>> registerNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
 
 			adminNoticeService.registerNotice(adminNoticeDTO);
-			return ResponseEntity
-					.status(HttpStatus.CREATED)
-					.body("공지사항 등록 성공");
+			
+			return ResponseData.created("공지사항 등록 성공");
 	}
 	
 	@PutMapping("/modify")
-	public ResponseEntity<String> modifyNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
-			adminNoticeService.modifyNotice(adminNoticeDTO);
-			return ResponseEntity
-					.status(HttpStatus.OK)
-					.body("공지사항 수정 성공");
+	public ResponseEntity<ResponseData<Object>> modifyNotice(@RequestBody AdminNoticeDTO adminNoticeDTO) {
+			
+		adminNoticeService.modifyNotice(adminNoticeDTO);
+			
+		return ResponseData.ok(null, "공지사항 수정 성공");
 	}
 }
