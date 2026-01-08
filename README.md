@@ -67,8 +67,6 @@ PCAR는 전기차 공유 서비스를 제공하는 웹 애플리케이션입니�
 
 ## 기술 스택
 
-<<<<<<< HEAD
-=======
 ### 언어 (Language)
 
 - **Java** 21
@@ -128,7 +126,6 @@ PCAR는 전기차 공유 서비스를 제공하는 웹 애플리케이션입니�
 - **Spring Validation** - 입력 데이터 검증
 - **MultipartFile** - 파일 업로드 처리
 - **Jackson** - JSON 직렬화/역직렬화 (Spring Boot 기본 포함)
->>>>>>> 5e0593f1ce72b8e5d239fee9861b8809384cacec
 ### Backend
 
 - **Java** 21
