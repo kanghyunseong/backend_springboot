@@ -26,11 +26,10 @@ tmp/
 <<<<<<< HEAD
 *.yml
 
-=======
 <<<<<<< HEAD
 *.yml
 *.yml
 application.yml
 application-private.yml
 *.yml
->>>>>>> 99785ccc6c2b9136c5f5e33d97ee92063ceeb0e5
+
