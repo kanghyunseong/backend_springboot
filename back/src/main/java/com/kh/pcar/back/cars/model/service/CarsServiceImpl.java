@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.cars.model.dao.CarsMapper;
 import com.kh.pcar.back.cars.model.dto.CarsDTO;
 import com.kh.pcar.back.exception.CarNotFoundException;

@@ -19,6 +19,11 @@ application-private.yml
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+application-private.yml
+application.yml
+application-S3.yml
+
+*.yml
 
 application-private.yml
 application.yml

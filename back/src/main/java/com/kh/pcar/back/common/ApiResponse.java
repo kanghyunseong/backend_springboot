@@ -1,5 +1,5 @@
 package com.kh.pcar.back.common;
-
+  
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

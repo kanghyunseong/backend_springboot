@@ -42,15 +42,17 @@ public class CarsReviewServiceImpl implements CarsReviewService{
 	}
 	
 	@Override
-	public int updateReview(CarsReviewDTO dto) {
+	public int updateReview(CarsReviewDTO dto, CustomUserDetails userDetails) {
 
+		dto.setReviewWriter(userDetails.getUserNo());
+		
 		int result = carsReviewMapper.updateReview(dto);
 		
 		return result;
 	}
 
 	@Override
-	public void deleteReview(Long reviewId) {
+	public void deleteReview(Long reviewId, CustomUserDetails userDetails) {
 		
 		carsReviewMapper.deleteReview(reviewId);
 		

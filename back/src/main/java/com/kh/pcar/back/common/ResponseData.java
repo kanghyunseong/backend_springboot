@@ -2,7 +2,6 @@ package com.kh.pcar.back.common;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import lombok.Builder;
 import lombok.Data;
 

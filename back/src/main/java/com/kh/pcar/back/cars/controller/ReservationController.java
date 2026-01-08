@@ -17,6 +17,7 @@ import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.cars.model.dto.CarReservationDTO;
 import com.kh.pcar.back.cars.model.dto.ReservationDTO;
 import com.kh.pcar.back.cars.model.service.ReservationService;
+import com.kh.pcar.back.common.ResponseData;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,72 +31,64 @@ public class ReservationController {
 
 	// 예약 (INSERT)
 	@PostMapping
-	public ResponseEntity<Long> saveReservation(@RequestBody ReservationDTO reservationDTO,
+	public ResponseEntity<ResponseData<Long>> saveReservation(@RequestBody ReservationDTO reservationDTO,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
-
-		Long reservationNo = reservationService.saveReservation(reservationDTO, userDetails);
-
-		return ResponseEntity.ok(reservationNo); // reservationNo를 url로 뽑아쓰기위해 반환
+		
+		return ResponseData.ok(reservationService.saveReservation(reservationDTO, userDetails),"예약이 완료되었습니다."); // reservationNo를 url로 뽑아쓰기위해 반환
 	}
 
 	// 예약 확인창
 	@GetMapping("/{reservationNo:[0-9]+}")
-	public ResponseEntity<List<ReservationDTO>> confirmReservation(
+	public ResponseEntity<ResponseData<List<ReservationDTO>>> confirmReservation(
 			@PathVariable(name = "reservationNo") Long reservationNo) {
 
-		List<ReservationDTO> reservation = reservationService.confirmReservation(reservationNo);
-
-		return ResponseEntity.ok(reservation); // 예약확인창에서 예약정보를 띄워주기
+		return ResponseData.ok(reservationService.confirmReservation(reservationNo), "조회성공"); // 예약확인창에서 예약정보를 띄워주기
 	}
 
 	// 예약 내역창
 	@GetMapping("/searchList")
-	public ResponseEntity<List<CarReservationDTO>> findReservation(
+	public ResponseEntity<ResponseData<List<CarReservationDTO>>> findReservation(
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-		List<CarReservationDTO> reservation = reservationService.findReservation(userDetails);
-
-		return ResponseEntity.ok(reservation); // 사용자가 예약한 예약정보
+		return ResponseData.ok(reservationService.findReservation(userDetails), "조회성공"); // 사용자가 예약한 예약정보
 	}
 
 	// 예약 히스토리창
 	@GetMapping("/history")
-	public ResponseEntity<List<CarReservationDTO>> getHistoryReservation(
+	public ResponseEntity<ResponseData<List<CarReservationDTO>>> getHistoryReservation(
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-		List<CarReservationDTO> reservation = reservationService.getHistoryReservation(userDetails);
-
-		return ResponseEntity.ok(reservation); // 사용자가 예약한 예약정보
+		return ResponseData.ok(reservationService.getHistoryReservation(userDetails), "조회성공"); // 사용자가 예약한 예약정보
 	}
 
 	// 예약 반납
 	@PutMapping("/return")
-	public ResponseEntity<String> returnReservation(@RequestBody Long reservationNo,
+	public ResponseEntity<ResponseData<String>> returnReservation(@RequestBody Long reservationNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		reservationService.returnReservation(reservationNo, userDetails);
 
-		return ResponseEntity.ok("반납 완료 하였습니다.");
+		return ResponseData.ok("반납 완료 하였습니다.", null);
 	}
 
 	// 예약 변경
 	@PutMapping("/change")
-	public ResponseEntity<String> changeReservation(@RequestBody ReservationDTO reservation,
+	public ResponseEntity<ResponseData<String>> changeReservation(@RequestBody ReservationDTO reservation,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		reservationService.changeReservation(reservation, userDetails);
 
-		return ResponseEntity.ok().body("예약 변경 완료");
+		return ResponseData.ok("예약 변경 완료", null);
 	}
 
 	// 예약 취소
 	@DeleteMapping("/{reservationNo:[0-9]+}")
-	public ResponseEntity<String> cancelReservation(@PathVariable(name = "reservationNo") Long reservationNo,
+	public ResponseEntity<ResponseData<String>> cancelReservation(@PathVariable(name = "reservationNo") Long reservationNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		reservationService.cancelReservation(reservationNo, userDetails);
 
-		return ResponseEntity.ok().body("예약 취소 완료");
+		return ResponseData.ok("예약 취소 완료", null);
 	}
 
 }
