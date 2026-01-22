@@ -25,6 +25,7 @@ public class S3Service {
    // 데이터 마이그레이션 작업
 
    private final S3Client s3Client;
+   
    @Value("${cloud.aws.s3.bucket}")
    private String bucketName;
 

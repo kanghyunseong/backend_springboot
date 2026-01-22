@@ -23,9 +23,13 @@ build/
 logs/
 *.log
 tmp/
-<<<<<<< HEAD
+
+*.yml
+
+
 *.yml
 *.yml
 application.yml
 application-private.yml
 *.yml
+
