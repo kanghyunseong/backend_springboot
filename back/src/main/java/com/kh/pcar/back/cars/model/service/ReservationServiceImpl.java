@@ -79,7 +79,8 @@ public class ReservationServiceImpl implements ReservationService {
 	public void cancelReservation(Long reservationNo, CustomUserDetails userDetails) {
 
 		List<ReservationDTO> dto = reservationMapper.confirmReservation(reservationNo);
-
+		
+		
 		if (dto.isEmpty()) {
 			throw new ReservationNotFoundException("예약번호를 찾을 수 없습니다.");
 		}

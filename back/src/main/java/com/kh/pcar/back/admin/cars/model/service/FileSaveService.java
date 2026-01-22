@@ -1,18 +1,28 @@
 package com.kh.pcar.back.admin.cars.model.service;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths; // import 추가
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.core.sync.RequestBody; // 중요: AWS SDK용 RequestBody
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
 @Service
+@RequiredArgsConstructor
 public class FileSaveService {
 
-    // [수정] "uploads" 폴더를 프로젝트 실행 위치 기준 절대 경로로 지정
-    private final String uploadPath = Paths.get("uploads").toAbsolutePath().toString();
+    private final S3Client s3Client;
+    
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+
+    @Value("${cloud.aws.region.static}")
+    private String region;
 
     public String saveFile(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
@@ -20,21 +30,24 @@ public class FileSaveService {
         }
 
         String originalFilename = file.getOriginalFilename();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String timestamp = sdf.format(new Date());
-        String storeFilename = timestamp + "_" + originalFilename;
+        String storeFilename = UUID.randomUUID().toString() + "_" + originalFilename;
+        String key = "cars/" + storeFilename;
 
-        File dir = new File(uploadPath);
-        if (!dir.exists()) {
-            boolean created = dir.mkdirs();
-            if (!created) {
-                throw new IOException("업로드 폴더를 생성할 수 없습니다: " + uploadPath);
-            }
+        try {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .contentType(file.getContentType()) 
+                    .build();
+
+            s3Client.putObject(putObjectRequest, 
+                    RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+
+            return String.format("https://%s.s3.%s.amazonaws.com/%s", 
+                                  bucketName, region, key);
+
+        } catch (Exception e) {
+            throw new IOException("AWS S3 파일 업로드 중 오류 발생: " + e.getMessage(), e);
         }
-
-        String fullPath = uploadPath + File.separator + storeFilename;
-        file.transferTo(new File(fullPath));
-
-        return "http://localhost:8081/uploads/" + storeFilename;
     }
 }

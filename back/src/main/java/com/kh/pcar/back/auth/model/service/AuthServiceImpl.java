@@ -27,12 +27,12 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public Map<String, String> login(MemberLoginDTO member) {
 
-		log.info("memberDTO : {} ", member);
+		//log.info("memberDTO : {} ", member);
 
 		CustomUserDetails user = getCustomUserDetails(member);
 
-		log.info("로그인성공! ");
-		log.info("인증에 성공한 사용자의 정보 : {} ", user);
+		//log.info("로그인성공! ");
+		//log.info("인증에 성공한 사용자의 정보 : {} ", user);
 
 		Map<String, String> loginResponse = getLoginResponse(user);
 

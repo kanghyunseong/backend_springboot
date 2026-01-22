@@ -19,7 +19,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	private final AdminNoticeMapper adminNoticeMapper;
 
 	@Override
-	@Transactional(readOnly = true) // [추가] 조회 성능 최적화
+	@Transactional(readOnly = true) 
 	public List<AdminNoticeDTO> findAllNotice() {
 		return adminNoticeMapper.findAllNotice();
 	}

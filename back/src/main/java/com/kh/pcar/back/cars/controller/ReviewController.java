@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.pcar.back.auth.model.vo.CustomUserDetails;
 import com.kh.pcar.back.cars.model.dto.CarsReviewDTO;
 import com.kh.pcar.back.cars.model.service.CarsReviewService;
+import com.kh.pcar.back.common.ResponseData;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,44 +25,40 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/reviews")
+@RequestMapping("/api/reviews")
 public class ReviewController {
 
 	private final CarsReviewService carsReviewService;
 
 	@GetMapping("/{carId}") // 차량 리뷰 조회
-	public ResponseEntity<List<CarsReviewDTO>> findReview(@PathVariable(name = "carId") Long carId) {
-
-		List<CarsReviewDTO> review = carsReviewService.findReview(carId);
-
-		return ResponseEntity.ok(review);
+	public ResponseEntity<ResponseData<List<CarsReviewDTO>>> findReview(@PathVariable(name = "carId") Long carId) {
+		return ResponseData.ok(carsReviewService.findReview(carId), "차량 리뷰 조회 성공");
 	}
 
 	@PostMapping // 차량 리뷰 등록
-	public ResponseEntity<?> insertReview(@RequestBody CarsReviewDTO dto,
+	public ResponseEntity<ResponseData<Object>> insertReview(@RequestBody CarsReviewDTO dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
-
+		
 		carsReviewService.insertReview(dto, userDetails);
-
-		return ResponseEntity.status(HttpStatus.CREATED).body("리뷰 등록 완료");
-
+		
+		return ResponseData.created("리뷰 등록 성공!");
 	}
 
 	@PutMapping //
-	public ResponseEntity<?> updateReview(@RequestBody CarsReviewDTO dto,
+	public ResponseEntity<ResponseData<Object>> updateReview(@RequestBody CarsReviewDTO dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-		carsReviewService.updateReview(dto);
+		carsReviewService.updateReview(dto, userDetails);
 
-		return ResponseEntity.ok("리뷰 변경 완료");
+		return ResponseData.created("리뷰 변경 완료!");
 	}
 
 	@DeleteMapping("/{reviewNo}") // 차량 리뷰 삭제
-	public ResponseEntity<?> deleteReview(@PathVariable(name = "reviewNo") Long reviewNo,
+	public ResponseEntity<ResponseData<Object>> deleteReview(@PathVariable(name = "reviewNo") Long reviewNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-		carsReviewService.deleteReview(reviewNo);
+		carsReviewService.deleteReview(reviewNo, userDetails);
 
-		return ResponseEntity.ok().body("삭제완료");
+		return ResponseData.ok("삭제완료");
 	}
 }
